@@ -1,5 +1,4 @@
 var gulp = require('gulp');
-var gzip = require('gulp-gzip');
 var Builder = require('systemjs-builder');
 var less = require('less');
 var fs = require('fs');
@@ -23,9 +22,6 @@ function buildSystem(orig) {
 	builder.buildStatic('src/Datium', 'out/Datium.js', {
 		minify: true
 	}).then(function() {
-		fs.writeFile('temp/stylesheet.css', '');		
-		gulp.src('out/Datium.js')
-			//.pipe(gzip({ append: false }))
-			.pipe(gulp.dest('out'));
+		fs.writeFile('temp/stylesheet.css', '');
 	});
 }
