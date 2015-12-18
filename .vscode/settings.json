@@ -9,7 +9,6 @@
 		"package.json": true,
 		"tsconfig.json": true,
 		"node_modules": true,
-		"index.html": true,
 		".gitignore": true
 	},
 	"editor.wrappingColumn": 0
