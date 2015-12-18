@@ -1,0 +1,16 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+	"files.exclude": {
+		"**/.git": true,
+		"**/.DS_Store": true,
+		"config.js": true,
+		"gulpfile.js": true,
+		"temp": true,
+		"package.json": true,
+		"tsconfig.json": true,
+		"node_modules": true,
+		"index.html": true,
+		".gitignore": true
+	},
+	"editor.wrappingColumn": 0
+}
