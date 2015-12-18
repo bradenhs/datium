@@ -7,8 +7,7 @@ var fs = require('fs');
 gulp.task('default', doLess);
 
 function doLess() {
-	less.render('@import "src/view.less";', {
-		paths: ['.'],
+	less.render('@import "src/view/styles.less";', {
 		compress: true
 	}, addStyles);
 }
