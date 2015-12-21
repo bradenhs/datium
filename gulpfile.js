@@ -4,7 +4,7 @@ var less = require('less');
 var fs = require('fs');
 var liveServer = require('live-server');
 
-//AWESOME
+//AWESOMER
 gulp.task('build', doLess);
 
 gulp.task('start', function() {
