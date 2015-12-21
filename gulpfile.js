@@ -2,8 +2,13 @@ var gulp = require('gulp');
 var Builder = require('systemjs-builder');
 var less = require('less');
 var fs = require('fs');
+var liveServer = require('live-server');
 
-gulp.task('default', doLess);
+gulp.task('build', doLess);
+
+gulp.task('start', function() {
+    liveServer.start({port: 8081});
+});
 
 function doLess() {
 	less.render('@import "src/view/styles.less";', {

@@ -37,7 +37,7 @@ class Datium {
     }
     
     private createView():HTMLElement {
-        let el = document.createElement('dm-datiumRANDOM');
+        let el = document.createElement('datium-container');
         el.innerHTML = template;
         return el;
     }
