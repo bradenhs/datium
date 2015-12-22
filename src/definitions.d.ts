@@ -1,4 +1,4 @@
-declare module 'src/view/markup.html!text' {
+declare module 'src/view/main.html!text' {
 	var html: string;
 	export default html;
 }

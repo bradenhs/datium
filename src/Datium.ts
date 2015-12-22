@@ -1,16 +1,11 @@
-import template from 'src/view/markup.html!text';
+import mainTemplate from 'src/view/main.html!text';
+import {onTap} from 'src/Events';
+import Header from 'src/Header';
 
 // When in develop this file is empty and so nothing really happens but when building
 // in production this file is filled temporarily with stlyes so that styles can be
 // added to the page dynamically when in production.
 import stylesheet from 'temp/stylesheet.css!text';
-
-export interface IViewParams {
-	primary: string;
-	primaryText: string;
-	secondary: string;
-	secondaryText: string;
-}
 
 interface IOptions {
 	element: HTMLElement;
@@ -19,10 +14,17 @@ interface IOptions {
 }
 
 class Datium {
-    private static insertedStyles: boolean = false;
+    private static insertedStyles: boolean = false;    
+    
+    private el:HTMLElement;
+    private header:Header;
+    
+    
     
     constructor(options:IOptions) {
-        this.insertAfter(options.element, this.createView());
+        this.el = this.createView();
+        this.header = new Header(this.el.querySelector('datium-header'));
+        this.insertAfter(options.element, this.el);
         this.insertStyles();
     }
     
@@ -38,7 +40,7 @@ class Datium {
     
     private createView():HTMLElement {
         let el = document.createElement('datium-container');
-        el.innerHTML = template;
+        el.innerHTML = mainTemplate;
         return el;
     }
     
