@@ -11,27 +11,32 @@ export enum ViewLevel {
 
 export default class ViewManager {
 	private level:ViewLevel;
-	
+	private lastLevel:ViewLevel;
 	private date:Date;
-	private observers:((date:Date, level:ViewLevel) => void)[] = [];
+	private lastDate:Date;
+	private observers:((date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel) => void)[] = [];
 	
-	public registerObserver(observer:(date:Date, level:ViewLevel) => void):void {
-		observer(this.date, this.level);
+	public registerObserver(observer:(date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel) => void):void {
+		observer(this.date, this.level, this.lastDate, this.lastLevel);
 		this.observers.push(observer);
 	}
 	
 	private notifyObservers():void {
 		for (let key in this.observers) {
-			this.observers[key](this.date, this.level);
+			this.observers[key](this.date, this.level, this.lastDate, this.lastLevel);
 		}
 	}
 	
 	constructor() {
 		this.date = new Date();
-		this.level = ViewLevel.MINUTE;
+		this.level = ViewLevel.MONTH;
+		this.lastDate = this.date;
+		this.lastLevel = this.level;
 	}
 	
 	private goToView(value:number, level:ViewLevel):void {
+		this.lastDate = new Date(this.date.valueOf());
+		this.lastLevel = this.level;
 		this.level = level;
 		switch(level) {
 		case ViewLevel.DECADE:

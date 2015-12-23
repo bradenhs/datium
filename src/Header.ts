@@ -78,7 +78,12 @@ export default class Header {
 		// Month
 		let monthText = this.months[date.getMonth()];
 		// Day
-		let dayText = this.days[date.getDay()] + ' ' + date.getDate();
+		let day = date.getDate();
+		let dayPrefix = '';
+		if (day < 10) {
+			dayPrefix = '0';
+		}
+		let dayText = this.days[date.getDay()] + ' ' + dayPrefix + day;
 		// Hour
 		let hour = date.getHours();
 		let meridiem = 'AM';
@@ -90,14 +95,18 @@ export default class Header {
 			hour -= 12;
 			meridiem = 'PM';
 		}
-		let hourText = hour + meridiem;
+		let hourPrefix = '';
+		if (hour < 10) {
+			hourPrefix = '0';
+		}
+		let hourText = hourPrefix + hour + meridiem;
 		// Minute
 		let minute = date.getMinutes();
-		let prefix = '';
+		let minutePrefix = '';
 		if (minute < 10) {
-			prefix = '0';
+			minutePrefix = '0';
 		}
-		let minuteText = hour + ':' + prefix + minute + meridiem;
+		let minuteText = hourPrefix + hour + ':' + minutePrefix + minute + meridiem;
 		
 		this.decadeLabelText.innerText = decadeText;
 		this.yearLabelText.innerText = yearText;

@@ -1,0 +1,17 @@
+@import 'palette.less';
+
+datium-day-element {
+	width: 14.2857143%;
+	display: inline-block;
+	line-height: 40px;
+	text-align: center;
+	position: relative;
+	color: @secondary-text;
+	font-size: 12pt;
+	&.datium-day-inactive, &.datium-weekday-label {
+		opacity: .6;
+	}
+	&.datium-weekday-label {
+		font-weight: bold;
+	}
+}
