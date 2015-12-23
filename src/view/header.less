@@ -85,8 +85,14 @@ datium-container {
 			padding-top: 22px;
 		}
 		&.datium-hidden-top {
-			top: 0;
-			bottom: 100%;
+			top: -10%;
+			bottom: 65%;
+			opacity: 0;
+		}
+		
+		&.datium-bottom > datium-extended-label-text,
+		&.datium-hidden-bottom > datium-extended-label-text {
+			display: none;
 		}
 		
 		&.datium-bottom {

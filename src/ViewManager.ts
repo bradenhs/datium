@@ -10,7 +10,7 @@ export enum ViewLevel {
 }
 
 export default class ViewManager {
-	private level:ViewLevel = ViewLevel.MONTH;
+	private level:ViewLevel;
 	
 	private date:Date;
 	private observers:((date:Date, level:ViewLevel) => void)[] = [];
@@ -28,11 +28,11 @@ export default class ViewManager {
 	
 	constructor() {
 		this.date = new Date();
-		this.zeroFrom(ViewLevel.MONTH);
+		this.level = ViewLevel.MINUTE;
 	}
 	
 	private goToView(value:number, level:ViewLevel):void {
-		this.zeroFrom(level);
+		this.level = level;
 		switch(level) {
 		case ViewLevel.DECADE:
 		case ViewLevel.YEAR:
@@ -57,38 +57,31 @@ export default class ViewManager {
 		this.notifyObservers();
 	}
 	
-	private zeroFrom(level:ViewLevel) {
-		this.date.setMilliseconds(0);
-		if (level > ViewLevel.SECOND) this.date.setSeconds(0); else return;
-		if (level > ViewLevel.MINUTE) this.date.setMinutes(0); else return;
-		if (level > ViewLevel.HOUR) this.date.setHours(0); else return;
-		if (level > ViewLevel.DAY) this.date.setDate(1); else return;
-		if (level > ViewLevel.MONTH) this.date.setMonth(0); else return;		
-	}
-	
 	public next():void {
-		let value:number = this.getValue(this.level) + 1;
+		let change = this.level === ViewLevel.DECADE ? 10 : 1;
+		let value:number = this.getValue(this.level) + change;
 		this.goToView(value, this.level);
 	}
 	
 	public previous():void {
-		let value:number = this.getValue(this.level) - 1;
+		let change = this.level === ViewLevel.DECADE ? 10 : 1;
+		let value:number = this.getValue(this.level) - change;
 		this.goToView(value, this.level);
 	}
 	
 	public zoomOut():void {
-		let newLevel:ViewLevel = this.level === ViewLevel.DECADE ? this.level : this.level - 1;
+		let newLevel:ViewLevel = this.level === ViewLevel.DECADE ? this.level : this.level + 1;
 		let value:number = this.getValue(newLevel);
 		this.goToView(value, newLevel);
 	}
 	
 	public zoomTo(newValue:number):void {
-		let newLevel:ViewLevel = this.level === ViewLevel.SECOND ? this.level : this.level + 1;
+		let newLevel:ViewLevel = this.level === ViewLevel.MINUTE ? this.level : this.level - 1;
 		this.goToView(newValue, newLevel);
 	}
 	
 	private getValue(level:ViewLevel):number {
-		switch(this.level) {
+		switch(level) {
 			case ViewLevel.SECOND: return this.date.getSeconds();
 			case ViewLevel.MINUTE: return this.date.getMinutes();
 			case ViewLevel.HOUR: return this.date.getHours();
