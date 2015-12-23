@@ -1,18 +1,19 @@
+// Order here is important
 export enum ViewLevel {
-	DECADE,
-	YEAR,
-	MONTH,
-	DAY,
-	HOUR,
+	SECOND,
 	MINUTE,
-	SECOND
+	HOUR,
+	DAY,
+	MONTH,
+	YEAR,
+	DECADE
 }
 
 export default class ViewManager {
 	private level:ViewLevel = ViewLevel.MONTH;
 	
 	private date:Date;
-	private observers:((date:Date, level:ViewLevel) => void)[];
+	private observers:((date:Date, level:ViewLevel) => void)[] = [];
 	
 	public registerObserver(observer:(date:Date, level:ViewLevel) => void):void {
 		observer(this.date, this.level);
