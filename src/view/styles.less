@@ -1,4 +1,40 @@
-@import 'palette.less';
+@import 'header.less';
+@import 'day-picker.less';
+
+datium-container, datium-container * {
+	-webkit-user-select: none;
+	cursor: default;
+}
+
+datium-all-pickers-container {
+	display: block;
+	position: relative;
+	transition: .4s ease all;
+}
+
+datium-picker-container {
+	position: absolute;
+	display: block;
+	left: 0;
+	right: 0;
+	transition: .4s ease all;
+	transform-origin: 150px 150px;
+}
+
+datium-picker-container.datium-transition-in {
+	opacity: 0;
+	transform: scale(.8);
+}
+
+datium-picker-container.datium-transition-out {
+	opacity: 0;
+	transform: scale(1.2);
+}
+
+datium-picker-container.datium-transition-left {
+	left: -100%;
+	right: 100%;
+}
 
 datium-container {
     font-family: Roboto, Arial, Helvetica, sans-serif;

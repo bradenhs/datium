@@ -1,16 +1,19 @@
-import template from 'src/view/markup.html!text';
+import mainTemplate from 'src/view/main.html!text';
+import {onTap} from 'src/Events';
+import Header from 'src/Header';
+import ViewManager, {ViewLevel} from 'src/ViewManager';
+import YearPicker from 'src/pickers/YearPicker';
+import MonthPicker from 'src/pickers/MonthPicker';
+import DayPicker from 'src/pickers/DayPicker';
+import HourPicker from 'src/pickers/HourPicker';
+import MinutePicker from 'src/pickers/MinutePicker';
+import SecondPicker from 'src/pickers/SecondPicker';
+import {Transition, IPicker} from 'src/pickers/IPicker';
 
 // When in develop this file is empty and so nothing really happens but when building
 // in production this file is filled temporarily with stlyes so that styles can be
 // added to the page dynamically when in production.
 import stylesheet from 'temp/stylesheet.css!text';
-
-export interface IViewParams {
-	primary: string;
-	primaryText: string;
-	secondary: string;
-	secondaryText: string;
-}
 
 interface IOptions {
 	element: HTMLElement;
@@ -21,9 +24,68 @@ interface IOptions {
 class Datium {
     private static insertedStyles: boolean = false;
     
+    private currentPicker:IPicker;
+    private yearPicker:YearPicker;
+    private monthPicker:MonthPicker;
+    private dayPicker:DayPicker;
+    private hourPicker:HourPicker;
+    private minutePicker:MinutePicker;
+    private secondPicker:SecondPicker;
+    
+    private pickerContainer:HTMLElement;
+    
     constructor(options:IOptions) {
-        this.insertAfter(options.element, this.createView());
+        let el = this.createView();
+        this.pickerContainer = <HTMLElement>el.querySelector('datium-all-pickers-container');   
+        
+        let viewManager = new ViewManager();
+        
+        this.yearPicker = new YearPicker(this.pickerContainer, viewManager);
+        this.monthPicker = new MonthPicker(this.pickerContainer, viewManager);
+        this.dayPicker = new DayPicker(this.pickerContainer, viewManager);
+        this.hourPicker = new HourPicker(this.pickerContainer, viewManager);
+        this.minutePicker = new MinutePicker(this.pickerContainer, viewManager);
+        this.secondPicker = new SecondPicker(this.pickerContainer, viewManager);     
+        
+        new Header(el.querySelector('datium-header'), viewManager);
+        viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel) => {
+            this.viewChanged(date, level, lastDate, lastLevel);
+        });
+        
+        this.insertAfter(options.element, el);
         this.insertStyles();
+    }
+    
+    private viewChanged(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel) {
+        let newPicker = this.getNewPicker(level);
+        if (level > lastLevel) {
+            this.currentPicker.destroy(Transition.ZOOM_IN);
+            newPicker.create(Transition.ZOOM_OUT, date);
+        } else if (level < lastLevel) {
+            this.currentPicker.destroy(Transition.ZOOM_OUT);
+            newPicker.create(Transition.ZOOM_IN, date);
+        } else if (date.valueOf() < lastDate.valueOf()) {
+            this.currentPicker.destroy(Transition.SCROLL_RIGHT);
+            newPicker.create(Transition.SCROLL_LEFT, date);
+        } else if (date.valueOf() > lastDate.valueOf()) {
+            this.currentPicker.destroy(Transition.SCROLL_LEFT);
+            newPicker.create(Transition.SCROLL_RIGHT, date);
+        } else {
+            newPicker.create(Transition.NONE, date);
+        }
+        this.pickerContainer.style.height = newPicker.getHeight() + 'px';
+        this.currentPicker = newPicker;
+    }
+    
+    private getNewPicker(level:ViewLevel):IPicker {
+        switch (level) {
+            case ViewLevel.DECADE: return this.yearPicker;
+            case ViewLevel.YEAR: return this.monthPicker;
+            case ViewLevel.MONTH: return this.dayPicker;
+            case ViewLevel.DAY: return this.hourPicker;
+            case ViewLevel.HOUR: return this.minutePicker;
+            case ViewLevel.MINUTE: return this.secondPicker;
+        }
     }
     
     private insertStyles():void {
@@ -38,7 +100,7 @@ class Datium {
     
     private createView():HTMLElement {
         let el = document.createElement('datium-container');
-        el.innerHTML = template;
+        el.innerHTML = mainTemplate;
         return el;
     }
     

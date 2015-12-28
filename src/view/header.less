@@ -1,0 +1,143 @@
+@import 'palette.less';
+
+datium-container {
+	font-family: Roboto, Arial, Helvetica, sans-serif;
+	display: block;
+	position: relative;
+	overflow: hidden;
+	border-radius: 2px;
+	width: 300px;
+	background: @secondary;
+	box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+	
+	datium-header {
+		background: @primary;
+		display: block;
+		height: 90px;
+		font-weight: bold;
+		color: @primary-text;
+		position: relative;
+	}
+	
+	datium-next-view, datium-previous-view {
+		position: absolute;
+		width: 40px;
+		height: 90px;
+		bottom: 0;
+		
+		&:after, &:before {
+			content: '';
+			position: absolute;
+			background: @primary-text;
+			width: 3px;
+			height: 8px;
+			display: block;
+			top: 56px;
+		}
+		
+		&:before {
+			margin-top: -4px;
+		}
+	}
+	
+	datium-next-view {
+		right: 0;
+		&:after, &:before {
+			left: 50%;
+			margin-left: -2px;
+		}
+		&:after {
+			transform: rotate(45deg);
+		}
+		&:before {
+			transform: rotate(-45deg);
+		}
+	}
+	
+	datium-previous-view {
+		left: 0;
+		&:after, &:before {
+			right: 50%;
+			margin-right: -2px;
+		}
+		&:after {
+			transform: rotate(-45deg);
+		}
+		&:before {
+			transform: rotate(45deg);
+		}
+	}
+	
+	datium-span-label {
+		display: block;
+		position: absolute;
+		left: 40px;
+		right: 40px;
+		overflow: hidden;
+		white-space: nowrap;
+		transition: all ease .2s;
+		&.datium-top {
+			top: 0;
+			bottom: 55%;
+			opacity: .6;
+			font-size: 12pt;
+			padding-top: 22px;
+		}
+		&.datium-hidden-top {
+			top: -10%;
+			bottom: 65%;
+			opacity: 0;
+		}
+		
+		&.datium-bottom > datium-extended-label-text,
+		&.datium-hidden-bottom > datium-extended-label-text {
+			display: none;
+		}
+		
+		&.datium-bottom {
+			top: 45%;
+			bottom: 0;
+			font-size: 18pt;
+			padding-top: 3px;
+			& > datium-zoom-out-icon {
+				opacity: 0;
+			}			
+		}
+		&.datium-hidden-bottom {
+			top: 100%;
+			bottom: 0;
+		}
+	}
+	
+	datium-zoom-out-icon {
+		position: relative;
+		width: 12px;
+		height: 12px;
+		margin-left: 5px;
+		display: inline-block;
+		bottom: 0;
+		&:before {
+			content: '-';
+			font-size: 12px;
+			border: 2px solid @primary-text;
+			position: absolute;
+			height: 6px;
+			width: 6px;
+			overflow: hidden;
+			text-align: center;
+			line-height: 6px;
+			border-radius: 5px;
+		}
+		&:after {
+			content: '';
+			position: absolute;
+			width: 2px;
+			height: 5px;
+			transform: rotate(-45deg);
+			background: @primary-text;
+			transform-origin: 1px 5px;
+			bottom: 0;
+			right: -1px;
+		}
+	}
+}
