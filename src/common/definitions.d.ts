@@ -1,6 +1,11 @@
-declare module 'src/view/main.html!text' {
+declare module 'src/header/header.html!text' {
 	var html: string;
 	export default html;
+}
+
+declare module 'src/pickers/month/month-picker.html!text' {
+    var html: string;
+    export default html;
 }
 
 // Needed for the build process

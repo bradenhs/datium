@@ -12,7 +12,7 @@ gulp.task('start', function() {
 });
 
 function doLess() {
-	less.render('@import "src/view/styles.less";', {
+	less.render('@import "src/styles.less";', {
 		compress: true
 	}, addStyles);
 }

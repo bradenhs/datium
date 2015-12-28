@@ -1,14 +1,14 @@
-import mainTemplate from 'src/view/main.html!text';
-import {onTap} from 'src/Events';
-import Header from 'src/Header';
-import ViewManager, {ViewLevel} from 'src/ViewManager';
-import YearPicker from 'src/pickers/YearPicker';
-import MonthPicker from 'src/pickers/MonthPicker';
-import DayPicker from 'src/pickers/DayPicker';
-import HourPicker from 'src/pickers/HourPicker';
-import MinutePicker from 'src/pickers/MinutePicker';
-import SecondPicker from 'src/pickers/SecondPicker';
-import {Transition, IPicker} from 'src/pickers/IPicker';
+import headerTemplate from 'src/header/header.html!text';
+import {onTap} from 'src/common/Events';
+import Header from 'src/header/Header';
+import ViewManager, {ViewLevel} from 'src/common/ViewManager';
+import YearPicker from 'src/pickers/year/YearPicker';
+import MonthPicker from 'src/pickers/month/MonthPicker';
+import DayPicker from 'src/pickers/day/DayPicker';
+import HourPicker from 'src/pickers/hour/HourPicker';
+import MinutePicker from 'src/pickers/minute/MinutePicker';
+import SecondPicker from 'src/pickers/second/SecondPicker';
+import {Transition, Picker} from 'src/pickers/Picker';
 
 // When in develop this file is empty and so nothing really happens but when building
 // in production this file is filled temporarily with stlyes so that styles can be
@@ -24,7 +24,7 @@ interface IOptions {
 class Datium {
     private static insertedStyles: boolean = false;
     
-    private currentPicker:IPicker;
+    private currentPicker:Picker;
     private yearPicker:YearPicker;
     private monthPicker:MonthPicker;
     private dayPicker:DayPicker;
@@ -77,7 +77,7 @@ class Datium {
         this.currentPicker = newPicker;
     }
     
-    private getNewPicker(level:ViewLevel):IPicker {
+    private getNewPicker(level:ViewLevel):Picker {
         switch (level) {
             case ViewLevel.DECADE: return this.yearPicker;
             case ViewLevel.YEAR: return this.monthPicker;
@@ -100,7 +100,7 @@ class Datium {
     
     private createView():HTMLElement {
         let el = document.createElement('datium-container');
-        el.innerHTML = mainTemplate;
+        el.innerHTML = headerTemplate + '<datium-all-pickers-container></datium-all-pickers-container>';
         return el;
     }
     

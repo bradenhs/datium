@@ -1,4 +1,4 @@
-@import 'palette.less';
+@import '../common/palette.less';
 
 datium-day-element {
 	width: 14.2857143%;
@@ -14,4 +14,12 @@ datium-day-element {
 	&.datium-weekday-label {
 		font-weight: bold;
 	}
+}
+
+datium-month-element, datium-year-element {
+    display: inline-block;
+    width: 24%;
+    line-height: 60px;
+    text-align: center;
+    color: @secondary-text;
 }

@@ -1,5 +1,5 @@
-import {onTap} from 'src/Events';
-import ViewManager, {ViewLevel} from 'src/ViewManager';
+import {onTap} from 'src/common/Events';
+import ViewManager, {ViewLevel} from 'src/common/ViewManager';
 
 export default class Header {
 	private decadeLabel:Element;
