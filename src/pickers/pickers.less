@@ -78,15 +78,15 @@ datium-clock {
     datium-tick-label {
         position: absolute;
         bottom: -30px;
-        width: 40px;
-        left: -20px;
+        width: 50px;
+        left: -25px;
         text-align: center;
         font-size: 12px;
-        line-height: 40px;
-        opacity: .6;
+        line-height: 50px;
+        opacity: .8;
         color: @secondary-text;
-        margin-bottom: -15px;
-        border-radius: 20px;
+        margin-bottom: -20px;
+        border-radius: 25px;
     }
     
     datium-time-drag {
@@ -97,7 +97,12 @@ datium-clock {
         width: 0;
         transform-origin: 0 0;
         z-index: 1;
-        transform: rotate(240deg);
+        transform: rotate(180deg);
+        transition: .4s ease all;
+    }
+    
+    datium-time-drag.datium-is-dragging {
+        transition: none;
     }
     
     datium-time-drag:before {
@@ -150,6 +155,18 @@ datium-clock {
         border-left-color: @primary;
         top: -5px;
         right: -8px;
+    }
+    
+    datium-pick {
+        position: absolute;
+        color: @primary;
+        text-transform: uppercase;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-weight: bold;
+        top: 130px;
+        font-size: 12pt;
     }
 
 }

@@ -4,6 +4,7 @@ var less = require('less');
 var fs = require('fs');
 var liveServer = require('live-server');
 var shell = require('shelljs');
+var del = require('del');
 
 //AWESOMER
 gulp.task('build', doLess);
@@ -13,11 +14,13 @@ gulp.task('start', function() {
 });
 
 gulp.task('deploy', ['build'], function() {
-    shell.cp('-rf', 'out/Datium.js', 'deploy/Datium.js');
-    shell.cd('deploy');
-    shell.exec('git add -A');
-    shell.exec('git commit -m "latest deploy"');
-    shell.exec('git push');
+    del(['deploy/Datium.js']).then(function(err) {
+        shell.cp('-rf', 'out/Datium.js', 'deploy');
+        shell.cd('deploy');
+        shell.exec('git add -A');
+        shell.exec('git commit -m "latest deploy"');
+        shell.exec('git push');        
+    });
 });
 
 function doLess() {

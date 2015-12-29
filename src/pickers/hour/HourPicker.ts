@@ -1,27 +1,99 @@
 import {Picker} from 'src/pickers/Picker';
 import ViewManager from 'src/common/ViewManager';
 import clockTemplate from 'src/pickers/clock.html!text';
+import {onDrag, onTap} from 'src/common/Events';
 
 export default class HourPicker extends Picker {
+    
+    protected timeDragElement:HTMLElement;
+    protected currentPickElement:HTMLElement;
+    protected clockElement:Element;
+    
+    protected rotation:number;
+    protected time:number;
+        
+    private meridiem:string;
     
 	constructor(container:HTMLElement, private viewManager:ViewManager) {
         super(container, viewManager, 'datium-hour-selectable');
         this.height = 300;
+        
+        onDrag(container, 'datium-time-drag', {
+           dragStart: (e:Event) => { this.dragStart(e); },
+           dragMove: (e:MouseEvent) => { this.dragMove(e); },
+           dragEnd: (e:Event) => { this.dragEnd(e); }
+        });
+        
+        onTap(container, "datium-clock-middle", (e:Event) => {
+        });
+    }
+    
+    private dragStart(e:Event):void {
+        this.timeDragElement.classList.add('datium-is-dragging');
+    }
+    
+    private dragMove(e:MouseEvent):void {
+        let centerX = this.clockElement.getBoundingClientRect().left + 100;
+        let centerY = this.clockElement.getBoundingClientRect().top + 100;
+        let offsetX = centerX - e.pageX;
+        let offsetY = centerY - e.pageY;
+        
+        let newRotation = 180-Math.atan2(offsetX, offsetY)*180/Math.PI;        
+        this.rotation = this.normalizeRotation(newRotation);
+        
+        this.setTimeDragRotation(this.rotation);        
+        this.time = this.rotationToTime(this.rotation);
+        this.updateTime();
+    }
+    
+    private setTimeDragRotation(angle:number):void {
+        this.timeDragElement.style.transform = `rotate(${angle}deg)`;
+        
+    }
+    
+    protected rotationToTime(rotation:number):number {
+        let num = (rotation) / 30 - 6;
+        num = Math.round(num < 0 ? num + 12 : num);
+        return num === 0 ? 12 : num;
+    }
+    
+    protected timeToRotation(time:number):number {
+        return this.normalizeRotation(time * 30 + 180);
+    }
+    
+    private updateTime():void {
+        //this.currentPickElement.innerText = this.time.toString() + this.meridiem;
+    }
+    
+    private normalizeRotation(newRotation:number):number {
+        while (newRotation + 180 < this.rotation) newRotation += 360;
+        while (newRotation - 180 > this.rotation) newRotation -= 360;
+        return newRotation;
+    }
+    
+    private dragEnd(e:Event):void {
+        this.rotation = this.timeToRotation(this.time);
+        this.setTimeDragRotation(this.rotation);
+        this.timeDragElement.classList.remove('datium-is-dragging');
     }
     
     protected populatePicker(picker:HTMLElement, date:Date):void {
         picker.innerHTML = clockTemplate;
-        let meridiem = date.getHours() < 12 ? 'am' : 'pm';
-        let clock = picker.querySelector('datium-clock');
-        
+        this.meridiem = date.getHours() < 12 ? 'am' : 'pm';
+        this.clockElement = picker.querySelector('datium-clock');
+        this.currentPickElement = <HTMLElement>picker.querySelector('datium-pick');
         for (let hour = 1; hour <= 12; hour++) {
             let angle = (hour - 6) * 30;
-            let label = hour.toString() + meridiem;
+            let label = hour.toString() + this.meridiem;
             let data = hour;
-            if (meridiem === 'pm') data += 12;
+            if (this.meridiem === 'pm') data += 12;
             if (hour === 12) data -= 12;            
-            clock.appendChild(this.mkTick(angle, label, data));
+            this.clockElement.appendChild(this.mkTick(angle, label, data));
         }
+        this.timeDragElement = <HTMLElement>picker.querySelector('.datium-time-drag');
+        this.rotation = 180;
+        this.updateTime();
+        
     }
     
     private mkTick(angle:number, label:string, data:number):HTMLElement {
@@ -31,7 +103,7 @@ export default class HourPicker extends Picker {
         tickLabel.innerText = label;
         tickLabel.style.transform = `rotate(${-angle}deg)`;
         tickLabel.setAttribute('datium-data', data.toString());
-        //tickLabel.className = 'datium-hour-selectable';
+        tickLabel.className = 'datium-hour-selectable';
         tick.appendChild(document.createElement('datium-tick-mark'));
         tick.appendChild(tickLabel);
         
