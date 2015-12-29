@@ -67,71 +67,93 @@ datium-container {
 			transform: rotate(45deg);
 		}
 	}
+    
+    datium-span-labels {
+        overflow: hidden;
+        left: 40px;
+        right: 40px;
+        top: 0;
+        bottom: 0;
+        display: block;
+        position: absolute;
+    }
 	
 	datium-span-label {
 		display: block;
 		position: absolute;
-		left: 40px;
-		right: 40px;
+		left: 0;
+		right: 0;
 		overflow: hidden;
 		white-space: nowrap;
 		transition: all ease .2s;
+        transform-origin: 0 0;
+        font-size: 18pt;
 		&.datium-top {
-            transform: translateY(22px);
+            transform: translateY(22px) scale(.66);
 			opacity: .6;
-			font-size: 12pt;
 		}
 		&.datium-hidden-top {
-            transform: translateY(6px);
+            transform: translateY(10px) scale(.5);
 			opacity: 0;
 		}
 		
+        datium-extended-label-text {
+            opacity: 1;
+            transition: all ease .2s;
+        }
+        
 		&.datium-bottom > datium-extended-label-text,
 		&.datium-hidden-bottom > datium-extended-label-text {
-			display: none;
+			opacity: 0;
 		}
 		
 		&.datium-bottom {
-            transform: translateY(44px);
-			font-size: 18pt;
+            transform: translateY(44px) scale(1);
 			& > datium-zoom-out-icon {
 				opacity: 0;
 			}			
 		}
 		&.datium-hidden-bottom {
-            transform: translateY(90px);
+            transform: translateY(90px) scale(1.2);
 		}
 	}
 	
 	datium-zoom-out-icon {
 		position: relative;
-		width: 12px;
-		height: 12px;
-		margin-left: 5px;
+		width: 16px;
+		height: 16px;
+		margin-left: 4px;
 		display: inline-block;
-		bottom: 0;
+		bottom: 1px;
 		&:before {
-			content: '-';
-			font-size: 12px;
+			content: '';
 			border: 2px solid @primary-text;
 			position: absolute;
-			height: 6px;
-			width: 6px;
+			height: 10px;
+			width: 10px;
 			overflow: hidden;
-			text-align: center;
-			line-height: 5px;
-			border-radius: 5px;
+			border-radius: 7px;
 		}
 		&:after {
 			content: '';
 			position: absolute;
-			width: 2px;
-			height: 5px;
+			width: 3px;
+			height: 7px;
 			transform: rotate(-45deg);
 			background: @primary-text;
-			transform-origin: 1px 5px;
+			transform-origin: 1.5px 7px;
 			bottom: 0;
-			right: -1px;
+			right: -1.5px;
 		}
+        datium-zoom-out-minus-sign {
+            position: absolute;
+            width: 6px;
+            height: 2px;
+            background: @primary-text;
+            z-index: 5;
+            top: 6px;
+            left: 4px;
+            display: block;
+        }
 	}
 }
