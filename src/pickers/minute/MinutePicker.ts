@@ -7,7 +7,7 @@ export default class MinutePicker extends Picker {
         super(container, viewManager, 'datium-minute-selectable');
     }
     
-    protected populatePicker(picker:HTMLElement, data:Date):void {
+    protected populatePicker(picker:HTMLElement, date:Date):void {
         
     }
 }

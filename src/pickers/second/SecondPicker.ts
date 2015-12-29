@@ -7,7 +7,7 @@ export default class SecondPicker extends Picker {
         super(container, viewManager, 'datium-second-selectable');
     }
     
-    protected populatePicker(picker:HTMLElement, data:Date):void {
+    protected populatePicker(picker:HTMLElement, date:Date):void {
         
     }
 }

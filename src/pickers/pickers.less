@@ -23,3 +23,133 @@ datium-month-element, datium-year-element {
     text-align: center;
     color: @secondary-text;
 }
+
+datium-clock {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin-left: -100px;
+	margin-top: -100px;
+	display: block;
+	width: 200px;
+	height: 200px;
+	border-radius: 100px;
+	box-shadow: inset 0 0 1px 0px @secondary-text;
+    
+    datium-clock-middle {
+        position: absolute;
+        width: 36px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: bold;
+        color: @primary;
+        border-radius: 20px;
+        top: 50%;
+        left: 50%;
+        margin-left: -20px;
+        margin-top: -20px;
+        border: 2px solid white;
+        background: @secondary;
+        line-height: 36px;
+        box-shadow: inset 0 0 0 3px @primary;	
+    }
+    
+    datium-tick {
+        display: block;
+        position: absolute;
+        width: 0;
+        height: 50%;
+        top: 50%;
+        left: 50%;
+        transform-origin: 0 0;
+    }
+    
+    datium-tick-mark {
+        content: '';
+        position: absolute;
+        width: 2px;
+        left: -1px;
+        height: 6px;
+        opacity: .3;
+        background: @secondary-text;
+        bottom: -3px;        
+    }
+    
+    datium-tick-label {
+        position: absolute;
+        bottom: -30px;
+        width: 40px;
+        left: -20px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 40px;
+        opacity: .6;
+        color: @secondary-text;
+        margin-bottom: -15px;
+        border-radius: 20px;
+    }
+    
+    datium-time-drag {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        height: 100px;
+        width: 0;
+        transform-origin: 0 0;
+        z-index: 1;
+        transform: rotate(240deg);
+    }
+    
+    datium-time-drag:before {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: -9px;
+        width: 14px;
+        height: 14px;
+        border-radius: 100%;
+        border: 2px solid @primary;
+        box-shadow: inset 0 0 0 2px @secondary;
+        background: @primary;
+    }
+    
+    datium-drag-selection-area {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        border-radius: 30px;
+        bottom: -25px;
+        left: -25px;
+        z-index: 1;
+    }
+
+    datium-time-drag-arrows {
+        position: absolute;
+        width: 22px;
+        left: -11px;
+        bottom: 0;
+    }
+
+    datium-time-drag-arrows:before {
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 4px solid transparent;
+        border-right-color: @primary;
+        top: -5px;
+        left: -8px;
+    }
+
+    datium-time-drag-arrows:after {
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 4px solid transparent;
+        border-left-color: @primary;
+        top: -5px;
+        right: -8px;
+    }
+
+}
