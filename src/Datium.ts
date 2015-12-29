@@ -70,7 +70,7 @@ class Datium {
         } else if (date.valueOf() > lastDate.valueOf()) {
             this.currentPicker.destroy(Transition.SCROLL_LEFT);
             newPicker.create(Transition.SCROLL_RIGHT, date);
-        } else {
+        } else if (this.currentPicker === void 0) {
             newPicker.create(Transition.NONE, date);
         }
         this.pickerContainer.style.height = newPicker.getHeight() + 'px';

@@ -47,7 +47,7 @@ export default class Header {
 		this.minuteExtendedLabelText = <HTMLElement>this.minuteLabel.querySelector('datium-extended-label-text');
 		
 		// Bind events
-		onTap(el, 'datium-top', () => {
+		onTap(el.querySelector('datium-span-labels'), () => {
 			viewManager.zoomOut();
 		});
 		
@@ -66,7 +66,7 @@ export default class Header {
 	
 	private months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 	
-	private days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
+	private days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 	
 	private updateLabels(date:Date, level:ViewLevel):void {
 		// Decade

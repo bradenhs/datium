@@ -77,15 +77,12 @@ datium-container {
 		white-space: nowrap;
 		transition: all ease .2s;
 		&.datium-top {
-			top: 0;
-			bottom: 55%;
+            transform: translateY(22px);
 			opacity: .6;
 			font-size: 12pt;
-			padding-top: 22px;
 		}
 		&.datium-hidden-top {
-			top: -10%;
-			bottom: 65%;
+            transform: translateY(6px);
 			opacity: 0;
 		}
 		
@@ -95,17 +92,14 @@ datium-container {
 		}
 		
 		&.datium-bottom {
-			top: 45%;
-			bottom: 0;
+            transform: translateY(44px);
 			font-size: 18pt;
-			padding-top: 3px;
 			& > datium-zoom-out-icon {
 				opacity: 0;
 			}			
 		}
 		&.datium-hidden-bottom {
-			top: 100%;
-			bottom: 0;
+            transform: translateY(90px);
 		}
 	}
 	
