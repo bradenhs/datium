@@ -44,11 +44,13 @@ datium-clock {
         font-weight: bold;
         color: @primary;
         border-radius: 20px;
+        text-transform: uppercase;
         top: 50%;
         left: 50%;
         margin-left: -20px;
         margin-top: -20px;
         border: 2px solid white;
+        z-index: 1;
         background: @secondary;
         line-height: 36px;
         box-shadow: inset 0 0 0 3px @primary;	
@@ -167,6 +169,29 @@ datium-clock {
         font-weight: bold;
         top: 130px;
         font-size: 12pt;
+        text-shadow:
+        -2px -2px 0 @secondary,
+        2px -2px 0 @secondary,
+        -2px 2px 0 @secondary,
+        2px 2px 0 @secondary; 
+        z-index: 1;
+    }
+    
+    datium-hour-hand {
+        display: block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        border-radius: 40%;
+        top: 50%;
+        left: 50%;
+        margin-left: -3px;
+        margin-top: -3px;
+        transform-origin: 3px 3px;	
+        transform: rotate(240deg);
+        border-top: 50px solid @primary;
+        border-left: 3px solid transparent;
+        border-right: 3px solid transparent;
     }
 
 }

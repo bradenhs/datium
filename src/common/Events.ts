@@ -51,7 +51,7 @@ export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallb
     attachEventsDelegate(['touchstart', 'mousedown'], parent, delegateClass, (e?:MouseEvent|TouchEvent) => {
         readyToStartDrag = true;
     });
-    attachEvents(['touchmove', 'mousemove'], parent, (e?:MouseEvent|TouchEvent) => {
+    attachEvents(['touchmove', 'mousemove'], document, (e?:MouseEvent|TouchEvent) => {
         if (readyToStartDrag) {
             readyToStartDrag = false;
             dragging = true;
@@ -63,7 +63,7 @@ export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallb
             callbacks.dragMove(e);
         }
     });
-    attachEvents(['touchend', 'mouseup'], parent, (e?:MouseEvent|TouchEvent) => {
+    attachEvents(['touchend', 'mouseup'], document, (e?:MouseEvent|TouchEvent) => {
         if (dragging && callbacks.dragEnd !== void 0) {
             callbacks.dragEnd(e);
         }

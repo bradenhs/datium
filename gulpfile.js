@@ -6,15 +6,15 @@ var liveServer = require('live-server');
 var shell = require('shelljs');
 var del = require('del');
 
-//AWESOMER
 gulp.task('build', doLess);
 
 gulp.task('start', function() {
     liveServer.start({port: 8081});
 });
 
-gulp.task('deploy', ['build'], function() {
+gulp.task('deploy', function() {
     del(['deploy/Datium.js']).then(function(err) {
+        shell.exec('gulp build');
         shell.cp('-rf', 'out/Datium.js', 'deploy');
         shell.cd('deploy');
         shell.exec('git add -A');
