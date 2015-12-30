@@ -167,7 +167,7 @@ datium-clock {
         right: 0;
         text-align: center;
         font-weight: bold;
-        top: 130px;
+        top: 50px;
         font-size: 12pt;
         text-shadow:
         -2px -2px 0 @secondary,
@@ -194,5 +194,38 @@ datium-clock {
         border-right: 3px solid transparent;
         transition: all ease .4s;
     }
-
+    
+    datium-time-drag.datium-is-dragging datium-time-bubble {
+        opacity: 1;
+    }
+    
+    datium-time-bubble {
+        position: absolute;
+        width: 56px;
+        height: 30px;
+        bottom: 26px;
+        left: -28px;
+        text-align: center;
+        line-height: 30px;
+        border-radius: 2px;
+        font-size: 12pt;
+        font-weight: bold;
+        background: @primary;
+        color: @primary-text;
+        transform-origin: 28px 56px;
+        pointer-events: none;
+        opacity: 0;
+        text-transform: uppercase;
+        transition: .4s ease opacity;
+    }
+    
+    datium-time-bubble:after {
+        content: '';
+        position: absolute;
+        border: 10px solid transparent;
+        border-top-color: @primary;
+        left: 50%;
+        margin-left: -10px;
+        top: 29px;
+    }
 }

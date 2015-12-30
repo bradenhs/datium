@@ -1,5 +1,5 @@
 import headerTemplate from 'src/header/header.html!text';
-import {onTap} from 'src/common/Events';
+import {onTap, onSwipeLeft, onSwipeRight} from 'src/common/Events';
 import Header from 'src/header/Header';
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
 import YearPicker from 'src/pickers/year/YearPicker';
@@ -39,6 +39,14 @@ class Datium {
         this.pickerContainer = <HTMLElement>el.querySelector('datium-all-pickers-container');   
         
         let viewManager = new ViewManager();
+        
+        onSwipeLeft(el, () => {
+           viewManager.next();
+        });
+        
+        onSwipeRight(el, () => {
+           viewManager.previous(); 
+        });
         
         this.yearPicker = new YearPicker(this.pickerContainer, viewManager);
         this.monthPicker = new MonthPicker(this.pickerContainer, viewManager);

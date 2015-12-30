@@ -3,7 +3,7 @@
 datium-container {
 	font-family: Roboto, Arial, Helvetica, sans-serif;
 	display: block;
-	position: relative;
+	position: absolute;
 	overflow: hidden;
 	border-radius: 2px;
 	width: 300px;
@@ -14,6 +14,7 @@ datium-container {
 		background: @primary;
 		display: block;
 		height: 90px;
+        width: 100%;
 		font-weight: bold;
 		color: @primary-text;
 		position: relative;
@@ -81,8 +82,7 @@ datium-container {
 	datium-span-label {
 		display: block;
 		position: absolute;
-		left: 0;
-		right: 0;
+		width: 100%;
 		overflow: hidden;
 		white-space: nowrap;
 		transition: all ease .2s;
@@ -91,6 +91,7 @@ datium-container {
 		&.datium-top {
             transform: translateY(22px) scale(.66);
 			opacity: .6;
+            width: 151%;
 		}
 		&.datium-hidden-top {
             transform: translateY(10px) scale(.5);

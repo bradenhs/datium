@@ -10,15 +10,17 @@ export default class HourPicker extends Picker {
     protected clockElement:Element;
     private clockMiddleElement:HTMLElement;
     private hourHandElement:HTMLElement;
+    protected timeBubbleElement:HTMLElement;
     
     protected rotation:number;
     protected time:number;
+    
         
     private meridiem:string;
     
 	constructor(container:HTMLElement, private viewManager:ViewManager) {
         super(container, viewManager, 'datium-hour-selectable');
-        this.height = 300;
+        this.height = 330;
         
         onDrag(container, 'datium-time-drag', {
            dragStart: (e:Event) => { this.dragStart(e); },
@@ -27,20 +29,29 @@ export default class HourPicker extends Picker {
         });
         
         onTap(container, "datium-clock-middle", (e:Event) => {
-            this.meridiem = this.meridiem === 'am' ? 'pm' : 'am';
-            this.clockMiddleElement.innerText = this.meridiem;
-            this.updateTime(this.time);
-            for (let key in this.tickLabels) {
-                let tickLabel = this.tickLabels[key];
-                let data = parseInt(tickLabel.getAttribute('datium-data'));
-                data = this.meridiem === 'am' ? data - 12 : data + 12;
-                tickLabel.setAttribute('datium-data', data.toString());
-            }
+            this.switchMeridiem();
         });
     }
     
+    private switchMeridiem():void {
+        this.meridiem = this.meridiem === 'am' ? 'pm' : 'am';
+        this.clockMiddleElement.innerText = this.meridiem;
+        this.updateTime(this.time);
+        for (let key in this.tickLabels) {
+            let tickLabel = this.tickLabels[key];
+            let data = parseInt(tickLabel.getAttribute('datium-data'));
+            data = this.meridiem === 'am' ? data - 12 : data + 12;
+            tickLabel.setAttribute('datium-data', data.toString());
+        }
+    }
+    
+    private dragOffsetX:number;
+    private dragOffsetY:number;
+    
     private dragStart(e:Event):void {
         this.timeDragElement.classList.add('datium-is-dragging');
+        
+        this.dragMove(e);
     }
     
     private dragMove(e:Event):void {
@@ -56,10 +67,21 @@ export default class HourPicker extends Picker {
         let newRotation = 180-Math.atan2(offsetX, offsetY)*180/Math.PI;        
         this.rotation = this.normalizeRotation(newRotation);
         
-        this.setTimeDragRotation(this.rotation);        
+        this.setTimeDragRotation(this.rotation);
+        
+        let lastTime = this.time; 
         this.time = this.rotationToTime(this.rotation);
+        
+        if ((lastTime === 11 && this.time === 12) || (lastTime === 12 && this.time === 11)) {
+            this.switchMeridiem();
+        }
+        
         this.updateTime(this.time);
         this.setHourRotationFromTime(this.time);
+        
+        let timeBubbleRotation = -this.rotation;
+        this.timeBubbleElement.innerText = this.time.toString() + this.meridiem;
+        this.timeBubbleElement.style.transform = `rotate(${timeBubbleRotation}deg)`;
     }
     
     private setTimeDragRotation(angle:number):void {
@@ -101,6 +123,7 @@ export default class HourPicker extends Picker {
         this.timeDragElement.classList.remove('datium-is-dragging');
         
         let zoomToTime = this.meridiem === 'pm' ? this.time + 12 : this.time;
+        if (zoomToTime === 12 || zoomToTime === 24) zoomToTime -= 12;
         this.viewManager.zoomTo(zoomToTime);
     }
     
@@ -111,6 +134,7 @@ export default class HourPicker extends Picker {
         this.currentPickElement = <HTMLElement>picker.querySelector('datium-pick');
         this.clockMiddleElement = <HTMLElement>picker.querySelector('datium-clock-middle');
         this.hourHandElement = <HTMLElement>picker.querySelector('datium-hour-hand');
+        this.timeBubbleElement = <HTMLElement>picker.querySelector('datium-time-bubble');
         
         this.clockMiddleElement.innerText = this.meridiem;
         this.tickLabels = [];
