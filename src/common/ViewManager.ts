@@ -26,10 +26,14 @@ export default class ViewManager {
 			this.observers[key](this.date, this.level, this.lastDate, this.lastLevel);
 		}
 	}
+    
+    public getViewLevel():ViewLevel {
+        return this.level;
+    }
 	
 	constructor() {
 		this.date = new Date();
-		this.level = ViewLevel.DAY;
+		this.level = ViewLevel.MONTH;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;
 	}

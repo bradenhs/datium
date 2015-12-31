@@ -90,7 +90,7 @@ function onSwipe(element:Element, direction:string, callback:(e?:Event) => void)
     attachEvents(['touchstart'], element, (e:TouchEvent) => {
         startTouchX = e.touches[0].clientX;
         startTouchY = e.touches[0].clientY;
-        startTime = new Date().valueOf();        
+        startTime = new Date().valueOf();
     });
     attachEvents(['touchend'], element, (e:TouchEvent) => {
         if (startTouchX === void 0 || startTouchY === void 0) return;

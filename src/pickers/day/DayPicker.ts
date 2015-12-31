@@ -3,7 +3,7 @@ import ViewManager from 'src/common/ViewManager';
 
 export default class DayPicker extends Picker {
 	constructor(container:HTMLElement, viewManager:ViewManager) {
-        super(container, viewManager, 'datium-day-selectable');
+        super(container, viewManager, 'datium-day');
 	}
 	
 	protected populatePicker(picker:HTMLElement, date:Date):void {		
@@ -44,6 +44,5 @@ export default class DayPicker extends Picker {
 			el.className = 'datium-day-selectable';
 		}
 		return el;
-	}
-	
+	}	
 }

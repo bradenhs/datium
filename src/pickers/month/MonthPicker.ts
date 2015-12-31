@@ -4,7 +4,7 @@ import monthTemplate from 'src/pickers/month/month-picker.html!text';
 
 export default class MonthPicker extends Picker {   
 	constructor(container:HTMLElement, private viewManager:ViewManager) {
-        super(container, viewManager, 'datium-month-selectable');
+        super(container, viewManager, 'datium-month');
         this.height = 180;
     }    
     protected populatePicker(picker:HTMLElement):void {

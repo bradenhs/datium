@@ -16,9 +16,9 @@ export class Picker {
     
     protected height:number = 0;
     
-    constructor(container:HTMLElement, viewManager:ViewManager, clickableClass:string) {
+    constructor(container:HTMLElement, viewManager:ViewManager, selectorPrefix:string) {
         this.container = container;
-        onTap(this.container, clickableClass, (e:Event) => {
+        onTap(this.container, selectorPrefix+'-selectable', (e:Event) => {
            let zoomValue = parseInt(e.srcElement.getAttribute('datium-data'));
            viewManager.zoomTo(zoomValue); 
         });
@@ -29,9 +29,10 @@ export class Picker {
         
         this.populatePicker(this.picker, date);
         
-        this.picker.className = this.getTransitionClass(transition);
+        let className = this.getTransitionClass(transition);
+        if (className !== '') this.picker.classList.add(className);
         setTimeout(() => {
-            this.picker.className = this.getTransitionClass(Transition.NONE);
+            if (className !== '') this.picker.classList.remove(className);
         }, 10);
         this.container.appendChild(this.picker);
     }
@@ -53,7 +54,7 @@ export class Picker {
     }
     
     public destroy(transition:Transition):void {
-        this.picker.className = this.getTransitionClass(transition);
+        this.picker.classList.add(this.getTransitionClass(transition));
         setTimeout((elToRemove:HTMLElement) => {
             elToRemove.remove();
             elToRemove = null;
