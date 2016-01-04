@@ -8,13 +8,12 @@ export default class SecondPicker extends TimePicker {
     }
     
     protected updateHandElements():void {
-        let secondAngle = this.timeToRotation(this.time);
-        this.secondHandElement.style.transform = `rotate(${secondAngle}deg)`;
+        this.secondHandElement.style.transform = `rotate(${this.rotation}deg)`;
         
-        let minuteAngle = this.date.getMinutes() * 5 + 180;
+        let minuteAngle = this.date.getMinutes() * 6 + 180;
         this.minuteHandElement.style.transform = `rotate(${minuteAngle}deg)`;
         
-        let hourAngle = this.date.getHours() * 30 + 180;
+        let hourAngle = this.date.getHours() * 30 + 180 + this.rotationToTime(minuteAngle) / 2;
         this.hourHandElement.style.transform = `rotate(${hourAngle}deg)`;       
     }
     
@@ -30,7 +29,7 @@ export default class SecondPicker extends TimePicker {
     }
       
     protected setInitialTime(date:Date):void {
-        this.time = date.getMinutes();
+        this.time = 0;
     }
     
     protected timeToRotation(time:number):number {
@@ -44,16 +43,8 @@ export default class SecondPicker extends TimePicker {
     protected rotationToTime(rotation:number):number {
         let num = Math.round(rotation / 6) - 30;
         while(num < 0) num += 60;
-        while(num > 60) num -= 60;
+        while(num >= 60) num -= 60;
         return num;
-    }
-    
-    protected updateCurrentPickElement():void {
-        this.currentPickElement.innerText = this.padNum(this.time) + 's';
-    }
-    
-    private padNum(num:number):string {
-        return num < 10 ? '0' + num.toString() : num.toString();
     }
     
     protected updateTimeBubbleElement():void {

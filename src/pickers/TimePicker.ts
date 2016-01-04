@@ -6,10 +6,10 @@ import clockTemplate from 'src/pickers/clock.html!text';
 export default class TimePicker extends Picker {
     protected rotation:number;
     protected time:number;
+    protected meridiem:string;
     protected tickLabels:HTMLElement[];
     
     protected timeDragElement:HTMLElement;
-    protected currentPickElement:HTMLElement;
     protected clockElement:Element;
     protected clockMiddleElement:HTMLElement;
     protected timeBubbleElement:HTMLElement;
@@ -49,7 +49,6 @@ export default class TimePicker extends Picker {
         
         this.time = this.rotationToTime(this.rotation);
         
-        this.updateCurrentPickElement();
         this.updateHandElements();
         this.updateTimeBubbleElement();   
     }
@@ -95,6 +94,7 @@ export default class TimePicker extends Picker {
     protected date:Date;
     
     protected populatePicker(picker:HTMLElement, date:Date):void {
+        this.meridiem = date.getHours() < 12 ? 'AM' : 'PM';
         this.date = date;
         picker.innerHTML = clockTemplate;
         
@@ -110,7 +110,6 @@ export default class TimePicker extends Picker {
         this.minuteHandElement = <HTMLElement>picker.querySelector('datium-minute-hand');
         this.secondHandElement = <HTMLElement>picker.querySelector('datium-second-hand');
         this.clockElement = <HTMLElement>picker.querySelector('datium-clock');
-        this.currentPickElement = <HTMLElement>picker.querySelector('datium-pick');
         this.clockMiddleElement = <HTMLElement>picker.querySelector('datium-clock-middle');
         
         this.timeBubbleElement = <HTMLElement>picker.querySelector('datium-time-bubble');
@@ -127,9 +126,12 @@ export default class TimePicker extends Picker {
         this.timeDragElement.classList.add(this.selectorPrefix+'-time-drag');    
         this.setInitialTime(date);    
         this.rotation = this.timeToRotation(this.time);
-        this.updateTimeDragElement();    
-        this.updateCurrentPickElement();        
+        this.updateTimeDragElement();           
         this.updateHandElements();
+    }
+    
+    protected padNum(num:number):string {
+        return num < 10 ? '0' + num.toString() : num.toString();
     }
     
     
@@ -139,7 +141,6 @@ export default class TimePicker extends Picker {
     protected getDataFromTickPosition(tickPosition:number):number { throw this.EmptyMethodException(); }
     protected rotationToTime(rotation:number):number { throw this.EmptyMethodException(); }
     protected timeToRotation(rotation:number):number { throw this.EmptyMethodException(); }
-    protected updateCurrentPickElement():void { throw this.EmptyMethodException(); }
     protected setInitialTime(date:Date):void { throw this.EmptyMethodException(); }
     protected getZoomToTime():number { throw this.EmptyMethodException(); }
     protected updateTimeBubbleElement():void { throw this.EmptyMethodException(); }

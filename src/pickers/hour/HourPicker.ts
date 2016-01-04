@@ -5,18 +5,14 @@ import {onDrag, onTap} from 'src/common/Events';
 import TimePicker from 'src/pickers/TimePicker';
 
 export default class HourPicker extends TimePicker {
-    private meridiem:string;
     
 	constructor(container:HTMLElement, viewManager:ViewManager) {
         super(container, viewManager, 'datium-hour');
-        onTap(container, "datium-clock-middle", (e:Event) => {
-            this.switchMeridiem();
-        });
     }
     
     protected updateTimeBubbleElement():void {
         let timeBubbleRotation = -this.rotation;
-        this.timeBubbleElement.innerText = this.time.toString() + this.meridiem;
+        this.timeBubbleElement.innerText = this.padNum(this.time) + this.meridiem;
         this.timeBubbleElement.style.transform = `rotate(${timeBubbleRotation}deg)`;        
     }    
     
@@ -36,8 +32,6 @@ export default class HourPicker extends TimePicker {
     
     private switchMeridiem():void {
         this.meridiem = this.meridiem === 'AM' ? 'PM' : 'AM';
-        this.clockMiddleElement.innerText = this.meridiem;
-        this.updateCurrentPickElement();
         for (let key in this.tickLabels) {
             let tickLabel = this.tickLabels[key];
             let data = parseInt(tickLabel.getAttribute('datium-data'));
@@ -48,12 +42,6 @@ export default class HourPicker extends TimePicker {
     
     protected getLabelFromTickPosition(tickPosition:number):string {
         return tickPosition.toString();
-    }  
-    
-    protected populatePicker(picker:HTMLElement, date:Date):void {
-        this.meridiem = date.getHours() < 12 ? 'AM' : 'PM';
-        super.populatePicker(picker, date);
-        this.clockMiddleElement.innerText = this.meridiem;
     }
     
     protected rotationToTime(rotation:number):number {
@@ -68,18 +56,13 @@ export default class HourPicker extends TimePicker {
         return this.normalizeRotation(time * 30 + 180);
     }
     
-    protected updateCurrentPickElement():void {
-        this.currentPickElement.innerText = this.time.toString() + this.meridiem;
-    }
-    
     protected setInitialTime(date:Date):void {
         this.time = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
         if (this.time === 0) this.time = 12;
     }
     
     protected updateHandElements():void {
-        let angle = this.timeToRotation(this.time);
-        this.hourHandElement.style.transform = `rotate(${angle}deg)`;        
+        this.hourHandElement.style.transform = `rotate(${this.rotation}deg)`;        
     }
     
     protected getDataFromTickPosition(tickPosition:number):number {

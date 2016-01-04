@@ -8,8 +8,7 @@ export default class MinutePicker extends TimePicker {
     }
     
     protected updateHandElements():void {
-        let minuteAngle = this.timeToRotation(this.time);
-        this.minuteHandElement.style.transform = `rotate(${minuteAngle}deg)`;
+        this.minuteHandElement.style.transform = `rotate(${this.rotation}deg)`;
         
         let hourAngle = this.date.getHours() * 30 + 180 + this.time/2;
         this.hourHandElement.style.transform = `rotate(${hourAngle}deg)`;       
@@ -27,7 +26,7 @@ export default class MinutePicker extends TimePicker {
     }
       
     protected setInitialTime(date:Date):void {
-        this.time = date.getMinutes();
+        this.time = 0;
     }
     
     protected timeToRotation(time:number):number {
@@ -41,21 +40,13 @@ export default class MinutePicker extends TimePicker {
     protected rotationToTime(rotation:number):number {
         let num = Math.round(rotation / 6) - 30;
         while(num < 0) num += 60;
-        while(num > 60) num -= 60;
+        while(num >= 60) num -= 60;
         return num;
-    }
-    
-    protected updateCurrentPickElement():void {
-        this.currentPickElement.innerText = this.padNum(this.time) + 'm';
-    }
-    
-    private padNum(num:number):string {
-        return num < 10 ? '0' + num.toString() : num.toString();
     }
     
     protected updateTimeBubbleElement():void {
         let timeBubbleRotation = -this.rotation;
-        this.timeBubbleElement.innerText = this.padNum(this.time) + 'm';
+        this.timeBubbleElement.innerHTML = this.padNum(this.time)+'m';
         this.timeBubbleElement.style.transform = `rotate(${timeBubbleRotation}deg)`;        
     } 
 }
