@@ -2,6 +2,7 @@ import {Picker} from 'src/pickers/Picker';
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
 import {onDrag} from 'src/common/Events';
 import clockTemplate from 'src/pickers/clock.html!text';
+import Header from 'src/header/Header';
 
 export default class TimePicker extends Picker {
     protected rotation:number;
@@ -17,9 +18,9 @@ export default class TimePicker extends Picker {
     protected minuteHandElement:HTMLElement;
     protected secondHandElement:HTMLElement;
     
-    constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string) {
+    constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string, protected header:Header) {
         super(container, viewManager, selectorPrefix);
-        this.height = 330;
+        this.height = 315;
         onDrag(container, selectorPrefix+'-time-drag', {
            dragStart: (e:Event) => { this.dragStart(e); },
            dragMove: (e:MouseEvent) => { this.dragMove(e); },
@@ -48,35 +49,29 @@ export default class TimePicker extends Picker {
         this.updateTimeDragElement();
         
         this.time = this.rotationToTime(this.rotation);
-        
+        this.updateHeaderTime();
         this.updateHandElements();
         this.updateTimeBubbleElement();   
     }
     
-    
-    
     private dragEnd(e:Event):void {
         this.rotation = this.timeToRotation(this.time);
         this.updateTimeDragElement();
+        this.updateHeaderTime();
         this.timeDragElement.classList.remove('datium-is-dragging');        
         this.viewManager.zoomTo(this.getZoomToTime());
     }
-
     
     private updateTimeDragElement():void {
         this.timeDragElement.style.transform = `rotate(${this.rotation}deg)`;        
     }
     
-    
-    
     protected mkTick(angle:number, label:string, data:number):HTMLElement {
         let tick = document.createElement('datium-tick');
         let tickLabel = document.createElement('datium-tick-label');
         
-        tickLabel.innerText = label;
+        tickLabel.innerHTML = `<datium-span class="${this.selectorPrefix}-selectable" datium-data="${data}">${label}</datium-span>`;
         tickLabel.style.transform = `rotate(${-angle}deg)`;
-        tickLabel.setAttribute('datium-data', data.toString());
-        tickLabel.className = this.selectorPrefix + '-selectable';
         tick.appendChild(document.createElement('datium-tick-mark'));
         tick.appendChild(tickLabel);
         tick.style.transform = `rotate(${angle}deg)`;
@@ -111,7 +106,6 @@ export default class TimePicker extends Picker {
         this.secondHandElement = <HTMLElement>picker.querySelector('datium-second-hand');
         this.clockElement = <HTMLElement>picker.querySelector('datium-clock');
         this.clockMiddleElement = <HTMLElement>picker.querySelector('datium-clock-middle');
-        
         this.timeBubbleElement = <HTMLElement>picker.querySelector('datium-time-bubble');
         
         
@@ -128,13 +122,12 @@ export default class TimePicker extends Picker {
         this.rotation = this.timeToRotation(this.time);
         this.updateTimeDragElement();           
         this.updateHandElements();
+        this.updateHeaderTime();
     }
     
     protected padNum(num:number):string {
         return num < 10 ? '0' + num.toString() : num.toString();
     }
-    
-    
     
     // Overridable
     protected getLabelFromTickPosition(tickPosition:number):string { throw this.EmptyMethodException(); }
@@ -145,6 +138,7 @@ export default class TimePicker extends Picker {
     protected getZoomToTime():number { throw this.EmptyMethodException(); }
     protected updateTimeBubbleElement():void { throw this.EmptyMethodException(); }
     protected updateHandElements():void { throw this.EmptyMethodException(); }
+    protected updateHeaderTime():void { throw this.EmptyMethodException(); }
     
     private EmptyMethodException() {
         return new Error('Method needs to be overrriden');

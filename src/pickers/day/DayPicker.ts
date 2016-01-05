@@ -1,5 +1,6 @@
 import {Picker} from 'src/pickers/Picker';
 import ViewManager from 'src/common/ViewManager';
+import Header from 'src/header/Header';
 
 export default class DayPicker extends Picker {
 	constructor(container:HTMLElement, viewManager:ViewManager) {

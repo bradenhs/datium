@@ -8,12 +8,18 @@ datium-day-element {
 	position: relative;
 	color: @secondary-text;
 	font-size: 12pt;
+    transition: .3s all ease;
 	&.datium-day-inactive, &.datium-weekday-label {
 		opacity: .6;
 	}
 	&.datium-weekday-label {
 		font-weight: bold;
 	}
+    &.datium-day-selectable:active {
+        transform: scale(.9);
+        opacity: .9;
+        transition: none;
+    }
 }
 
 datium-month-element, datium-year-element {
@@ -22,6 +28,12 @@ datium-month-element, datium-year-element {
     line-height: 60px;
     text-align: center;
     color: @secondary-text;
+    transition: .3s all ease;    
+    &:active {
+        transform: scale(.9);
+        opacity: .9;
+        transition: none;
+    }
 }
 
 
@@ -42,6 +54,11 @@ datium-month-element, datium-year-element {
 .datium-hour-view datium-minute-hand,
 .datium-hour-view datium-second-hand,
 .datium-minute-view datium-second-hand {
+    display: none;
+}
+
+.datium-minute-view datium-meridiem-switcher,
+.datium-second-view datium-meridiem-switcher {
     display: none;
 }
 
@@ -99,12 +116,26 @@ datium-clock {
         width: 50px;
         left: -25px;
         text-align: center;
-        font-size: 12px;
-        line-height: 50px;
-        opacity: .8;
+        font-size: 10pt;
+        height: 50px;
+        opacity: 1;
         color: @secondary-text;
         margin-bottom: -20px;
         border-radius: 25px;
+        datium-span {
+            transition: .2s ease all;
+            position: absolute;
+            line-height: 50px;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+        &:active > datium-span {
+            transform: scale(.8);
+            transition: none;
+            opacity: .8;
+        }
     }
     
     datium-time-drag {
@@ -134,6 +165,12 @@ datium-clock {
         border: 2px solid @primary;
         box-shadow: inset 0 0 0 2px @secondary;
         background: @primary;
+        transition: .3s ease all;
+    }
+    
+    datium-time-drag:active:before {
+        box-shadow: inset 0 0 0 3px @secondary;
+        transition: none;
     }
     
     datium-drag-selection-area {
@@ -220,7 +257,7 @@ datium-clock {
         margin-left: -2px;
         margin-top: -2px;
         transform-origin: 2px 2px;
-        border-top: 75px solid @primary;
+        border-top: 65px solid @primary;
         border-left: 2px solid transparent;
         border-right: 2px solid transparent;
     }
@@ -237,7 +274,7 @@ datium-clock {
         margin-top: -1px;
         transform-origin: 1px 1px;	
         transform: rotate(120deg);
-        border-top: 90px solid @primary;
+        border-top: 80px solid @primary;
         border-left: 1px solid transparent;
         border-right: 1px solid transparent;
     }
@@ -273,5 +310,55 @@ datium-clock {
         left: 50%;
         margin-left: -10px;
         top: 29px;
+    }
+    
+    datium-meridiem-switcher {
+        position: absolute;
+        width: 80px;
+        height: 40px;
+        left: 50%;
+        margin-left: -40px;
+        top: 50%;
+        margin-top: 40px;
+        &:after, &:before {
+            position: absolute;
+            width: 40px;
+            text-align: center;
+            line-height: 40px;
+            font-size: 12pt;
+            font-weight: bold;
+            color: @secondary-text;
+            opacity: .6;  
+            transition: all ease .2s;
+            text-shadow:
+            -1px -1px 0 @secondary,
+            1px -1px 0 @secondary,
+            -1px 1px 0 @secondary,
+            1px 1px 0 @secondary; 
+        }
+        
+        &:before {
+            content: 'AM';
+            left: 0;
+        }
+        
+        &:after {
+            content: 'PM';
+            right: 0;
+        }
+    }
+    
+    datium-meridiem-switcher.datium-am {
+        &:before {
+            color: @primary;
+            opacity: 1;
+        }        
+    }
+    
+    datium-meridiem-switcher.datium-pm {
+        &:after {
+            color: @primary;
+            opacity: 1;
+        }
     }
 }

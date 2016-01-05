@@ -1,5 +1,6 @@
 import ViewManager from 'src/common/ViewManager';
 import {onTap} from 'src/common/Events';
+import Header from 'src/header/Header';
 
 export enum Transition {
 	SCROLL_LEFT,

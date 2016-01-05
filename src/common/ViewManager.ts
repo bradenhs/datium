@@ -33,7 +33,7 @@ export default class ViewManager {
 	
 	constructor() {
 		this.date = new Date();
-		this.level = ViewLevel.MONTH;
+		this.level = ViewLevel.DAY;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;
 	}

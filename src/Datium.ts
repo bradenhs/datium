@@ -48,14 +48,15 @@ class Datium {
            viewManager.previous(); 
         });
         
+        let header = new Header(el.querySelector('datium-header'), viewManager);
+        
         this.yearPicker = new YearPicker(this.pickerContainer, viewManager);
         this.monthPicker = new MonthPicker(this.pickerContainer, viewManager);
         this.dayPicker = new DayPicker(this.pickerContainer, viewManager);
-        this.hourPicker = new HourPicker(this.pickerContainer, viewManager);
-        this.minutePicker = new MinutePicker(this.pickerContainer, viewManager);
-        this.secondPicker = new SecondPicker(this.pickerContainer, viewManager);     
+        this.hourPicker = new HourPicker(this.pickerContainer, viewManager, header);
+        this.minutePicker = new MinutePicker(this.pickerContainer, viewManager, header);
+        this.secondPicker = new SecondPicker(this.pickerContainer, viewManager, header);
         
-        new Header(el.querySelector('datium-header'), viewManager);
         viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel) => {
             this.viewChanged(date, level, lastDate, lastLevel);
         });

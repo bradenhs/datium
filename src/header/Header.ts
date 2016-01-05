@@ -68,24 +68,71 @@ export default class Header {
 	
 	private days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 	
-	private updateLabels(date:Date, level:ViewLevel):void {
-		// Decade
+    public updateDayLabel(date:Date) {
+        if (this.level === ViewLevel.DAY) {  
+        this.dayLabelText.innerHTML = this.getDayText(date) + ' <datium-changing-label>' + this.getHourText(date) + this.getMeridiemText(date) + '</datium-changing-label>';
+        } else {
+            this.dayLabelText.innerHTML = this.getDayText(date);
+        }
+    }
+    
+    public updateHourLabel(date:Date) {
+        if (this.level === ViewLevel.MINUTE) {
+            this.hourLabelText.innerHTML = '';    
+        } else if (this.level === ViewLevel.HOUR) {
+            this.hourLabelText.innerHTML = this.getHourText(date) + ':<datium-changing-label>' + this.getMinuteText(date) + '</datium-changing-label>' + this.getMeridiemText(date);
+        } else {
+            this.hourLabelText.innerHTML = this.getHourText(date) + this.getMeridiemText(date);
+        }
+    }
+    
+    public updateMinuteLabel(date:Date) {
+        if (this.level === ViewLevel.MINUTE) {            
+            this.minuteLabelText.innerHTML = this.getHourText(date) + ':' + this.getMinuteText(date) + ':<datium-changing-label>' + this.getSecondText(date) + '</datium-changing-label>' + this.getMeridiemText(date);
+        } else {
+            this.minuteLabelText.innerHTML = this.getHourText(date) + ':' + this.getMinuteText(date) + this.getMeridiemText(date);
+        }
+    }
+    
+    private getDecadeText(date:Date):string {
 		let decadeStart = date.getFullYear();
 		while (decadeStart % 10 !== 0) decadeStart--;
-		let decadeText = decadeStart + ' - ' + (decadeStart + 10);
-		// Year
-		let yearText = date.getFullYear().toString();
-		// Month
-		let monthText = this.months[date.getMonth()];
-		// Day
+		return decadeStart + ' - ' + (decadeStart + 10);        
+    }
+    
+    private getYearText(date:Date):string {
+        return date.getFullYear().toString();
+    }
+    
+    private getMonthText(date:Date):string {
+        return this.months[date.getMonth()];
+    }
+    
+    private getDayText(date:Date):string {
 		let day = date.getDate();
 		let dayPrefix = '';
 		if (day < 10) {
 			dayPrefix = '0';
 		}
-		let dayText = this.days[date.getDay()] + ' ' + dayPrefix + day;
-		// Hour
+		return this.days[date.getDay()] + ' ' + dayPrefix + day;
+    }
+    
+    private getHourText(date:Date):string {        
 		let hour = date.getHours();
+		if (hour === 0) {
+			hour = 12;
+		} else if (hour > 12) {
+			hour -= 12;
+		}
+		let hourPrefix = '';
+		if (hour < 10) {
+			hourPrefix = '0';
+		}
+		return hourPrefix + hour;
+    }
+    
+    private getMeridiemText(date:Date):string {
+        let hour = date.getHours();
 		let meridiem = 'AM';
 		if (hour === 0) {
 			hour = 12;
@@ -95,31 +142,43 @@ export default class Header {
 			hour -= 12;
 			meridiem = 'PM';
 		}
-		let hourPrefix = '';
-		if (hour < 10) {
-			hourPrefix = '0';
-		}
-		let hourText = hourPrefix + hour + meridiem;
-		// Minute
+		return meridiem;
+    }
+    
+    private getMinuteText(date:Date):string {        
 		let minute = date.getMinutes();
 		let minutePrefix = '';
 		if (minute < 10) {
 			minutePrefix = '0';
 		}
-		let minuteText = hourPrefix + hour + ':' + minutePrefix + minute + meridiem;
-		
-		this.decadeLabelText.innerText = decadeText;
-		this.yearLabelText.innerText = yearText;
-		this.monthLabelText.innerText = monthText;
-		this.monthExtendedLabelText.innerText = yearText;		
-		this.dayLabelText.innerText = dayText;
-		this.dayExtendedLabelText.innerText = monthText + ' ' + yearText;
-		this.hourLabelText.innerText = level === ViewLevel.MINUTE ? '' : hourText;
-		this.hourExtendedLabelText.innerText = dayText + ' ' + monthText + ' ' + yearText;
-		this.minuteLabelText.innerText = minuteText;
+		return minutePrefix + minute;
+    }
+    
+    private getSecondText(date:Date):string {        
+		let minute = date.getSeconds();
+		let minutePrefix = '';
+		if (minute < 10) {
+			minutePrefix = '0';
+		}
+		return minutePrefix + minute;
+    }
+    
+	private updateLabels(date:Date, level:ViewLevel):void {
+		this.decadeLabelText.innerText = this.getDecadeText(date);
+		this.yearLabelText.innerText = this.getYearText(date);
+		this.monthLabelText.innerText = this.getMonthText(date);
+		this.monthExtendedLabelText.innerText = this.getYearText(date);		
+        this.updateDayLabel(date);
+		this.dayExtendedLabelText.innerText = this.getMonthText(date) + ' ' + this.getYearText(date);
+        this.updateHourLabel(date);		
+		this.hourExtendedLabelText.innerText = this.getDayText(date) + ' ' + this.getMonthText(date) + ' ' + this.getYearText(date);
+        this.updateMinuteLabel(date);
 	}
-	
+    
+    private level:ViewLevel;
+    	
 	private viewChanged(date:Date, level:ViewLevel):void {
+        this.level = level;
 		this.updateLabels(date, level);
 		if (level === ViewLevel.DECADE) {
 			this.mkBottom(this.decadeLabel);

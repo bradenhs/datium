@@ -1,10 +1,11 @@
 import TimePicker from 'src/pickers/TimePicker';
 import ViewManager from 'src/common/ViewManager';
+import Header from 'src/header/Header';
 
 export default class SecondPicker extends TimePicker {
     
-	constructor(container:HTMLElement, viewManager:ViewManager) {
-        super(container, viewManager, 'datium-second');
+	constructor(container:HTMLElement, viewManager:ViewManager, header:Header) {
+        super(container, viewManager, 'datium-second', header);
     }
     
     protected updateHandElements():void {
@@ -15,6 +16,12 @@ export default class SecondPicker extends TimePicker {
         
         let hourAngle = this.date.getHours() * 30 + 180 + this.rotationToTime(minuteAngle) / 2;
         this.hourHandElement.style.transform = `rotate(${hourAngle}deg)`;       
+    }
+    
+    protected updateHeaderTime():void {
+        let date = new Date(this.date.valueOf());
+        date.setSeconds(this.time);
+        this.header.updateMinuteLabel(date);
     }
     
     protected getLabelFromTickPosition(tickPosition:number):string {
@@ -29,7 +36,7 @@ export default class SecondPicker extends TimePicker {
     }
       
     protected setInitialTime(date:Date):void {
-        this.time = 0;
+        this.time = date.getSeconds();
     }
     
     protected timeToRotation(time:number):number {

@@ -1,7 +1,10 @@
 /*global System */
 System.config({
 	transpiler: 'typescript',
-	typescriptOptions: { emitDecoratorMetadata: true },
+	typescriptOptions: {
+        emitDecoratorMetadata: true,
+        noEmitOnError: false
+    },
 	meta: {
 		'*.ts': {
 			format: 'es6'

@@ -1,6 +1,7 @@
 import {Picker} from 'src/pickers/Picker';
 import ViewManager from 'src/common/ViewManager';
 import monthTemplate from 'src/pickers/month/month-picker.html!text';
+import Header from 'src/header/Header';
 
 export default class MonthPicker extends Picker {   
 	constructor(container:HTMLElement, private viewManager:ViewManager) {

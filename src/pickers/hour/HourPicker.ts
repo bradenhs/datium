@@ -3,11 +3,17 @@ import ViewManager from 'src/common/ViewManager';
 import clockTemplate from 'src/pickers/clock.html!text';
 import {onDrag, onTap} from 'src/common/Events';
 import TimePicker from 'src/pickers/TimePicker';
+import Header from 'src/header/Header';
 
 export default class HourPicker extends TimePicker {
     
-	constructor(container:HTMLElement, viewManager:ViewManager) {
-        super(container, viewManager, 'datium-hour');
+	constructor(container:HTMLElement, viewManager:ViewManager, header:Header) {
+        
+        super(container, viewManager, 'datium-hour', header);
+        
+        onTap(container, 'datium-meridiem-switcher', () => {
+           this.switchMeridiem();
+        });
     }
     
     protected updateTimeBubbleElement():void {
@@ -16,11 +22,27 @@ export default class HourPicker extends TimePicker {
         this.timeBubbleElement.style.transform = `rotate(${timeBubbleRotation}deg)`;        
     }    
     
+    protected updateHeaderTime():void {
+        let date = new Date(this.date.valueOf());
+        let hours = this.time;
+        if (this.meridiem === 'PM' && hours !== 12) {
+            hours += 12;
+        } else if (this.meridiem === 'AM' && hours === 12) {
+            hours = 0;
+        }
+        date.setHours(hours);
+        this.header.updateDayLabel(date);
+    }
+    
     protected dragMove(e:Event):void {
         let lastTime = this.time;
         super.dragMove(e);
-        if ((lastTime === 11 && this.time === 12) || (lastTime === 12 && this.time === 11)) {
-            this.switchMeridiem();
+        if (lastTime !== this.time) {
+            if (Math.round((this.rotation + 15) / 360) % 2 === 0) {
+                if (this.meridiem === 'PM') this.switchMeridiem();
+            } else {
+                if (this.meridiem === 'AM') this.switchMeridiem();
+            }
         }
     }
     
@@ -33,19 +55,38 @@ export default class HourPicker extends TimePicker {
     private switchMeridiem():void {
         this.meridiem = this.meridiem === 'AM' ? 'PM' : 'AM';
         for (let key in this.tickLabels) {
-            let tickLabel = this.tickLabels[key];
+            let tickLabel = this.tickLabels[key].querySelector('datium-span');
             let data = parseInt(tickLabel.getAttribute('datium-data'));
             data = this.meridiem === 'AM' ? data - 12 : data + 12;
             tickLabel.setAttribute('datium-data', data.toString());
         }
+        this.updateMeridiemPicker();
+        this.updateHeaderTime();
+        this.updateTimeBubbleElement();
     }   
+    
+    private updateMeridiemPicker():void {
+        let meridemSwitcher = this.clockElement.querySelector('datium-meridiem-switcher');        
+        if (this.meridiem === 'AM') {
+            meridemSwitcher.classList.remove('datium-pm');
+            meridemSwitcher.classList.add('datium-am');
+        } else {
+            meridemSwitcher.classList.remove('datium-am');
+            meridemSwitcher.classList.add('datium-pm');
+        }
+    }
+    
+    protected populatePicker(picker:HTMLElement, date:Date):void {
+        super.populatePicker(picker, date);
+        this.updateMeridiemPicker();
+    }
     
     protected getLabelFromTickPosition(tickPosition:number):string {
         return tickPosition.toString();
     }
     
     protected rotationToTime(rotation:number):number {
-        let num = (rotation) / 30 - 6;
+        let num = rotation / 30 - 6;
         num = Math.round(num < 0 ? num + 12 : num);
         while(num < 0) num += 12;
         while(num > 12) num -= 12;
@@ -68,7 +109,7 @@ export default class HourPicker extends TimePicker {
     protected getDataFromTickPosition(tickPosition:number):number {
         let data = tickPosition;
         if (this.meridiem === 'PM') data += 12;
-        if (tickPosition === 12) data -= 12;
+        if (tickPosition === 12) data = 0;
         return data;        
     }
         
