@@ -9,8 +9,6 @@ datium-container {
         width: 100%;
 		font-weight: bold;
 		color: @primary-text;
-        border-top-right-radius: 2px;
-        border-top-left-radius: 2px;
 		position: relative;
 	}
 	
@@ -19,6 +17,8 @@ datium-container {
 		width: 40px;
 		height: 90px;
 		bottom: 0;
+        background: @primary;
+        z-index: 1;
 		
 		&:after, &:before {
 			content: '';
