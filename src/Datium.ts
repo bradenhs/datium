@@ -97,8 +97,12 @@ class Datium {
         this.insertAfter(options.element, el);
         this.insertStyles();
         
+        
+        if (window.innerHeight < 380) {
+            el.classList.add('datium-portrait-view');
+        }
         window.onresize = () => {
-            if (window.innerHeight < 350) {
+            if (window.innerHeight < 380) {
                 el.classList.add('datium-portrait-view');
             } else {
                 el.classList.remove('datium-portrait-view');

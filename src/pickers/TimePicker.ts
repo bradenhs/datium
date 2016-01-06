@@ -19,7 +19,7 @@ export default class TimePicker extends Picker {
     
     constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string, protected header:Header) {
         super(container, viewManager, selectorPrefix);
-        this.height = 298;
+        this.height = 280;
         onDrag(container, selectorPrefix+'-time-drag', {
            dragStart: (e:Event) => { this.dragStart(e); },
            dragMove: (e:MouseEvent) => { this.dragMove(e); },
@@ -30,7 +30,7 @@ export default class TimePicker extends Picker {
     public isDragging:boolean = false;
     
     private dragStart(e:Event):void {
-        this.timeDragElement.classList.add('datium-is-dragging');       
+        this.container.parentElement.classList.add('datium-is-dragging');
         this.isDragging = true;
         this.dragMove(e);
     }
@@ -59,8 +59,8 @@ export default class TimePicker extends Picker {
     private dragEnd(e:Event):void {
         this.rotation = this.timeToRotation(this.time);
         this.updateTimeDragElement();
-        this.updateHeaderTime();
-        this.timeDragElement.classList.remove('datium-is-dragging');        
+        this.updateHeaderTime();  
+        this.container.parentElement.classList.remove('datium-is-dragging');     
         this.viewManager.zoomTo(this.getZoomToTime());
         this.isDragging = false;
     }

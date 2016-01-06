@@ -12,7 +12,7 @@ export enum Transition {
 
 export class Picker {
     
-    private container:HTMLElement;
+    protected container:HTMLElement;
     private picker:HTMLElement;
     
     protected height:number = 0;

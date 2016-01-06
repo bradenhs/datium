@@ -66,12 +66,12 @@ datium-clock {
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	margin-left: -100px;
-	margin-top: -100px;
+	margin-left: -90px;
+	margin-top: -90px;
 	display: block;
-	width: 200px;
-	height: 200px;
-	border-radius: 100px;
+	width: 180px;
+	height: 180px;
+	border-radius: 90px;
 	box-shadow: inset 0 0 1px 0px @secondary-text;
     
     datium-clock-middle {
@@ -142,7 +142,7 @@ datium-clock {
         position: absolute;
         left: 50%;
         top: 50%;
-        height: 100px;
+        height: 90px;
         width: 0;
         transform-origin: 0 0;
         z-index: 1;
@@ -150,9 +150,6 @@ datium-clock {
         transition: .4s ease all;
     }
     
-    datium-time-drag.datium-is-dragging {
-        transition: none;
-    }
     
     datium-time-drag:before {
         content: '';
@@ -212,23 +209,6 @@ datium-clock {
         right: -8px;
     }
     
-    datium-pick {
-        position: absolute;
-        color: @primary;
-        left: 0;
-        right: 0;
-        text-align: center;
-        font-weight: bold;
-        top: 50px;
-        font-size: 12pt;
-        text-shadow:
-        -2px -2px 0 @secondary,
-        2px -2px 0 @secondary,
-        -2px 2px 0 @secondary,
-        2px 2px 0 @secondary; 
-        z-index: 1;
-    }
-    
     datium-hour-hand {
         display: block;
         position: absolute;
@@ -241,7 +221,7 @@ datium-clock {
         margin-top: -3px;
         transform-origin: 3px 3px;	
         transform: rotate(240deg);
-        border-top: 50px solid @primary;
+        border-top: 40px solid @primary;
         border-left: 3px solid transparent;
         border-right: 3px solid transparent;
     }
@@ -257,7 +237,7 @@ datium-clock {
         margin-left: -2px;
         margin-top: -2px;
         transform-origin: 2px 2px;
-        border-top: 65px solid @primary;
+        border-top: 55px solid @primary;
         border-left: 2px solid transparent;
         border-right: 2px solid transparent;
     }
@@ -274,13 +254,9 @@ datium-clock {
         margin-top: -1px;
         transform-origin: 1px 1px;	
         transform: rotate(120deg);
-        border-top: 80px solid @primary;
+        border-top: 70px solid @primary;
         border-left: 1px solid transparent;
         border-right: 1px solid transparent;
-    }
-    
-    datium-time-drag.datium-is-dragging datium-time-bubble {
-        opacity: 1;
     }
     
     datium-time-bubble {
@@ -320,7 +296,7 @@ datium-clock {
         left: 50%;
         margin-left: -40px;
         top: 50%;
-        margin-top: 40px;
+        margin-top: 30px;
         &:after, &:before {
             position: absolute;
             width: 40px;
@@ -361,5 +337,21 @@ datium-clock {
             color: @primary;
             opacity: 1;
         }
+    }
+}
+
+datium-container.datium-is-dragging {    
+    datium-time-drag {
+        transition: none;
+    }    
+    
+    datium-time-drag datium-time-bubble {
+        opacity: 1;
+    }
+    
+    overflow: visible !important;
+    
+    datium-all-pickers-container {
+        overflow: visible !important;
     }
 }
