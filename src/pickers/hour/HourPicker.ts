@@ -54,12 +54,6 @@ export default class HourPicker extends TimePicker {
     
     private switchMeridiem():void {
         this.meridiem = this.meridiem === 'AM' ? 'PM' : 'AM';
-        for (let key in this.tickLabels) {
-            let tickLabel = this.tickLabels[key].querySelector('datium-span');
-            let data = parseInt(tickLabel.getAttribute('datium-data'));
-            data = this.meridiem === 'AM' ? data - 12 : data + 12;
-            tickLabel.setAttribute('datium-data', data.toString());
-        }
         this.updateMeridiemPicker();
         this.updateHeaderTime();
         this.updateTimeBubbleElement();
@@ -107,11 +101,11 @@ export default class HourPicker extends TimePicker {
     }
     
     protected getDataFromTickPosition(tickPosition:number):number {
-        let data = tickPosition;
-        if (this.meridiem === 'PM') data += 12;
-        if (tickPosition === 12) data = 0;
-        return data;        
-    }
-        
+        if (tickPosition === 12) {
+            return 0;
+        } else {
+            return tickPosition;
+        }        
+    }       
     
 }

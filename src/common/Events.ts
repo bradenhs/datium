@@ -87,12 +87,31 @@ export function onTap(...params:any[]) {
 
 function onSwipe(element:Element, direction:string, callback:(e?:Event) => void) {
     let startTouchX, startTouchY, startTime;
+    let touchMoveListener:ListenerReference;
+    let scrollingDisabled;
     attachEvents(['touchstart'], element, (e:TouchEvent) => {
         startTouchX = e.touches[0].clientX;
         startTouchY = e.touches[0].clientY;
         startTime = new Date().valueOf();
+        scrollingDisabled = false;
+        touchMoveListener = attachEvents(['touchmove'], document, (e:TouchEvent) => {
+            let xDiff = Math.abs(e.changedTouches[0].clientX - startTouchX);
+            let yDiff = Math.abs(e.changedTouches[0].clientY - startTouchY);
+            if (xDiff > yDiff && xDiff > 20) {
+                scrollingDisabled = true;
+            } else if (yDiff > xDiff && yDiff > 20) {
+                scrollingDisabled = false;
+            }
+            if (new Date().valueOf() - startTime > 500) {
+                scrollingDisabled = false;
+            }
+            if (scrollingDisabled) {
+                e.preventDefault();
+            }
+        })[0]; 
     });
     attachEvents(['touchend'], element, (e:TouchEvent) => {
+        document.removeEventListener(touchMoveListener.event, touchMoveListener.reference);
         if (startTouchX === void 0 || startTouchY === void 0) return;
         if (new Date().valueOf() - startTime > 500) return;
         let xDiff = e.changedTouches[0].clientX - startTouchX;
@@ -161,3 +180,28 @@ export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallb
         }));        
     });
 }
+
+export function onDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
+    attachEvents(['touchstart', 'mousedown'], element, (e) => {
+        callback(e);
+    }); 
+};
+
+export function onMouseDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
+    attachEvents(['mousedown'], element, (e) => {
+        callback(e);
+    }); 
+};
+
+export function onFocus(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
+    attachEvents(['focus'], element, (e) => {
+        callback(e);
+    }); 
+};
+
+export function onBlur(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
+    attachEvents(['blur'], element, (e) => {
+        e.preventDefault();
+        callback(e);
+    }); 
+};

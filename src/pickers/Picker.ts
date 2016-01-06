@@ -1,4 +1,4 @@
-import ViewManager from 'src/common/ViewManager';
+import ViewManager, {ViewLevel} from 'src/common/ViewManager';
 import {onTap} from 'src/common/Events';
 import Header from 'src/header/Header';
 
@@ -20,8 +20,11 @@ export class Picker {
     constructor(container:HTMLElement, viewManager:ViewManager, selectorPrefix:string) {
         this.container = container;
         onTap(this.container, selectorPrefix+'-selectable', (e:Event) => {
-           let zoomValue = parseInt(e.srcElement.getAttribute('datium-data'));
-           viewManager.zoomTo(zoomValue); 
+            let zoomValue = parseInt(e.srcElement.getAttribute('datium-data'));
+            if (viewManager.getViewLevel() === ViewLevel.DAY && (<any>this).meridiem === 'PM') {
+                zoomValue += 12;                
+            }
+            viewManager.zoomTo(zoomValue); 
         });
     }
     

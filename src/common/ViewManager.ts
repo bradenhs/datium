@@ -33,7 +33,7 @@ export default class ViewManager {
 	
 	constructor() {
 		this.date = new Date();
-		this.level = ViewLevel.DAY;
+		this.level = ViewLevel.MONTH;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;
 	}
@@ -83,9 +83,14 @@ export default class ViewManager {
 		let value:number = this.getValue(newLevel);
 		this.goToView(value, newLevel);
 	}
+    
+    public changeViewLevel(newLevel:ViewLevel):void {
+		let value:number = this.getValue(newLevel);
+		this.goToView(value, newLevel);        
+    }
 	
 	public zoomTo(newValue:number):void {
-		let newLevel:ViewLevel = this.level === ViewLevel.MINUTE ? this.level : this.level - 1;
+		let newLevel:ViewLevel = this.level - 1;
 		this.goToView(newValue, newLevel);
 	}
 	

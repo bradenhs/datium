@@ -8,7 +8,6 @@ export default class TimePicker extends Picker {
     protected rotation:number;
     protected time:number;
     protected meridiem:string;
-    protected tickLabels:HTMLElement[];
     
     protected timeDragElement:HTMLElement;
     protected clockElement:Element;
@@ -20,7 +19,7 @@ export default class TimePicker extends Picker {
     
     constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string, protected header:Header) {
         super(container, viewManager, selectorPrefix);
-        this.height = 315;
+        this.height = 298;
         onDrag(container, selectorPrefix+'-time-drag', {
            dragStart: (e:Event) => { this.dragStart(e); },
            dragMove: (e:MouseEvent) => { this.dragMove(e); },
@@ -28,8 +27,11 @@ export default class TimePicker extends Picker {
         });
     }
     
+    public isDragging:boolean = false;
+    
     private dragStart(e:Event):void {
-        this.timeDragElement.classList.add('datium-is-dragging');        
+        this.timeDragElement.classList.add('datium-is-dragging');       
+        this.isDragging = true;
         this.dragMove(e);
     }
     
@@ -60,6 +62,7 @@ export default class TimePicker extends Picker {
         this.updateHeaderTime();
         this.timeDragElement.classList.remove('datium-is-dragging');        
         this.viewManager.zoomTo(this.getZoomToTime());
+        this.isDragging = false;
     }
     
     private updateTimeDragElement():void {
@@ -76,7 +79,6 @@ export default class TimePicker extends Picker {
         tick.appendChild(tickLabel);
         tick.style.transform = `rotate(${angle}deg)`;
         
-        this.tickLabels.push(tickLabel);
         return tick;
     }
     
@@ -108,8 +110,6 @@ export default class TimePicker extends Picker {
         this.clockMiddleElement = <HTMLElement>picker.querySelector('datium-clock-middle');
         this.timeBubbleElement = <HTMLElement>picker.querySelector('datium-time-bubble');
         
-        
-        this.tickLabels = [];
         for (let tickPosition = 1; tickPosition <= 12; tickPosition++) {
             let angle = (tickPosition - 6) * 30;
             let label = this.getLabelFromTickPosition(tickPosition);
