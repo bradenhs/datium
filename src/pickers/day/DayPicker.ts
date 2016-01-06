@@ -23,7 +23,7 @@ export default class DayPicker extends Picker {
 			}
 			rows++;
 		} while(d.getMonth() === date.getMonth());
-		this.height = rows * 40;
+		this.height = rows * 37;
 	}
 	
 	private days:string[] = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];

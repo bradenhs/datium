@@ -3,7 +3,7 @@
 datium-day-element {
 	width: 14.2857143%;
 	display: inline-block;
-	line-height: 40px;
+	line-height: 37px;
 	text-align: center;
 	position: relative;
 	color: @secondary-text;
@@ -62,16 +62,18 @@ datium-month-element, datium-year-element {
     display: none;
 }
 
+@clock-radius: 80px;
+
 datium-clock {
 	position: absolute;
 	left: 50%;
 	top: 50%;
-	margin-left: -90px;
-	margin-top: -90px;
+	margin-left: -@clock-radius;
+	margin-top: -@clock-radius;
 	display: block;
-	width: 180px;
-	height: 180px;
-	border-radius: 90px;
+	width: 2 * @clock-radius;
+	height: 2 * @clock-radius;
+	border-radius: @clock-radius;
 	box-shadow: inset 0 0 1px 0px @secondary-text;
     
     datium-clock-middle {
@@ -142,7 +144,7 @@ datium-clock {
         position: absolute;
         left: 50%;
         top: 50%;
-        height: 90px;
+        height: @clock-radius;
         width: 0;
         transform-origin: 0 0;
         z-index: 1;
@@ -221,7 +223,7 @@ datium-clock {
         margin-top: -3px;
         transform-origin: 3px 3px;	
         transform: rotate(240deg);
-        border-top: 40px solid @primary;
+        border-top: (@clock-radius * .4) solid @primary;
         border-left: 3px solid transparent;
         border-right: 3px solid transparent;
     }
@@ -237,7 +239,7 @@ datium-clock {
         margin-left: -2px;
         margin-top: -2px;
         transform-origin: 2px 2px;
-        border-top: 55px solid @primary;
+        border-top: (@clock-radius * .6) solid @primary;
         border-left: 2px solid transparent;
         border-right: 2px solid transparent;
     }
@@ -254,7 +256,7 @@ datium-clock {
         margin-top: -1px;
         transform-origin: 1px 1px;	
         transform: rotate(120deg);
-        border-top: 70px solid @primary;
+        border-top: (@clock-radius * .8) solid @primary;
         border-left: 1px solid transparent;
         border-right: 1px solid transparent;
     }
@@ -296,7 +298,7 @@ datium-clock {
         left: 50%;
         margin-left: -40px;
         top: 50%;
-        margin-top: 30px;
+        margin-top: @clock-radius - 60px;
         &:after, &:before {
             position: absolute;
             width: 40px;

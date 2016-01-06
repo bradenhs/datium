@@ -19,7 +19,7 @@ export default class TimePicker extends Picker {
     
     constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string, protected header:Header) {
         super(container, viewManager, selectorPrefix);
-        this.height = 280;
+        this.height = 260;
         onDrag(container, selectorPrefix+'-time-drag', {
            dragStart: (e:Event) => { this.dragStart(e); },
            dragMove: (e:MouseEvent) => { this.dragMove(e); },
