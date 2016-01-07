@@ -21,7 +21,7 @@ export default class YearPicker extends Picker {
             if (year === this.viewManager.getSelectedDate().getFullYear()) {
                 yearElement.classList.add('datium-current-selection');
             }
-            yearElement.innerText = year.toString();
+            yearElement.innerHTML = year.toString() + '<datium-bubble>' + year.toString() + '</datium-bubble>';
             yearElement.setAttribute('datium-data', year.toString());
             picker.appendChild(yearElement);
         }

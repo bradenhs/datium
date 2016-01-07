@@ -82,17 +82,20 @@ datium-container.datium-portrait-view {
     datium-next-view, datium-previous-view {
         width: 50%;
         height: 50px;
-        box-shadow: inset 0 1px 1px -1px @secondary;
+        transform-origin: 47px 25px;
         &:after, &:before {
 			top: 23px;
 		}
     }
     datium-span-labels {
-        left: 18px;
-        right: 18px;
+        padding-left: 18px;
+        padding-right: 18px;
+        left: 0;
+        right: 0;
         height: 90px;
         top: auto;
         bottom: 50px;
+        box-shadow: inset 0 -1px 1px -1px @secondary;
     }
     datium-span-label {
         white-space: default;

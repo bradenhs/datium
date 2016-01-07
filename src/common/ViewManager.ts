@@ -39,7 +39,7 @@ export default class ViewManager {
 	constructor() {
 		this.date = new Date();
         this.selectedDate = new Date(this.date.valueOf());
-		this.level = ViewLevel.MONTH;
+		this.level = ViewLevel.DECADE;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;
 	}
@@ -55,9 +55,6 @@ export default class ViewManager {
 			break;
 		case ViewLevel.MONTH:
 			this.date.setMonth(value);
-            while (this.date.getMonth() !== value) {
-                this.date.setDate(this.date.getDate() - 1);
-            }
 			break;
 		case ViewLevel.DAY:
 			this.date.setDate(value);

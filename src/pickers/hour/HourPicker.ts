@@ -59,14 +59,13 @@ export default class HourPicker extends TimePicker {
         this.updateTimeBubbleElement();
     }   
     
-    private updateMeridiemPicker():void {
-        let meridemSwitcher = this.clockElement.querySelector('datium-meridiem-switcher');        
+    private updateMeridiemPicker():void {     
         if (this.meridiem === 'AM') {
-            meridemSwitcher.classList.remove('datium-pm');
-            meridemSwitcher.classList.add('datium-am');
+            this.clockElement.classList.remove('datium-pm');
+            this.clockElement.classList.add('datium-am');
         } else {
-            meridemSwitcher.classList.remove('datium-am');
-            meridemSwitcher.classList.add('datium-pm');
+            this.clockElement.classList.remove('datium-am');
+            this.clockElement.classList.add('datium-pm');
         }
     }
     

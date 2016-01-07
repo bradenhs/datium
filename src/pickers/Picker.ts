@@ -1,5 +1,5 @@
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
-import {onTouchStart, onTouchEnd, onTap} from 'src/common/Events';
+import {onDown, onUp, onTap} from 'src/common/Events';
 import Header from 'src/header/Header';
 
 export enum Transition {

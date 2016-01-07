@@ -33,17 +33,13 @@ function attachEvents(events:string[], element:Element|Document, callback:(e?:Mo
     for (let key in events) {
         let event:string = events[key];
         
-        
-        let newListener = (e:MouseEvent|TouchEvent) => {
-            callback(e); 
-        };
         listeners.push({
             element: element,
-            reference: newListener,
+            reference: callback,
             event: event
         });
         
-        element.addEventListener(event, newListener);
+        element.addEventListener(event, callback);
     }
     return listeners;
 }
@@ -183,21 +179,9 @@ export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallb
 
 export function removeListeners(listeners:ListenerReference[]):void {
     for (let key in listeners) {
-        let listener = listeners[key];     
+        let listener = listeners[key];
         listener.element.removeEventListener(listener.event, listener.reference);
     }
-}
-
-export function onTouchStart(parent:Element, delegateClass:string, callback:(e?:MouseEvent|TouchEvent) => void) {
-    attachEventsDelegate(['touchstart'], parent, delegateClass, (e) => {
-        callback(e);
-    }); 
-};
-
-export function onTouchEnd(parent:Element, delegateClass:string, callback:(e?:MouseEvent|TouchEvent) => void) {
-    attachEventsDelegate(['touchend'], parent, delegateClass, (e) => {
-       callback(e); 
-    });
 }
 
 export function onMouseDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {

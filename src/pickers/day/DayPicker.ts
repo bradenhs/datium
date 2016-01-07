@@ -38,7 +38,7 @@ export default class DayPicker extends Picker {
 	
 	private mkDay(date:Date, inactive:boolean):HTMLElement {
 		let el = document.createElement('datium-day-element');
-		el.innerText = date.getDate().toString();
+		el.innerHTML = date.getDate().toString() + '<datium-bubble>' + date.getDate().toString() + '</datium-bubble>';
 		el.setAttribute('datium-data', date.getDate().toString());
         let selectedDate = this.viewManager.getSelectedDate();
         if (date.getDate() === selectedDate.getDate() &&

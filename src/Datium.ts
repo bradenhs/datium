@@ -73,7 +73,7 @@ class Datium {
         });
         
         onTap(options.element, () => {
-            if (!this.isPickerOpen) {
+            if (!this.isPickerOpen && document.activeElement === this.options.element) {
                 this.openPicker();
             }
         });
@@ -113,22 +113,27 @@ class Datium {
         }
     }
     
-    private documentListeners:ListenerReference[] = [];
+    private eventListeners:ListenerReference[] = [];
     
     private openPicker():void {
         if (this.isPickerOpen) return;
         this.isPickerOpen = true;
         this.datiumContainer.classList.remove('datium-closed');
         
-        this.documentListeners = onTap(document, (e) => {
-            let el = e.srcElement;
-            while (el !== null) {
-                if (el === this.datiumContainer || el === this.options.element) {
-                    return;
+        let cancelClose = false;
+        setTimeout(() => {
+            this.eventListeners = this.eventListeners.concat(onTap(this.options.element, (e) => {
+                cancelClose = true;
+            }));
+            this.eventListeners = this.eventListeners.concat(onTap(this.datiumContainer, (e) => {
+                cancelClose = true;
+            }));
+            this.eventListeners = this.eventListeners.concat(onTap(document, (e) => {
+                if (!cancelClose) {
+                    this.closePicker();                
                 }
-                el = el.parentElement;
-            }
-            this.closePicker();
+                cancelClose = false;
+            }));            
         });
     }
     
@@ -138,8 +143,8 @@ class Datium {
         this.datiumContainer.classList.add('datium-closed');
         this.pickerContainer.style.height = '0px';
         
-        removeListeners(this.documentListeners);
-        this.documentListeners = [];
+        removeListeners(this.eventListeners);
+        this.eventListeners = [];
         
         setTimeout(() => {
             this.viewManager.changeViewLevel(ViewLevel.MONTH);                

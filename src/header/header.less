@@ -20,7 +20,7 @@ datium-container {
 		width: 40px;
 		height: 90px;
 		bottom: 0;
-		
+		transform-origin: 20px 56px;
 		&:after, &:before {
 			content: '';
 			position: absolute;
@@ -34,6 +34,14 @@ datium-container {
 		&:before {
 			margin-top: -4px;
 		}
+        
+        transition: all ease .2s;
+        
+        &:active {
+            transform: scale(.9);
+            opacity: .9;
+            transition: none;
+        }
 	}
 	
 	datium-next-view {
@@ -72,6 +80,11 @@ datium-container {
         bottom: 0;
         display: block;
         position: absolute;
+        transition: .2s ease all;
+        &:active {
+            opacity: .85;
+            transition: none;
+        }
     }
 	
 	datium-span-label {
