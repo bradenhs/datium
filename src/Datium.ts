@@ -1,5 +1,5 @@
 import headerTemplate from 'src/header/header.html!text';
-import {onMouseDown, onBlur, onFocus, onDown, onTap, onSwipeLeft, onSwipeRight} from 'src/common/Events';
+import {onMouseDown, onBlur, onFocus, onTap, onSwipeLeft, onSwipeRight, ListenerReference, removeListeners} from 'src/common/Events';
 import Header from 'src/header/Header';
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
 import YearPicker from 'src/pickers/year/YearPicker';
@@ -16,7 +16,7 @@ import {Transition, Picker} from 'src/pickers/Picker';
 import stylesheet from 'temp/stylesheet.css!text';
 
 interface IOptions {
-	element: HTMLElement; // The html input element of type text the picker is attached to
+	element: HTMLInputElement; // The html input element of type text the picker is attached to
     format: string; // the format of the date in the picker
 	max: string; // The 
     startAt: string; //
@@ -35,86 +35,122 @@ class Datium {
     private secondPicker:SecondPicker;
     
     private pickerContainer:HTMLElement;
-    
+    private viewManager:ViewManager;
     private minLevel:ViewLevel;
+    private datiumContainer:HTMLElement;
+    private isPickerOpen:boolean = false;
     
     constructor(private options:IOptions) {
-        let el = this.createView();
-        this.pickerContainer = <HTMLElement>el.querySelector('datium-all-pickers-container');   
+        this.datiumContainer = this.createView();
+        this.pickerContainer = <HTMLElement>this.datiumContainer.querySelector('datium-all-pickers-container');   
         
-        let viewManager = new ViewManager();
+        this.viewManager = new ViewManager();
         
         this.minLevel = ViewLevel.SECOND;
         
-        onSwipeLeft(el, () => {
+        onSwipeLeft(this.datiumContainer, () => {
             if (this.secondPicker.isDragging ||
                 this.minutePicker.isDragging ||
                 this.hourPicker.isDragging) return;
-           viewManager.next();
+           this.viewManager.next();
         });
         
-        onSwipeRight(el, () => {
+        onSwipeRight(this.datiumContainer, () => {
             if (this.secondPicker.isDragging ||
                 this.minutePicker.isDragging ||
                 this.hourPicker.isDragging) return;
-           viewManager.previous(); 
-        });       
+           this.viewManager.previous(); 
+        });
         
-        let cancelBlur;
-        
-        onMouseDown(el, (e) =>  {
+        onMouseDown(this.datiumContainer, (e) =>  {
             e.preventDefault();
             e.stopPropagation();
             return false;
         });
         
-        onFocus(options.element, () => {
-            el.classList.remove('datium-closed');     
+        onFocus(options.element, () => {  
+            this.openPicker();
+        });
+        
+        onTap(options.element, () => {
+            if (!this.isPickerOpen) {
+                this.openPicker();
+            }
         });
         
         onBlur(options.element, () => {
-            el.classList.add('datium-closed');
-            setTimeout(() => {
-                viewManager.changeViewLevel(ViewLevel.MONTH);                
-            }, 400);
+            this.closePicker();
         });
         
         options.element.setAttribute('readonly', 'true');
         
-        let header = new Header(el.querySelector('datium-header'), viewManager);
+        let header = new Header(this.datiumContainer.querySelector('datium-header'), this.viewManager);
         
-        this.yearPicker = new YearPicker(this.pickerContainer, viewManager);
-        this.monthPicker = new MonthPicker(this.pickerContainer, viewManager);
-        this.dayPicker = new DayPicker(this.pickerContainer, viewManager);
-        this.hourPicker = new HourPicker(this.pickerContainer, viewManager, header);
-        this.minutePicker = new MinutePicker(this.pickerContainer, viewManager, header);
-        this.secondPicker = new SecondPicker(this.pickerContainer, viewManager, header);
+        this.yearPicker = new YearPicker(this.pickerContainer, this.viewManager);
+        this.monthPicker = new MonthPicker(this.pickerContainer, this.viewManager);
+        this.dayPicker = new DayPicker(this.pickerContainer, this.viewManager);
+        this.hourPicker = new HourPicker(this.pickerContainer, this.viewManager, header);
+        this.minutePicker = new MinutePicker(this.pickerContainer, this.viewManager, header);
+        this.secondPicker = new SecondPicker(this.pickerContainer, this.viewManager, header);
         
-        viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel) => {
-            this.viewChanged(date, level, lastDate, lastLevel);
+        this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) => {
+            this.viewChanged(date, level, lastDate, lastLevel, selectedDate);
         });
         
-        this.insertAfter(options.element, el);
+        this.insertAfter(options.element, this.datiumContainer);
         this.insertStyles();
         
         
         if (window.innerHeight < 380) {
-            el.classList.add('datium-portrait-view');
+            this.datiumContainer.classList.add('datium-portrait-view');
         }
         window.onresize = () => {
             if (window.innerHeight < 380) {
-                el.classList.add('datium-portrait-view');
+                this.datiumContainer.classList.add('datium-portrait-view');
             } else {
-                el.classList.remove('datium-portrait-view');
+                this.datiumContainer.classList.remove('datium-portrait-view');
             }
         }
     }
     
-    private viewChanged(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel) {
+    private documentListeners:ListenerReference[] = [];
+    
+    private openPicker():void {
+        if (this.isPickerOpen) return;
+        this.isPickerOpen = true;
+        this.datiumContainer.classList.remove('datium-closed');
+        
+        this.documentListeners = onTap(document, (e) => {
+            let el = e.srcElement;
+            while (el !== null) {
+                if (el === this.datiumContainer || el === this.options.element) {
+                    return;
+                }
+                el = el.parentElement;
+            }
+            this.closePicker();
+        });
+    }
+    
+    private closePicker():void {
+        if (this.isPickerOpen === false) return;
+        this.isPickerOpen = false;
+        this.datiumContainer.classList.add('datium-closed');
+        this.pickerContainer.style.height = '0px';
+        
+        removeListeners(this.documentListeners);
+        this.documentListeners = [];
+        
+        setTimeout(() => {
+            this.viewManager.changeViewLevel(ViewLevel.MONTH);                
+        }, 400);
+    }
+    
+    private viewChanged(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) {
+        this.options.element.value = selectedDate.toString();
         if (level === this.minLevel) {
             this.currentPicker.destroy(Transition.ZOOM_IN);
-            this.pickerContainer.style.height = '0px';
-            this.options.element.blur();
+            this.closePicker();
             return;
         }
         let newPicker = this.getNewPicker(level);

@@ -8,7 +8,20 @@ export default class MonthPicker extends Picker {
         super(container, viewManager, 'datium-month');
         this.height = 180;
     }    
-    protected populatePicker(picker:HTMLElement):void {
+    protected populatePicker(picker:HTMLElement, date:Date):void {
         picker.innerHTML = monthTemplate;
+        picker.classList.add('datium-month-view');
+        
+        for (let i = 0; i < picker.childNodes.length; i++) {
+            let node = <HTMLElement>picker.childNodes.item(i);
+            if (node.attributes !== void 0) {
+                let val = node.attributes.getNamedItem('datium-data').nodeValue;
+                if (parseInt(val) === this.viewManager.getSelectedDate().getMonth() &&
+                    date.getFullYear() === this.viewManager.getSelectedDate().getFullYear()) {
+                    node.classList.add('datium-current-selection');
+                    break;
+                }
+            }
+        }
     }
 }

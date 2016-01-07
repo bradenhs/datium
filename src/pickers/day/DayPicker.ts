@@ -3,11 +3,12 @@ import ViewManager from 'src/common/ViewManager';
 import Header from 'src/header/Header';
 
 export default class DayPicker extends Picker {
-	constructor(container:HTMLElement, viewManager:ViewManager) {
+	constructor(container:HTMLElement, private viewManager:ViewManager) {
         super(container, viewManager, 'datium-day');
 	}
 	
-	protected populatePicker(picker:HTMLElement, date:Date):void {		
+	protected populatePicker(picker:HTMLElement, date:Date):void {	
+        picker.classList.add('datium-day-view');	
 		let d = new Date(date.valueOf());
 		d.setDate(1);
 		d.setDate(1 - d.getDay());
@@ -39,10 +40,16 @@ export default class DayPicker extends Picker {
 		let el = document.createElement('datium-day-element');
 		el.innerText = date.getDate().toString();
 		el.setAttribute('datium-data', date.getDate().toString());
+        let selectedDate = this.viewManager.getSelectedDate();
+        if (date.getDate() === selectedDate.getDate() &&
+            date.getMonth() === selectedDate.getMonth() &&
+            date.getFullYear() === selectedDate.getFullYear()) {
+            el.classList.add('datium-current-selection');
+        }
 		if (inactive) {
-			el.className = 'datium-day-inactive';
+			el.classList.add('datium-day-inactive');
 		} else {
-			el.className = 'datium-day-selectable';
+            el.classList.add('datium-day-selectable');
 		}
 		return el;
 	}	

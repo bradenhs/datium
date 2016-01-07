@@ -18,6 +18,7 @@ function attachEventsDelegate(events:string[], parent:Element, delegateClass:str
         
         let newListener = handleDelegateEvent(parent, delegateClass, callback);
         listeners.push({
+            element: parent,
             reference: newListener,
             event: event
         });
@@ -37,6 +38,7 @@ function attachEvents(events:string[], element:Element|Document, callback:(e?:Mo
             callback(e); 
         };
         listeners.push({
+            element: element,
             reference: newListener,
             event: event
         });
@@ -46,9 +48,9 @@ function attachEvents(events:string[], element:Element|Document, callback:(e?:Mo
     return listeners;
 }
 
-export function onTap(parent:Element, delegateClass:string, callback:(e?:Event) => void);
-export function onTap(element:Element, callback:(e?:Event) => void);
-export function onTap(...params:any[]) {
+export function onTap(parent:Element|Document, delegateClass:string, callback:(e?:Event) => void);
+export function onTap(element:Element|Document, callback:(e?:Event) => void);
+export function onTap(...params:any[]):ListenerReference[] {
     let startTouchX, startTouchY;
     
     let handleStart = (e:TouchEvent) => {
@@ -66,23 +68,26 @@ export function onTap(...params:any[]) {
         let xDiff = e.changedTouches[0].clientX - startTouchX;
         let yDiff = e.changedTouches[0].clientY - startTouchY;
         
-        if (Math.sqrt(xDiff * xDiff + yDiff * yDiff) < 20) {
+        if (Math.sqrt(xDiff * xDiff + yDiff * yDiff) < 5) {
             e.preventDefault();
             callback(e);
         }
     }
     
+    let listeners:ListenerReference[] = [];
+    
     if (params.length === 3) {
-        attachEventsDelegate(['touchstart'], params[0], params[1], handleStart);
-        attachEventsDelegate(['touchend', 'click'], params[0], params[1], (e:TouchEvent) => {
+        listeners = listeners.concat(attachEventsDelegate(['touchstart'], params[0], params[1], handleStart));
+        listeners = listeners.concat(attachEventsDelegate(['touchend', 'click'], params[0], params[1], (e:TouchEvent) => {
             handleEnd(e, params[2]);
-        });
+        }));
     } else if (params.length === 2) {
-        attachEvents(['touchstart'], params[0], handleStart);
-        attachEvents(['touchend', 'click'], params[0], (e:TouchEvent) => {
+        listeners = listeners.concat(attachEvents(['touchstart'], params[0], handleStart));
+        listeners = listeners.concat(attachEvents(['touchend', 'click'], params[0], (e:TouchEvent) => {
             handleEnd(e, params[1]);
-        });
+        }));
     }
+    return listeners;
 }
 
 function onSwipe(element:Element, direction:string, callback:(e?:Event) => void) {
@@ -142,7 +147,8 @@ interface DragCallbacks {
     dragEnd?:(e?:MouseEvent|TouchEvent) => void;
 }
 
-interface ListenerReference {
+export interface ListenerReference {
+    element: Element|Document;
     reference: EventListener;
     event: string;
 }
@@ -170,22 +176,29 @@ export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallb
                 e.preventDefault();
             }
             dragging = false;
-            
-            for (let key in listeners) {
-                let listener = listeners[key];
-                
-                document.removeEventListener(listener.event, listener.reference);
-            }
-            
+            removeListeners(listeners);            
         }));        
     });
 }
 
-export function onDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
-    attachEvents(['touchstart', 'mousedown'], element, (e) => {
+export function removeListeners(listeners:ListenerReference[]):void {
+    for (let key in listeners) {
+        let listener = listeners[key];     
+        listener.element.removeEventListener(listener.event, listener.reference);
+    }
+}
+
+export function onTouchStart(parent:Element, delegateClass:string, callback:(e?:MouseEvent|TouchEvent) => void) {
+    attachEventsDelegate(['touchstart'], parent, delegateClass, (e) => {
         callback(e);
     }); 
 };
+
+export function onTouchEnd(parent:Element, delegateClass:string, callback:(e?:MouseEvent|TouchEvent) => void) {
+    attachEventsDelegate(['touchend'], parent, delegateClass, (e) => {
+       callback(e); 
+    });
+}
 
 export function onMouseDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
     attachEvents(['mousedown'], element, (e) => {

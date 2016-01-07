@@ -13,26 +13,32 @@ export default class ViewManager {
 	private level:ViewLevel;
 	private lastLevel:ViewLevel;
 	private date:Date;
+    private selectedDate:Date;
 	private lastDate:Date;
-	private observers:((date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel) => void)[] = [];
+	private observers:((date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel, selectedDate?:Date) => void)[] = [];
 	
-	public registerObserver(observer:(date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel) => void):void {
-		observer(this.date, this.level, this.lastDate, this.lastLevel);
+	public registerObserver(observer:(date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel, selectedDate?:Date) => void):void {
+		observer(this.date, this.level, this.lastDate, this.lastLevel, this.selectedDate);
 		this.observers.push(observer);
 	}
 	
 	private notifyObservers():void {
 		for (let key in this.observers) {
-			this.observers[key](this.date, this.level, this.lastDate, this.lastLevel);
+			this.observers[key](this.date, this.level, this.lastDate, this.lastLevel, this.selectedDate);
 		}
 	}
     
     public getViewLevel():ViewLevel {
         return this.level;
     }
+    
+    public getSelectedDate():Date {
+        return this.selectedDate;
+    }
 	
 	constructor() {
 		this.date = new Date();
+        this.selectedDate = new Date(this.date.valueOf());
 		this.level = ViewLevel.MONTH;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;
@@ -49,6 +55,9 @@ export default class ViewManager {
 			break;
 		case ViewLevel.MONTH:
 			this.date.setMonth(value);
+            while (this.date.getMonth() !== value) {
+                this.date.setDate(this.date.getDate() - 1);
+            }
 			break;
 		case ViewLevel.DAY:
 			this.date.setDate(value);
@@ -63,6 +72,9 @@ export default class ViewManager {
 			this.date.setSeconds(value);
 			break;
 		}
+        if (this.level < this.lastLevel) {
+            this.selectedDate = new Date(this.date.valueOf());
+        }
 		this.notifyObservers();
 	}
 	

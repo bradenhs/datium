@@ -47,6 +47,17 @@ export default class SecondPicker extends TimePicker {
         return this.time;
     }
     
+    protected getCurrentTimeRotation(date:Date, selectedDate:Date):number {
+        if (date.getFullYear() === selectedDate.getFullYear() &&
+            date.getMonth() === selectedDate.getMonth() &&
+            date.getDate() === selectedDate.getDate() &&
+            date.getHours() === selectedDate.getHours() &&
+            date.getMinutes() === selectedDate.getMinutes()) {
+            return this.timeToRotation(selectedDate.getSeconds());    
+        }
+        return void 0;
+    }
+    
     protected rotationToTime(rotation:number):number {
         let num = Math.round(rotation / 6) - 30;
         while(num < 0) num += 60;

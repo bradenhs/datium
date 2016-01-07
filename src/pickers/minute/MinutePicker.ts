@@ -51,6 +51,16 @@ export default class MinutePicker extends TimePicker {
         return num;
     }
     
+    protected getCurrentTimeRotation(date:Date, selectedDate:Date):number {
+        if (date.getFullYear() === selectedDate.getFullYear() &&
+            date.getMonth() === selectedDate.getMonth() &&
+            date.getDate() === selectedDate.getDate() &&
+            date.getHours() === selectedDate.getHours()) {
+            return this.timeToRotation(selectedDate.getMinutes());    
+        }
+        return void 0;
+    }
+    
     protected updateTimeBubbleElement():void {
         let timeBubbleRotation = -this.rotation;
         this.timeBubbleElement.innerHTML = this.padNum(this.time)+'m';

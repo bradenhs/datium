@@ -64,10 +64,38 @@ datium-month-element, datium-year-element {
 
 @clock-radius: 80px;
 
+.datium-current-selection {
+    position: relative;
+    &:after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: 11px;
+        height: 2px;
+        background: @primary;
+    }
+}
+
+.datium-year-view .datium-current-selection:after {
+    width: 40px;
+    margin-left: -20px;
+}
+
+.datium-month-view .datium-current-selection:after {
+    width: 30px;
+    margin-left: -15px;
+}
+
+.datium-day-view .datium-current-selection:after {
+    width: 20px;
+    margin-left: -10px;
+}
+
 datium-clock {
 	position: absolute;
 	left: 50%;
-	top: 50%;
+	top: 130px;
 	margin-left: -@clock-radius;
 	margin-top: -@clock-radius;
 	display: block;
@@ -99,6 +127,26 @@ datium-clock {
         top: 50%;
         left: 50%;
         transform-origin: 0 0;
+    }
+    
+    datium-current-time {
+        display: block;
+        position: absolute;
+        width: 0;
+        height: 50%;
+        top: 50%;
+        left: 50%;
+        transform-origin: 0 0;
+        &:after {
+            position: absolute;
+            content: '';
+            width: 0;
+            height: 0;
+            border: 4px solid transparent;
+            border-top-color: @primary;
+            bottom: -18px;
+            left: -4px;
+        }
     }
     
     datium-tick-mark {

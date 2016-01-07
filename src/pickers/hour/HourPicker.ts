@@ -79,6 +79,15 @@ export default class HourPicker extends TimePicker {
         return tickPosition.toString();
     }
     
+    protected getCurrentTimeRotation(date:Date, selectedDate:Date):number {
+        if (date.getFullYear() === selectedDate.getFullYear() &&
+            date.getMonth() === selectedDate.getMonth() &&
+            date.getDate() === selectedDate.getDate()) {
+            return this.timeToRotation(selectedDate.getHours());    
+        }
+        return void 0;
+    }
+    
     protected rotationToTime(rotation:number):number {
         let num = rotation / 30 - 6;
         num = Math.round(num < 0 ? num + 12 : num);

@@ -36,8 +36,8 @@ export default class TimePicker extends Picker {
     }
     
     protected dragMove(e:Event):void {
-        let centerX = this.clockElement.getBoundingClientRect().left + 100;
-        let centerY = this.clockElement.getBoundingClientRect().top + 100;
+        let centerX = this.clockElement.getBoundingClientRect().left + 80;
+        let centerY = this.clockElement.getBoundingClientRect().top + 80;
         
         let clientX = (<MouseEvent>e).clientX === void 0 ? (<TouchEvent>e).touches[0].clientX : (<MouseEvent>e).clientX;
         let clientY = (<MouseEvent>e).clientY === void 0 ? (<TouchEvent>e).touches[0].clientY : (<MouseEvent>e).clientY;
@@ -58,7 +58,6 @@ export default class TimePicker extends Picker {
     
     private dragEnd(e:Event):void {
         this.rotation = this.timeToRotation(this.time);
-        this.updateTimeDragElement();
         this.updateHeaderTime();  
         this.container.parentElement.classList.remove('datium-is-dragging');     
         this.viewManager.zoomTo(this.getZoomToTime());
@@ -110,12 +109,23 @@ export default class TimePicker extends Picker {
         this.clockMiddleElement = <HTMLElement>picker.querySelector('datium-clock-middle');
         this.timeBubbleElement = <HTMLElement>picker.querySelector('datium-time-bubble');
         
+        let currentTimeElement = <HTMLElement>picker.querySelector('datium-current-time');
+        let curTimeRotation = this.getCurrentTimeRotation(date, this.viewManager.getSelectedDate());
+        if (curTimeRotation === void 0) {
+            currentTimeElement.remove();
+        } else {
+            currentTimeElement.style.transform = `rotate(${curTimeRotation}deg)`;
+        }
+        
         for (let tickPosition = 1; tickPosition <= 12; tickPosition++) {
             let angle = (tickPosition - 6) * 30;
             let label = this.getLabelFromTickPosition(tickPosition);
+            
             let data = this.getDataFromTickPosition(tickPosition);
+            
             this.clockElement.appendChild(this.mkTick(angle, label, data));
         }
+        
         this.timeDragElement = <HTMLElement>picker.querySelector('.datium-time-drag');
         this.timeDragElement.classList.add(this.selectorPrefix+'-time-drag');    
         this.setInitialTime(date);    
@@ -130,6 +140,7 @@ export default class TimePicker extends Picker {
     }
     
     // Overridable
+    protected getCurrentTimeRotation(date:Date, selectedDate:Date):number { throw this.EmptyMethodException(); }
     protected getLabelFromTickPosition(tickPosition:number):string { throw this.EmptyMethodException(); }
     protected getDataFromTickPosition(tickPosition:number):number { throw this.EmptyMethodException(); }
     protected rotationToTime(rotation:number):number { throw this.EmptyMethodException(); }

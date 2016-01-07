@@ -1,5 +1,5 @@
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
-import {onTap} from 'src/common/Events';
+import {onTouchStart, onTouchEnd, onTap} from 'src/common/Events';
 import Header from 'src/header/Header';
 
 export enum Transition {
@@ -22,7 +22,7 @@ export class Picker {
         onTap(this.container, selectorPrefix+'-selectable', (e:Event) => {
             let zoomValue = parseInt(e.srcElement.getAttribute('datium-data'));
             if (viewManager.getViewLevel() === ViewLevel.DAY && (<any>this).meridiem === 'PM') {
-                zoomValue += 12;                
+                zoomValue += 12;
             }
             viewManager.zoomTo(zoomValue); 
         });

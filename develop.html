@@ -14,7 +14,19 @@
   <body>
     <h4>DEVELOP</h4>
     <input id="test-element"/>
-    
+    <style>
+        input {
+            padding: 10px;
+            width: 400px;
+            border: 1px solid #aaa;
+            border-radius: 2px;
+            transition: all ease .2s;
+        }
+        
+        input:focus {
+            border-color: #019587;
+        }
+    </style>
     <script>      
       System.import('src/Datium').then(function() {
         new Datium({
