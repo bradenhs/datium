@@ -15,14 +15,6 @@ import {Transition, Picker} from 'src/pickers/Picker';
 // added to the page dynamically when in production.
 import stylesheet from 'temp/stylesheet.css!text';
 
-interface IOptions {
-	element: HTMLInputElement; // The html input element of type text the picker is attached to
-    format: string; // the format of the date in the picker
-	max: string; // The 
-    startAt: string; //
-	selectTo: string; //
-}
-
 class Datium {
     private static insertedStyles: boolean = false;
     
@@ -40,7 +32,7 @@ class Datium {
     private datiumContainer:HTMLElement;
     private isPickerOpen:boolean = false;
     
-    constructor(private options:IOptions) {
+    constructor(private options:IDatiumOptions) {
         this.datiumContainer = this.createView();
         this.pickerContainer = <HTMLElement>this.datiumContainer.querySelector('datium-all-pickers-container');
         
