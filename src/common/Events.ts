@@ -64,7 +64,7 @@ export function onTap(...params:any[]):ListenerReference[] {
         let xDiff = e.changedTouches[0].clientX - startTouchX;
         let yDiff = e.changedTouches[0].clientY - startTouchY;
         
-        if (Math.sqrt(xDiff * xDiff + yDiff * yDiff) < 5) {
+        if (Math.sqrt(xDiff * xDiff + yDiff * yDiff) < 10) {
             e.preventDefault();
             callback(e);
         }

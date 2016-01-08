@@ -121,7 +121,7 @@ export default class TimePicker extends Picker {
             let angle = (tickPosition - 6) * 30;
             let label = this.getLabelFromTickPosition(tickPosition);
             let padding = '';
-            if (parseInt(label) < 10) padding = '0';
+            if (label.length < 2) padding = '0';
             label += '<datium-bubble>'+padding+label+'</datium-bubble>';
             
             let data = this.getDataFromTickPosition(tickPosition);

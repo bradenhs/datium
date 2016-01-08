@@ -383,6 +383,7 @@ datium-clock {
         left: 50%;
         margin-left: -40px;
         top: 50%;
+        z-index: 1;
         margin-top: @clock-radius - 60px;
         transition: all ease .2s;
         &:after, &:before {
@@ -404,7 +405,6 @@ datium-clock {
         }
         
         &:active {
-            opacity: .8;
             transition: none;
         }
         
@@ -435,6 +435,9 @@ datium-container:active {
     datium-all-pickers-container {
         overflow: visible !important;
     }
+    datium-header:active + datium-all-pickers-container {
+        overflow: hidden !important;
+    }
     datium-tick:active {
         z-index: 3;
     }
@@ -445,7 +448,7 @@ datium-bubble {
     width: 56px;
     height: 30px;
     top: 50%;
-    margin-top: -55px;
+    margin-top: -60px;
     margin-left: -28px;
     left: 50%;
     text-align: center;
@@ -458,7 +461,7 @@ datium-bubble {
     transform-origin: 28px 56px;
     pointer-events: none;
     opacity: 0;
-    box-shadow: 0 0 1px 0 @secondary;
+    box-shadow: 0 0 1px 0 @secondary, 0 18px 8px -14px @secondary;
     transition: .2s ease all;
     transform: scale(.9);
 }
@@ -474,9 +477,27 @@ datium-bubble:before {
 }
 
 
-[datium-data]:active > datium-bubble {
+datium-meridiem-switcher:active datium-bubble {
     opacity: 1;
-    transition-delay: .3s;
+    transition-delay: .2s;
+    transform: scale(1);        
+}
+
+datium-meridiem-switcher datium-bubble:after {
+    content: '';
+}
+
+.datium-am datium-meridiem-switcher:active datium-bubble:after {
+    content: 'PM';
+}
+
+.datium-pm datium-meridiem-switcher:active datium-bubble:after {
+    content: 'AM';
+}
+
+[datium-data]:not(.datium-day-inactive):active > datium-bubble {
+    opacity: 1;
+    transition-delay: .1s;
     transform: scale(1.1111);
 }
 

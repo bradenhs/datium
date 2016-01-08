@@ -39,7 +39,7 @@ export default class ViewManager {
 	constructor() {
 		this.date = new Date();
         this.selectedDate = new Date(this.date.valueOf());
-		this.level = ViewLevel.DECADE;
+		this.level = ViewLevel.DAY;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;
 	}

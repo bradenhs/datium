@@ -42,7 +42,7 @@ class Datium {
     
     constructor(private options:IOptions) {
         this.datiumContainer = this.createView();
-        this.pickerContainer = <HTMLElement>this.datiumContainer.querySelector('datium-all-pickers-container');   
+        this.pickerContainer = <HTMLElement>this.datiumContainer.querySelector('datium-all-pickers-container');
         
         this.viewManager = new ViewManager();
         
@@ -68,18 +68,19 @@ class Datium {
             return false;
         });
         
+        let reopenOnTapListeners = [];
         onFocus(options.element, () => {  
-            this.openPicker();
-        });
-        
-        onTap(options.element, () => {
-            if (!this.isPickerOpen && document.activeElement === this.options.element) {
-                this.openPicker();
-            }
+            this.openPicker();        
+            reopenOnTapListeners = onTap(options.element, () => {
+                if (!this.isPickerOpen && document.activeElement === this.options.element) {
+                    this.openPicker();
+                }
+            });   
         });
         
         onBlur(options.element, () => {
             this.closePicker();
+            removeListeners(reopenOnTapListeners);            
         });
         
         options.element.setAttribute('readonly', 'true');
@@ -133,7 +134,7 @@ class Datium {
                     this.closePicker();                
                 }
                 cancelClose = false;
-            }));            
+            }));       
         });
     }
     
