@@ -9,6 +9,8 @@ import HourPicker from 'src/pickers/hour/HourPicker';
 import MinutePicker from 'src/pickers/minute/MinutePicker';
 import SecondPicker from 'src/pickers/second/SecondPicker';
 import {Transition, Picker} from 'src/pickers/Picker';
+import {IDatiumOptions, IDatiumTheme, SanitizeOptions} from 'src/DatiumOptions';
+import themesheet from 'src/common/themesheet.css!text';
 
 // When in develop this file is empty and so nothing really happens but when building
 // in production this file is filled temporarily with stlyes so that styles can be
@@ -32,7 +34,11 @@ class Datium {
     private datiumContainer:HTMLElement;
     private isPickerOpen:boolean = false;
     
-    constructor(private options:IDatiumOptions) {
+    private opts:IDatiumOptions;
+    
+    constructor(options:any) {
+        this.opts = SanitizeOptions(options);
+        
         this.datiumContainer = this.createView();
         this.pickerContainer = <HTMLElement>this.datiumContainer.querySelector('datium-all-pickers-container');
         
@@ -64,7 +70,7 @@ class Datium {
         onFocus(options.element, () => {  
             this.openPicker();        
             reopenOnTapListeners = onTap(options.element, () => {
-                if (!this.isPickerOpen && document.activeElement === this.options.element) {
+                if (!this.isPickerOpen && document.activeElement === this.opts.element) {
                     this.openPicker();
                 }
             });   
@@ -92,7 +98,7 @@ class Datium {
         
         this.insertAfter(options.element, this.datiumContainer);
         this.insertStyles();
-        
+        this.addTheme();
         
         if (window.innerHeight < 380) {
             this.datiumContainer.classList.add('datium-portrait-view');
@@ -115,7 +121,7 @@ class Datium {
         
         let cancelClose = false;
         setTimeout(() => {
-            this.eventListeners = this.eventListeners.concat(onTap(this.options.element, (e) => {
+            this.eventListeners = this.eventListeners.concat(onTap(this.opts.element, (e) => {
                 cancelClose = true;
             }));
             this.eventListeners = this.eventListeners.concat(onTap(this.datiumContainer, (e) => {
@@ -145,7 +151,7 @@ class Datium {
     }
     
     private viewChanged(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) {
-        this.options.element.value = selectedDate.toString();
+        this.opts.element.value = selectedDate.toString();
         if (level === this.minLevel) {
             this.currentPicker.destroy(Transition.ZOOM_IN);
             this.closePicker();
@@ -188,8 +194,27 @@ class Datium {
         
         let styles = document.createElement('style');
         styles.innerText = stylesheet;
-        
         document.head.appendChild(styles);        
+    }
+    
+    private addTheme():void {
+        
+        let theme = document.createElement('style');
+        let primary = new RegExp('PRIMARY', 'g');
+        let primaryText = new RegExp('PRIMARY_TEXT', 'g');
+        let secondary = new RegExp('SECONDARY', 'g');
+        let secondaryText = new RegExp('SECONDARY_TEXT', 'g');
+        let secondaryAccent = new RegExp('SECONDARY_ACCENT', 'g');
+        
+        let t = themesheet;
+        t = t.replace(primaryText, this.opts.theme.primaryText);
+        t = t.replace(primary, this.opts.theme.primary);
+        t = t.replace(secondaryAccent, this.opts.theme.secondaryAccent);
+        t = t.replace(secondaryText, this.opts.theme.secondaryText);
+        t = t.replace(secondary, this.opts.theme.secondary);
+        
+        theme.innerText = t;
+        document.head.appendChild(theme);
     }
     
     private createView():HTMLElement {
