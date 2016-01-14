@@ -1,0 +1,458 @@
+.STYLE_INSTANCE datium-day-element {
+	width: 14.2857143%;
+	display: inline-block;
+	line-height: 37px;
+	text-align: center;
+	position: relative;
+    position: relative;
+	font-size: 12pt;
+    transition: .3s all ease;
+    color: SECONDARY_TEXT;
+}
+
+.STYLE_INSTANCE datium-day-element.datium-day-inactive,
+.STYLE_INSTANCE datium-day-element.datium-weekday-label {
+    opacity: .6;
+}
+
+.STYLE_INSTANCE datium-weekday-label {
+    font-weight: bold;
+}
+
+.STYLE_INSTANCE datium-day-element.datium-day-selectable:active {
+    transform: scale(.9);
+    transition: none;
+}
+
+.STYLE_INSTANCE datium-month-element,
+.STYLE_INSTANCE datium-year-element {
+  display: inline-block;
+  width: 24%;
+  line-height: 60px;
+  position: relative;
+  text-align: center;
+  transition: .3s all ease;
+  color: SECONDARY_TEXT;
+}
+.STYLE_INSTANCE datium-month-element:active,
+.STYLE_INSTANCE datium-year-element:active {
+  transform: scale(0.9);
+  transition: none;
+}
+.STYLE_INSTANCE .datium-minute-view datium-hour-hand,
+.STYLE_INSTANCE .datium-second-view datium-hour-hand {
+  opacity: .3;
+  border-top-color: SECONDARY_TEXT;
+}
+.STYLE_INSTANCE .datium-second-view datium-minute-hand {
+  opacity: .3;
+  border-top-color: SECONDARY_TEXT;
+}
+.STYLE_INSTANCE .datium-hour-view datium-minute-hand,
+.STYLE_INSTANCE .datium-hour-view datium-second-hand,
+.STYLE_INSTANCE .datium-minute-view datium-second-hand {
+  display: none;
+}
+.STYLE_INSTANCE .datium-minute-view datium-meridiem-switcher,
+.STYLE_INSTANCE .datium-second-view datium-meridiem-switcher {
+  display: none;
+}
+.STYLE_INSTANCE .datium-current-selection {
+  position: relative;
+}
+.STYLE_INSTANCE .datium-current-selection:after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-top: 11px;
+  height: 2px;
+  background: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE .datium-year-view .datium-current-selection:after {
+  width: 40px;
+  margin-left: -20px;
+}
+.STYLE_INSTANCE .datium-month-view .datium-current-selection:after {
+  width: 30px;
+  margin-left: -15px;
+}
+.STYLE_INSTANCE .datium-day-view .datium-current-selection:after {
+  width: 20px;
+  margin-left: -10px;
+}
+.STYLE_INSTANCE datium-clock {
+  position: absolute;
+  left: 50%;
+  top: 130px;
+  margin-left: -80px;
+  margin-top: -80px;
+  display: block;
+  width: 160px;
+  height: 160px;
+  border-radius: 80px;
+  box-shadow: inset 0 0 1px 0px SECONDARY_TEXT;
+}
+.STYLE_INSTANCE datium-clock-middle {
+  z-index: 1;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  top: 50%;
+  left: 50%;
+  margin-left: -6px;
+  margin-top: -6px;
+  border: 2px solid SECONDARY;
+  background: SECONDARY;
+  box-shadow: inset 0 0 0 2px SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-tick {
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+}
+.STYLE_INSTANCE datium-current-time {
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform-origin: 0 0;
+}
+.STYLE_INSTANCE datium-current-time:after {
+  position: absolute;
+  content: '';
+  width: 0;
+  height: 0;
+  border: 4px solid transparent;
+  bottom: -18px;
+  left: -4px;
+  border-top-color: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-tick-mark {
+  content: '';
+  position: absolute;
+  width: 2px;
+  left: -1px;
+  height: 6px;
+  opacity: .3;
+  bottom: -3px;
+  background: SECONDARY_TEXT;
+}
+.STYLE_INSTANCE datium-tick-label {
+  position: absolute;
+  bottom: -30px;
+  width: 50px;
+  left: -25px;
+  text-align: center;
+  font-size: 10pt;
+  height: 50px;
+  opacity: 1;
+  margin-bottom: -20px;
+  border-radius: 25px;
+  color: SECONDARY_TEXT;
+}
+.STYLE_INSTANCE datium-tick-label datium-span {
+  transition: .2s ease all;
+  position: absolute;
+  line-height: 50px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+.STYLE_INSTANCE datium-tick-label:active > datium-span {
+  transform: scale(0.8);
+  transition: none;
+}
+.STYLE_INSTANCE datium-time-drag {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 80px;
+  width: 0;
+  transform-origin: 0 0;
+  z-index: 1;
+  transform: rotate(180deg);
+  transition: .4s ease all;
+}
+.STYLE_INSTANCE datium-time-drag:before {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: -9px;
+  width: 14px;
+  height: 14px;
+  border-radius: 100%;
+  transition: .3s ease all;
+  border: 2px solid SECONDARY_ACCENT;
+  box-shadow: inset 0 0 0 2px SECONDARY;
+  background: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-time-drag:active:before {
+  transition: none;
+  box-shadow: inset 0 0 0 3px SECONDARY;
+}
+.STYLE_INSTANCE datium-drag-selection-area {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 30px;
+  bottom: -25px;
+  left: -25px;
+  z-index: 1;
+}
+.STYLE_INSTANCE datium-time-drag-arrows {
+  position: absolute;
+  width: 22px;
+  left: -11px;
+  bottom: 0;
+}
+.STYLE_INSTANCE datium-time-drag-arrows:before {
+  position: absolute;
+  content: '';
+  width: 0;
+  height: 0;
+  border: 4px solid transparent;
+  top: -5px;
+  left: -8px;
+  border-right-color: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-time-drag-arrows:after {
+  position: absolute;
+  content: '';
+  width: 0;
+  height: 0;
+  border: 4px solid transparent;
+  top: -5px;
+  right: -8px;
+  border-left-color: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-hour-hand {
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-radius: 40%;
+  top: 50%;
+  left: 50%;
+  margin-left: -3px;
+  margin-top: -3px;
+  transform-origin: 3px 3px;
+  transform: rotate(240deg);
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
+  border-top: 32px solid SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-minute-hand {
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-radius: 40%;
+  top: 50%;
+  left: 50%;
+  margin-left: -2px;
+  margin-top: -2px;
+  transform-origin: 2px 2px;
+  border-left: 2px solid transparent;
+  border-right: 2px solid transparent;
+  border-top: 48px solid SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-second-hand {
+  display: block;
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-radius: 40%;
+  top: 50%;
+  left: 50%;
+  margin-left: -1px;
+  margin-top: -1px;
+  transform-origin: 1px 1px;
+  transform: rotate(120deg);
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-top: 64px solid SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-time-bubble {
+  position: absolute;
+  width: 56px;
+  height: 30px;
+  bottom: 26px;
+  left: -28px;
+  text-align: center;
+  line-height: 30px;
+  border-radius: 2px;
+  font-size: 12pt;
+  font-weight: bold;
+  transform-origin: 28px 56px;
+  pointer-events: none;
+  opacity: 0;
+  transition: .4s ease opacity;
+  background: SECONDARY_ACCENT;
+  color: SECONDARY;
+  box-shadow: 0 0 1px 0 SECONDARY;
+}
+.STYLE_INSTANCE datium-time-bubble:after {
+  content: '';
+  position: absolute;
+  border: 10px solid transparent;
+  left: 50%;
+  margin-left: -10px;
+  top: 29px;
+  border-top-color: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher:active:before {
+  transform: scale(0.8) !important;
+  transition: none;
+}
+.STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher:active:after {
+  transform: scale(0.7) !important;
+  transition: none;
+}
+.STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher:active:before {
+  transform: scale(0.7) !important;
+  transition: none;
+}
+.STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher:active:after {
+  transform: scale(0.8) !important;
+  transition: none;
+}
+.STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher:before {
+  opacity: 1;
+  transform: scale(1);
+  color: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher:after {
+  opacity: 1;
+  transform: scale(1);
+  color: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-clock datium-meridiem-switcher {
+  position: absolute;
+  width: 80px;
+  height: 40px;
+  left: 50%;
+  margin-left: -40px;
+  top: 50%;
+  z-index: 1;
+  margin-top: 20px;
+  transition: all ease .2s;
+}
+.STYLE_INSTANCE datium-meridiem-switcher:after,
+.STYLE_INSTANCE datium-meridiem-switcher:before {
+  position: absolute;
+  width: 40px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 12pt;
+  font-weight: bold;
+  opacity: .6;
+  transition: all ease .2s;
+  transform: scale(0.8);
+}
+.STYLE_INSTANCE datium-meridiem-switcher:active {
+  transition: none;
+}
+.STYLE_INSTANCE datium-meridiem-switcher:before {
+  content: 'AM';
+  left: 0;
+  color: SECONDARY_TEXT;
+}
+.STYLE_INSTANCE datium-meridiem-switcher:after {
+  content: 'PM';
+  right: 0;
+  color: SECONDARY_TEXT;
+}
+datium-container.STYLE_INSTANCE.datium-is-dragging datium-time-drag {
+  transition: none;
+}
+datium-container.STYLE_INSTANCE.datium-is-dragging datium-time-drag datium-time-bubble {
+  opacity: 1;
+}
+datium-container.STYLE_INSTANCE:active {
+  overflow: visible !important;
+}
+datium-container.STYLE_INSTANCE:active datium-all-pickers-container {
+  overflow: visible !important;
+}
+datium-container.STYLE_INSTANCE:active datium-header:active + datium-all-pickers-container {
+  overflow: hidden !important;
+}
+datium-container.STYLE_INSTANCE:active datium-tick:active {
+  z-index: 3;
+}
+.STYLE_INSTANCE datium-bubble {
+  position: absolute;
+  width: 56px;
+  height: 30px;
+  top: 50%;
+  margin-top: -60px;
+  margin-left: -28px;
+  left: 50%;
+  text-align: center;
+  line-height: 30px;
+  border-radius: 2px;
+  font-size: 12pt;
+  font-weight: bold;
+  transform-origin: 28px 56px;
+  pointer-events: none;
+  opacity: 0;
+  transition: .2s ease all;
+  transform: scale(0.9);
+  background: SECONDARY_ACCENT;
+  color: SECONDARY;
+  box-shadow: 0 0 1px 0 SECONDARY, 0 18px 8px -14px SECONDARY;
+}
+.STYLE_INSTANCE datium-bubble:before {
+  content: '';
+  position: absolute;
+  border: 10px solid transparent;
+  left: 50%;
+  margin-left: -10px;
+  top: 29px;
+  border-top-color: SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE datium-meridiem-switcher:active datium-bubble {
+  opacity: 1;
+  transition-delay: .2s;
+  transform: scale(1);
+}
+.STYLE_INSTANCE datium-meridiem-switcher datium-bubble:after {
+  content: '';
+}
+.STYLE_INSTANCE .datium-am datium-meridiem-switcher:active datium-bubble:after {
+  content: 'PM';
+}
+.STYLE_INSTANCE .datium-pm datium-meridiem-switcher:active datium-bubble:after {
+  content: 'AM';
+}
+.STYLE_INSTANCE [datium-data]:not(.datium-day-inactive):active > datium-bubble {
+  opacity: 1;
+  transition-delay: .1s;
+  transform: scale(1.1111);
+}
+.STYLE_INSTANCE .datium-hour-view [datium-data]:active > datium-bubble,
+.STYLE_INSTANCE .datium-minute-view [datium-data]:active > datium-bubble,
+.STYLE_INSTANCE .datium-second-view [datium-data]:active > datium-bubble {
+  transform: scale(1.25);
+}
+.STYLE_INSTANCE .datium-hour-view .datium-pm datium-bubble:after {
+  content: 'PM';
+}
+.STYLE_INSTANCE .datium-hour-view .datium-am datium-bubble:after {
+  content: 'AM';
+}
+.STYLE_INSTANCE .datium-minute-view datium-bubble:after {
+  content: 'm';
+}
+.STYLE_INSTANCE .datium-second-view datium-bubble:after {
+  content: 's';
+}

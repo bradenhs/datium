@@ -13,13 +13,17 @@ declare module 'src/pickers/clock.html!text' {
     export default html;
 }
 
-declare module 'src/common/themesheet.css!text' {
+declare module 'src/styles/main.css!text' {
 	var css: string;
 	export default css;
 }
 
-// Needed for the build process
-declare module 'temp/stylesheet.css!text' {
+declare module 'src/styles/header.css!text' {
+	var css: string;
+	export default css;
+}
+
+declare module 'src/styles/pickers.css!text' {
 	var css: string;
 	export default css;
 }

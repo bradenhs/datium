@@ -1,7 +1,7 @@
 let ElementError = Error('DATIUM - The "element" option is required.');
 let ShowPickerError = Error('DATIUM - The "showPicker" option must be of type boolean.');
 let ModalError = Error('DATIUM - The "modal" option must be of type boolean.');
-let ThemeError = Error('DATIUM - The "theme" options must be a string of value: "light", "dark", or "material". Or an object with the properties: primary, primaryText, secondary, secondaryText, secondaryAccent with each property being a valid hex, rgb, or rgba color code.');
+let ThemeError = Error('DATIUM - The "theme" option must be a string of value: "light", "dark", or "material". Or an object with the properties: primary, primaryText, secondary, secondaryText, secondaryAccent with each property being a valid hex, rgb, or rgba color code.');
 let StartViewError = Error('DATIUM - The "startView" option must be a string of value "year", "month", "day", "hour", "minute" or "second".');
 let EndViewError = Error('DATIUM - The "endView" option must be a string of value "year", "month", "day", "hour", "minute" or "second". It cannot be a bigger view than the start view (i.e. the end view cannot be "month" if the start view is "day").');
 let MaxViewError = Error('DATIUM - The "maxView" option must be a string of value "year", "month", "day", "hour", "minute" or "second". It cannot be a smaller view than the start view (i.e. the max view cannot be "hour" if the start view is "day").');
@@ -32,10 +32,10 @@ function sanitizeModal(modal:boolean):boolean {
     return modal;
 }
 
-let threeHex = '#[A-Fa-f0-9]{3}';
-let sixHex = '#[A-Fa-f0-9]{6}';
-let rgb = 'rgb\(\d{1,3},\d{1,3},\d{1,3}\)';
-let rgba = 'rgba\(\d{1,3},\d{1,3},\d{1,3},\d{1,3}\)';
+let threeHex = '\\s*#[A-Fa-f0-9]{3}\\s*';
+let sixHex = '\\s*#[A-Fa-f0-9]{6}\\s*';
+let rgb = '\\s*rgb\\(\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*\\)\\s*';
+let rgba = '\\s*rgba\\(\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*\\,\\s*[0-9]*\\.[0-9]+\\s*\\)\\s*';
 let sanitizeColorRegex = new RegExp(`^((${threeHex})|(${sixHex})|(${rgb})|(${rgba}))$`);
 
 function sanitizeColor(color:string):string {

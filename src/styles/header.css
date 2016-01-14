@@ -1,0 +1,170 @@
+.STYLE_INSTANCE datium-header {
+  display: block;
+  height: 90px;
+  width: 100%;
+  font-weight: bold;
+  border-top-right-radius: 2px;
+  border-top-left-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  color: PRIMARY_TEXT;
+  background: PRIMARY;
+}
+.STYLE_INSTANCE datium-next-view,
+.STYLE_INSTANCE datium-previous-view {
+  position: absolute;
+  width: 40px;
+  height: 90px;
+  bottom: 0;
+  transform-origin: 20px 56px;
+  transition: all ease .2s;
+}
+.STYLE_INSTANCE datium-next-view:after,
+.STYLE_INSTANCE datium-previous-view:after,
+.STYLE_INSTANCE datium-next-view:before,
+.STYLE_INSTANCE datium-previous-view:before {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 8px;
+  display: block;
+  top: 56px;
+  background: PRIMARY_TEXT;
+}
+.STYLE_INSTANCE datium-next-view:before,
+.STYLE_INSTANCE datium-previous-view:before {
+  margin-top: -4px;
+}
+.STYLE_INSTANCE datium-next-view:active,
+.STYLE_INSTANCE datium-previous-view:active {
+  transform: scale(0.9);
+  opacity: .9;
+  transition: none;
+}
+.STYLE_INSTANCE datium-next-view {
+  right: 0;
+}
+.STYLE_INSTANCE datium-next-view:after,
+.STYLE_INSTANCE datium-next-view:before {
+  left: 50%;
+  margin-left: -2px;
+}
+.STYLE_INSTANCE datium-next-view:after {
+  transform: rotate(45deg);
+}
+.STYLE_INSTANCE datium-next-view:before {
+  transform: rotate(-45deg);
+}
+.STYLE_INSTANCE datium-previous-view {
+  left: 0;
+}
+.STYLE_INSTANCE datium-previous-view:after,
+.STYLE_INSTANCE datium-previous-view:before {
+  right: 50%;
+  margin-right: -2px;
+}
+.STYLE_INSTANCE datium-previous-view:after {
+  transform: rotate(-45deg);
+}
+.STYLE_INSTANCE datium-previous-view:before {
+  transform: rotate(45deg);
+}
+.STYLE_INSTANCE datium-span-labels {
+  overflow: hidden;
+  left: 40px;
+  right: 40px;
+  top: 0;
+  bottom: 0;
+  display: block;
+  position: absolute;
+  transition: .2s ease all;
+}
+.STYLE_INSTANCE datium-span-labels:active {
+  opacity: .85;
+  transition: none;
+}
+.STYLE_INSTANCE datium-span-label {
+  display: block;
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: all ease .2s;
+  transform-origin: 0 0;
+  font-size: 18pt;
+}
+.STYLE_INSTANCE datium-span-label datium-changing-label {
+  border-radius: 5px;
+  opacity: .8;
+  padding: 0 4px;
+  font-size: 14pt;
+  position: relative;
+  top: -2px;
+  margin: 0 2px;
+  background: PRIMARY_TEXT;
+  color: PRIMARY;
+}
+.STYLE_INSTANCE datium-span-label.datium-top {
+  transform: translateY(22px) scale(0.66);
+  opacity: .6;
+  width: 151%;
+}
+.STYLE_INSTANCE datium-span-label.datium-hidden-top {
+  transform: translateY(10px) scale(0.5);
+  opacity: 0;
+}
+.STYLE_INSTANCE datium-span-label datium-extended-label-text {
+  opacity: 1;
+  transition: all ease .2s;
+}
+.STYLE_INSTANCE datium-span-label.datium-bottom > datium-extended-label-text,
+.STYLE_INSTANCE datium-span-label.datium-hidden-bottom > datium-extended-label-text {
+  opacity: 0;
+}
+.STYLE_INSTANCE datium-span-label.datium-bottom {
+  transform: translateY(44px) scale(1);
+}
+.STYLE_INSTANCE datium-span-label.datium-bottom > datium-zoom-out-icon {
+  opacity: 0;
+}
+.STYLE_INSTANCE datium-span-label.datium-hidden-bottom {
+  transform: translateY(90px) scale(1.2);
+}
+.STYLE_INSTANCE datium-zoom-out-icon {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  display: inline-block;
+  bottom: 1px;
+}
+.STYLE_INSTANCE datium-zoom-out-icon:before {
+  content: '';
+  position: absolute;
+  height: 10px;
+  width: 10px;
+  overflow: hidden;
+  border-radius: 7px;
+  border: 2px solid PRIMARY_TEXT;
+}
+.STYLE_INSTANCE datium-zoom-out-icon:after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 7px;
+  transform: rotate(-45deg);
+  transform-origin: 1.5px 7px;
+  bottom: 0;
+  right: -1.5px;
+  background: PRIMARY_TEXT;
+}
+.STYLE_INSTANCE datium-zoom-out-icon datium-zoom-out-minus-sign {
+  position: absolute;
+  width: 6px;
+  height: 2px;
+  z-index: 5;
+  top: 6px;
+  left: 4px;
+  display: block;
+  background: PRIMARY_TEXT;
+}

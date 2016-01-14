@@ -6,7 +6,7 @@ var liveServer = require('live-server');
 var shell = require('shelljs');
 var del = require('del');
 
-gulp.task('build', doLess);
+gulp.task('build', buildSystem);
 
 gulp.task('start', function() {
     liveServer.start({port: 8081});
@@ -23,23 +23,9 @@ gulp.task('deploy', function() {
     });
 });
 
-function doLess() {
-	less.render('@import "src/styles.less";', {
-		compress: true
-	}, addStyles);
-}
-
-function addStyles(e, output) {
-	fs.writeFile('temp/stylesheet.css', output.css, function(e) {
-		buildSystem();		
-	});
-}
-
-function buildSystem(orig) {
+function buildSystem() {
 	var builder = new Builder('./', 'config.js');
 	builder.buildStatic('src/Datium', 'out/Datium.js', {
 		minify: true
-	}).then(function() {
-		fs.writeFile('temp/stylesheet.css', '');
 	});
 }

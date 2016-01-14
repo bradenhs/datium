@@ -10,15 +10,12 @@ import MinutePicker from 'src/pickers/minute/MinutePicker';
 import SecondPicker from 'src/pickers/second/SecondPicker';
 import {Transition, Picker} from 'src/pickers/Picker';
 import {IDatiumOptions, IDatiumTheme, SanitizeOptions} from 'src/DatiumOptions';
-import themesheet from 'src/common/themesheet.css!text';
-
-// When in develop this file is empty and so nothing really happens but when building
-// in production this file is filled temporarily with stlyes so that styles can be
-// added to the page dynamically when in production.
-import stylesheet from 'temp/stylesheet.css!text';
+import mainCss from 'src/styles/main.css!text';
+import headerCss from 'src/styles/header.css!text';
+import pickerCss from 'src/styles/pickers.css!text';
 
 class Datium {
-    private static insertedStyles: boolean = false;
+    private static pickersOnPage: number = 0;
     
     private currentPicker:Picker;
     private yearPicker:YearPicker;
@@ -34,10 +31,14 @@ class Datium {
     private datiumContainer:HTMLElement;
     private isPickerOpen:boolean = false;
     
+    private pickerId:string;
     private opts:IDatiumOptions;
     
     constructor(options:any) {
         this.opts = SanitizeOptions(options);
+        
+        Datium.pickersOnPage++;
+        this.pickerId = this.getRandomId() + Datium.pickersOnPage.toString();
         
         this.datiumContainer = this.createView();
         this.pickerContainer = <HTMLElement>this.datiumContainer.querySelector('datium-all-pickers-container');
@@ -98,7 +99,6 @@ class Datium {
         
         this.insertAfter(options.element, this.datiumContainer);
         this.insertStyles();
-        this.addTheme();
         
         if (window.innerHeight < 380) {
             this.datiumContainer.classList.add('datium-portrait-view');
@@ -110,6 +110,14 @@ class Datium {
                 this.datiumContainer.classList.remove('datium-portrait-view');
             }
         }
+    }
+    
+    private getRandomId():string {
+        let returnValue = "";
+        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        for(let i = 0; i < 5; i++)
+            returnValue += possible.charAt(Math.floor(Math.random() * possible.length));
+        return "datium-"+returnValue;
     }
     
     private eventListeners:ListenerReference[] = [];
@@ -189,38 +197,34 @@ class Datium {
     }
     
     private insertStyles():void {
-        if (Datium.insertedStyles || stylesheet === '') return;
-        Datium.insertedStyles = true;
-        
-        let styles = document.createElement('style');
-        styles.innerText = stylesheet;
-        document.head.appendChild(styles);        
+        let styles = this.transformCss(mainCss) + this.transformCss(headerCss) + this.transformCss(pickerCss);
+        let styleElement = document.createElement('style');
+        styleElement.innerText = styles;
+        document.head.appendChild(styleElement);        
     }
     
-    private addTheme():void {
-        
-        let theme = document.createElement('style');
-        let primary = new RegExp('PRIMARY', 'g');
-        let primaryText = new RegExp('PRIMARY_TEXT', 'g');
-        let secondary = new RegExp('SECONDARY', 'g');
-        let secondaryText = new RegExp('SECONDARY_TEXT', 'g');
-        let secondaryAccent = new RegExp('SECONDARY_ACCENT', 'g');
-        
-        let t = themesheet;
-        t = t.replace(primaryText, this.opts.theme.primaryText);
-        t = t.replace(primary, this.opts.theme.primary);
-        t = t.replace(secondaryAccent, this.opts.theme.secondaryAccent);
-        t = t.replace(secondaryText, this.opts.theme.secondaryText);
-        t = t.replace(secondary, this.opts.theme.secondary);
-        
-        theme.innerText = t;
-        document.head.appendChild(theme);
+    private primary = new RegExp('PRIMARY', 'g');
+    private primaryText = new RegExp('PRIMARY_TEXT', 'g');
+    private secondary = new RegExp('SECONDARY', 'g');
+    private secondaryText = new RegExp('SECONDARY_TEXT', 'g');
+    private secondaryAccent = new RegExp('SECONDARY_ACCENT', 'g');
+    private styleInstance = new RegExp('STYLE_INSTANCE', 'g');
+    
+    private transformCss(css:string):string {
+        let transformedCss = css.replace(this.styleInstance, this.pickerId);
+        transformedCss = transformedCss.replace(this.primaryText, this.opts.theme.primaryText);
+        transformedCss = transformedCss.replace(this.primary, this.opts.theme.primary);
+        transformedCss = transformedCss.replace(this.secondaryAccent, this.opts.theme.secondaryAccent);
+        transformedCss = transformedCss.replace(this.secondaryText, this.opts.theme.secondaryText);
+        transformedCss = transformedCss.replace(this.secondary, this.opts.theme.secondary);
+        return transformedCss;
     }
     
     private createView():HTMLElement {
         let el = document.createElement('datium-container');
         el.innerHTML = headerTemplate + '<datium-all-pickers-container></datium-all-pickers-container>';
         el.classList.add('datium-closed');
+        el.classList.add(this.pickerId);
         return el;
     }
     

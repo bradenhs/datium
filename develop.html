@@ -4,8 +4,6 @@
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
     
     <!-- Start Production Code -->
-    <link rel="stylesheet/less" type="text/css" href="src/styles.less" />
-    <script src="node_modules/less/dist/less.min.js"></script>
     <script src="node_modules/systemjs/dist/system.js"></script>
     <script src="node_modules/typescript/lib/typescript.js"></script>
     <script src="config.js"></script>    
@@ -13,6 +11,7 @@
   </head>
   <body>
     <h4>DEVELOP</h4>
+    <input id="test-element1"/>
     <p>
         Nullam pretium rhoncus arcu vitae iaculis. Donec maximus placerat leo at rhoncus. Praesent ut elit pellentesque, ullamcorper
         eros laoreet, ullamcorper est. In metus leo, aliquet non tortor aliquam, fermentum cursus ligula. Vivamus eget pulvinar
@@ -62,6 +61,9 @@
         new Datium({
           element: document.querySelector('#test-element'),
           theme: 'material'
+        });
+        new Datium({
+          element: document.querySelector('#test-element1')
         });
       });      
     </script>
