@@ -33,6 +33,7 @@ class Datium {
     
     private pickerId:string;
     private opts:IDatiumOptions;
+    private modalBackground:HTMLElement;
     
     constructor(options:any) {
         this.opts = SanitizeOptions(options);
@@ -68,21 +69,21 @@ class Datium {
         });
         
         let reopenOnTapListeners = [];
-        onFocus(options.element, () => {  
+        onFocus(this.opts.element, () => {  
             this.openPicker();        
-            reopenOnTapListeners = onTap(options.element, () => {
+            reopenOnTapListeners = onTap(this.opts.element, () => {
                 if (!this.isPickerOpen && document.activeElement === this.opts.element) {
                     this.openPicker();
                 }
             });   
         });
         
-        onBlur(options.element, () => {
+        onBlur(this.opts.element, () => {
             this.closePicker();
             removeListeners(reopenOnTapListeners);            
         });
         
-        options.element.setAttribute('readonly', 'true');
+        this.opts.element.setAttribute('readonly', 'true');
         
         let header = new Header(this.datiumContainer.querySelector('datium-header'), this.viewManager);
         
@@ -96,8 +97,14 @@ class Datium {
         this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) => {
             this.viewChanged(date, level, lastDate, lastLevel, selectedDate);
         });
-        
-        this.insertAfter(options.element, this.datiumContainer);
+        if(this.opts.modal) {
+            this.modalBackground = this.createModalBackground();
+            document.body.appendChild(this.datiumContainer);
+            document.body.appendChild(this.modalBackground);
+            this.datiumContainer.classList.add('datium-modal');
+        } else {
+            this.insertAfter(this.opts.element, this.datiumContainer);
+        }
         this.insertStyles();
         
         if (window.innerHeight < 380) {
@@ -123,8 +130,11 @@ class Datium {
     private eventListeners:ListenerReference[] = [];
     
     private openPicker():void {
-        if (this.isPickerOpen) return;
+        if (this.isPickerOpen || this.opts.showPicker === false) return;
         this.isPickerOpen = true;
+        if (this.opts.modal) {
+            this.modalBackground.classList.add('datium-showing');
+        }
         this.datiumContainer.classList.remove('datium-closed');
         
         let cancelClose = false;
@@ -146,8 +156,12 @@ class Datium {
     
     private closePicker():void {
         if (this.isPickerOpen === false) return;
+        if (document.activeElement === this.opts.element) this.opts.element.blur();
         this.isPickerOpen = false;
         this.datiumContainer.classList.add('datium-closed');
+        if (this.opts.modal) {
+            this.modalBackground.classList.remove('datium-showing');
+        }
         this.pickerContainer.style.height = '0px';
         
         removeListeners(this.eventListeners);
@@ -220,11 +234,19 @@ class Datium {
         return transformedCss;
     }
     
+    private createModalBackground():HTMLElement {
+        let el = document.createElement('datium-modal-background');
+        el.style.zIndex = (this.opts.zIndex - 1).toString();
+        el.classList.add(this.pickerId);
+        return el;
+    }
+    
     private createView():HTMLElement {
         let el = document.createElement('datium-container');
         el.innerHTML = headerTemplate + '<datium-all-pickers-container></datium-all-pickers-container>';
         el.classList.add('datium-closed');
         el.classList.add(this.pickerId);
+        el.style.zIndex = this.opts.zIndex.toString();
         return el;
     }
     

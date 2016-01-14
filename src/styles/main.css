@@ -14,6 +14,7 @@ datium-container.STYLE_INSTANCE, datium-container.STYLE_INSTANCE * {
 	position: relative;
 	transition: .4s ease all;
     overflow: hidden;
+    background: SECONDARY;
 }
 
 .STYLE_INSTANCE datium-picker-container {
@@ -56,7 +57,40 @@ datium-container.STYLE_INSTANCE {
     overflow: hidden;
     transform-origin: 20px -4px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23), inset 0 1px 1px -1px SECONDARY_TEXT;
-    background: SECONDARY;
+}
+
+datium-modal-background.STYLE_INSTANCE {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: rgba(100,100,100,.7);
+    opacity: 0;
+    pointer-events: none;
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -khtml-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    transition: all ease .4s;
+}
+
+datium-modal-background.STYLE_INSTANCE.datium-showing {
+    opacity: 1;
+    cursor: default;
+    pointer-events: auto;
+}
+
+datium-container.STYLE_INSTANCE.datium-modal {
+    position: fixed;
+    left: 50%;
+    margin-left: -150px;
+    top: 50%;
+    margin-top: -175px;
+    transform-origin: 150px 175px;
 }
 
 datium-container.STYLE_INSTANCE.datium-closed {
