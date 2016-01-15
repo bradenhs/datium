@@ -1,11 +1,12 @@
 import TimePicker from 'src/pickers/TimePicker';
 import ViewManager from 'src/common/ViewManager';
 import Header from 'src/header/Header';
+import {IDatiumOptions} from 'src/DatiumOptions';
 
 export default class MinutePicker extends TimePicker {
     
-	constructor(container:HTMLElement, viewManager:ViewManager, header:Header) {
-        super(container, viewManager, 'datium-minute', header);
+	constructor(container:HTMLElement, viewManager:ViewManager, header:Header, opts:IDatiumOptions) {
+        super(container, viewManager, 'datium-minute', header, opts);
     }
     
     protected updateHandElements():void {
@@ -46,6 +47,7 @@ export default class MinutePicker extends TimePicker {
     
     protected rotationToTime(rotation:number):number {
         let num = Math.round(rotation / 6) - 30;
+        num = Math.round(num / this.opts.minuteSelectionInterval) * this.opts.minuteSelectionInterval;
         while(num < 0) num += 60;
         while(num >= 60) num -= 60;
         return num;

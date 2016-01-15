@@ -1,6 +1,7 @@
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
-import {onDown, onUp, onTap} from 'src/common/Events';
+import {onTap} from 'src/common/Events';
 import Header from 'src/header/Header';
+import {IDatiumOptions} from 'src/DatiumOptions';
 
 export enum Transition {
 	SCROLL_LEFT,
@@ -17,7 +18,7 @@ export class Picker {
     
     protected height:number = 0;
     
-    constructor(container:HTMLElement, viewManager:ViewManager, selectorPrefix:string) {
+    constructor(container:HTMLElement, viewManager:ViewManager, selectorPrefix:string, protected opts:IDatiumOptions) {
         this.container = container;
         onTap(this.container, selectorPrefix+'-selectable', (e:Event) => {
             let zoomValue = parseInt(e.srcElement.getAttribute('datium-data'));
@@ -30,7 +31,6 @@ export class Picker {
     
     public create(transition:Transition, date:Date):void {
         this.picker = document.createElement('datium-picker-container');
-        
         this.populatePicker(this.picker, date);
         
         let className = this.getTransitionClass(transition);

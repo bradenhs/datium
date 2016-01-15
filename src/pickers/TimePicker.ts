@@ -3,6 +3,7 @@ import ViewManager, {ViewLevel} from 'src/common/ViewManager';
 import {onDrag} from 'src/common/Events';
 import clockTemplate from 'src/pickers/clock.html!text';
 import Header from 'src/header/Header';
+import {IDatiumOptions} from 'src/DatiumOptions';
 
 export default class TimePicker extends Picker {
     protected rotation:number;
@@ -17,8 +18,8 @@ export default class TimePicker extends Picker {
     protected minuteHandElement:HTMLElement;
     protected secondHandElement:HTMLElement;
     
-    constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string, protected header:Header) {
-        super(container, viewManager, selectorPrefix);
+    constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string, protected header:Header, opts:IDatiumOptions) {
+        super(container, viewManager, selectorPrefix, opts);
         this.height = 260;
         onDrag(container, selectorPrefix+'-time-drag', {
            dragStart: (e:Event) => { this.dragStart(e); },
@@ -75,10 +76,30 @@ export default class TimePicker extends Picker {
         tickLabel.innerHTML = `<datium-span class="${this.selectorPrefix}-selectable" datium-data="${data}">${label}</datium-span>`;
         tickLabel.style.transform = `rotate(${-angle}deg)`;
         tick.appendChild(document.createElement('datium-tick-mark'));
-        tick.appendChild(tickLabel);
+        
+        if (this.appendTickLabel(data)) {
+            tick.appendChild(tickLabel);
+        }
+        
         tick.style.transform = `rotate(${angle}deg)`;
         
         return tick;
+    }
+    
+    private appendTickLabel(num:number):boolean {
+        let interval;
+        switch (this.viewManager.getViewLevel()) {
+            case ViewLevel.HOUR:
+                interval = this.opts.hourSelectionInterval;
+                break;
+            case ViewLevel.MINUTE:
+                interval = this.opts.minuteSelectionInterval;
+                break;
+            case ViewLevel.SECOND:
+                interval = this.opts.secondSelectionInterval;
+                break;
+        }
+        return num % interval === 0;
     }
     
     protected normalizeRotation(newRotation:number):number {
@@ -96,9 +117,9 @@ export default class TimePicker extends Picker {
         
         let className:string = '';
         switch(this.viewManager.getViewLevel()) {
-            case ViewLevel.DAY: className = 'datium-hour-view'; break;
-            case ViewLevel.HOUR: className = 'datium-minute-view'; break;
-            case ViewLevel.MINUTE: className = 'datium-second-view'; break;
+            case ViewLevel.HOUR: className = 'datium-hour-view'; break;
+            case ViewLevel.MINUTE: className = 'datium-minute-view'; break;
+            case ViewLevel.SECOND: className = 'datium-second-view'; break;
         }
         picker.classList.add(className);        
         
@@ -116,6 +137,8 @@ export default class TimePicker extends Picker {
         } else {
             currentTimeElement.style.transform = `rotate(${curTimeRotation}deg)`;
         }
+        
+        
         
         for (let tickPosition = 1; tickPosition <= 12; tickPosition++) {
             let angle = (tickPosition - 6) * 30;

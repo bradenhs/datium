@@ -1,5 +1,6 @@
 import {onTap} from 'src/common/Events';
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
+import {IDatiumOptions} from 'src/DatiumOptions';
 
 export default class Header {
 	private decadeLabel:Element;
@@ -22,9 +23,12 @@ export default class Header {
 	private dayExtendedLabelText:HTMLElement;
 	private hourExtendedLabelText:HTMLElement;
 	private minuteExtendedLabelText:HTMLElement;
+    
+    private spanLabelsContainer:Element;
 	
-	constructor(el:Element, private viewManager:ViewManager) {
-		
+	constructor(el:Element, private viewManager:ViewManager, private opts:IDatiumOptions) {
+        this.spanLabelsContainer = el.querySelector('datium-span-labels');
+        
 		this.decadeLabel = el.querySelector('.datium-decade-label');
 		this.yearLabel = el.querySelector('.datium-year-label');
 		this.monthLabel = el.querySelector('.datium-month-label');
@@ -46,6 +50,24 @@ export default class Header {
 		this.hourExtendedLabelText = <HTMLElement>this.hourLabel.querySelector('datium-extended-label-text');
 		this.minuteExtendedLabelText = <HTMLElement>this.minuteLabel.querySelector('datium-extended-label-text');
 		
+        switch(this.opts.maxView) {
+            case ViewLevel.SECOND:
+                this.hourLabel.classList.add('datium-max-view');
+                break;
+            case ViewLevel.MINUTE:
+                this.dayLabel.classList.add('datium-max-view');
+                break;
+            case ViewLevel.HOUR:
+                this.monthLabel.classList.add('datium-max-view');
+                break;
+            case ViewLevel.DAY:
+                this.yearLabel.classList.add('datium-max-view');
+                break;
+            case ViewLevel.MONTH:
+                this.decadeLabel.classList.add('datium-max-view');
+                break;
+        }
+        
 		// Bind events
 		onTap(el.querySelector('datium-span-labels'), () => {
 			viewManager.zoomOut();
@@ -69,7 +91,7 @@ export default class Header {
 	private days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 	
     public updateDayLabel(date:Date) {
-        if (this.level === ViewLevel.DAY) {  
+        if (this.level === ViewLevel.HOUR) {  
         this.dayLabelText.innerHTML = this.getDayText(date) + ' <datium-changing-label>' + this.getHourText(date) + this.getMeridiemText(date) + '</datium-changing-label>';
         } else {
             this.dayLabelText.innerHTML = this.getDayText(date);
@@ -77,9 +99,9 @@ export default class Header {
     }
     
     public updateHourLabel(date:Date) {
-        if (this.level === ViewLevel.MINUTE) {
+        if (this.level === ViewLevel.SECOND) {
             this.hourLabelText.innerHTML = '';    
-        } else if (this.level === ViewLevel.HOUR) {
+        } else if (this.level === ViewLevel.MINUTE) {
             this.hourLabelText.innerHTML = this.getHourText(date) + ':<datium-changing-label>' + this.getMinuteText(date) + '</datium-changing-label>' + this.getMeridiemText(date);
         } else {
             this.hourLabelText.innerHTML = this.getHourText(date) + this.getMeridiemText(date);
@@ -87,7 +109,7 @@ export default class Header {
     }
     
     public updateMinuteLabel(date:Date) {
-        if (this.level === ViewLevel.MINUTE) {            
+        if (this.level === ViewLevel.SECOND) {            
             this.minuteLabelText.innerHTML = this.getHourText(date) + ':' + this.getMinuteText(date) + ':<datium-changing-label>' + this.getSecondText(date) + '</datium-changing-label>' + this.getMeridiemText(date);
         } else {
             this.minuteLabelText.innerHTML = this.getHourText(date) + ':' + this.getMinuteText(date) + this.getMeridiemText(date);
@@ -178,67 +200,78 @@ export default class Header {
     private level:ViewLevel;
     	
 	private viewChanged(date:Date, level:ViewLevel):void {
+        if (level < this.opts.endView) return;
         this.level = level;
 		this.updateLabels(date, level);
-		if (level === ViewLevel.DECADE) {
+		if (level === ViewLevel.YEAR) {
 			this.mkBottom(this.decadeLabel);
 			this.mkHiddenBottom(this.yearLabel, this.monthLabel, this.dayLabel, this.hourLabel, this.minuteLabel);
 		}
-		if (level === ViewLevel.YEAR) {
+		if (level === ViewLevel.MONTH) {
 			this.mkTop(this.decadeLabel);
 			this.mkBottom(this.yearLabel);
 			this.mkHiddenBottom(this.monthLabel, this.dayLabel, this.hourLabel, this.minuteLabel);
 		}
-		if (level === ViewLevel.MONTH) {
+		if (level === ViewLevel.DAY) {
 			this.mkHiddenTop(this.decadeLabel);
 			this.mkTop(this.yearLabel);
 			this.mkBottom(this.monthLabel);
 			this.mkHiddenBottom(this.dayLabel, this.hourLabel, this.minuteLabel);			
 		}
-		if (level === ViewLevel.DAY) {
+		if (level === ViewLevel.HOUR) {
 			this.mkHiddenTop(this.decadeLabel, this.yearLabel);
 			this.mkTop(this.monthLabel);
 			this.mkBottom(this.dayLabel);
 			this.mkHiddenBottom(this.hourLabel, this.minuteLabel);			
 		}
-		if (level === ViewLevel.HOUR) {
+		if (level === ViewLevel.MINUTE) {
 			this.mkHiddenTop(this.decadeLabel, this.yearLabel, this.monthLabel);
 			this.mkTop(this.dayLabel);
 			this.mkBottom(this.hourLabel);
 			this.mkHiddenBottom(this.minuteLabel);			
 		}
-		if (level === ViewLevel.MINUTE) {
+		if (level === ViewLevel.SECOND) {
 			this.mkHiddenTop(this.decadeLabel, this.yearLabel, this.monthLabel, this.dayLabel);
 			this.mkTop(this.hourLabel);
 			this.mkBottom(this.minuteLabel);	
 		}
-		if (level === ViewLevel.SECOND) {
-			this.mkHiddenTop(this.decadeLabel, this.yearLabel, this.monthLabel, this.dayLabel, this.hourLabel);
-			this.mkTop(this.minuteLabel);
-		}
+        if (level === this.opts.maxView) {
+            this.spanLabelsContainer.classList.add('datium-header-inactive');
+        } else {
+            this.spanLabelsContainer.classList.remove('datium-header-inactive');
+        }
 	}
 	
+    private changeClass(element:Element, classesToAdd:string[], classesToRemove:string[]):void {
+        for (let key in classesToRemove) {
+            element.classList.remove(classesToRemove[key]);
+        }
+        for (let key in classesToAdd) {
+            element.classList.add(classesToAdd[key]);
+        }
+    }
+    
 	private mkTop(...elements:Element[]) {
 		for (let key in elements) {
-			elements[key].className = 'datium-top';
+            this.changeClass(elements[key], ['datium-top'], ['datium-hidden-top', 'datium-bottom', 'datium-hidden-bottom']);
 		}
 	}
 	
 	private mkHiddenTop(...elements:Element[]) {
 		for (let key in elements) {
-			elements[key].className = 'datium-top datium-hidden-top';
+            this.changeClass(elements[key], ['datium-top', 'datium-hidden-top'], ['datium-bottom', 'datium-hidden-bottom']);
 		}
 	}
 	
 	private mkBottom(...elements:Element[]) {
 		for (let key in elements) {
-			elements[key].className = 'datium-bottom';
+            this.changeClass(elements[key], ['datium-bottom'], ['datium-top', 'datium-hidden-top', 'datium-hidden-bottom']);
 		}
 	}
 	
 	private mkHiddenBottom(...elements:Element[]) {
 		for (let key in elements) {
-			elements[key].className = 'datium-bottom datium-hidden-bottom';
+            this.changeClass(elements[key], ['datium-bottom', 'datium-hidden-bottom'], ['datium-top', 'datium-hidden-top']);
 		}
 	}
 }

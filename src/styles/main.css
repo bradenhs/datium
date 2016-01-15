@@ -57,6 +57,7 @@ datium-container.STYLE_INSTANCE {
     overflow: hidden;
     transform-origin: 20px -4px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23), inset 0 1px 1px -1px SECONDARY_TEXT;
+    -webkit-transform: translate3d(0,0,0);
 }
 
 datium-modal-background.STYLE_INSTANCE {
@@ -90,7 +91,6 @@ datium-container.STYLE_INSTANCE.datium-modal {
     margin-left: -150px;
     top: 50%;
     margin-top: -175px;
-    transform-origin: 150px 175px;
 }
 
 datium-container.STYLE_INSTANCE.datium-closed {
@@ -103,14 +103,22 @@ datium-container.STYLE_INSTANCE.datium-closed datium-all-pickers-container {
     height: 0 !important;
 }
 
-datium-container.STYLE_INSTANCE.datium-portrait-view {
+datium-container.STYLE_INSTANCE.datium-landscape-view.datium-modal {
+    left: 50%;
+    margin-left: -240px;
+    top: 50%;
+    margin-top: -135px;
+    transform-origin: 240px 135px;
+}
+
+datium-container.STYLE_INSTANCE.datium-landscape-view {
     width: 480px;
 }
 
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-all-pickers-container {
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-all-pickers-container {
     width: 290px;
 }
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-header {
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-header {
     height: 100%;
     position: absolute;
     width: 190px;
@@ -120,21 +128,21 @@ datium-container.STYLE_INSTANCE.datium-portrait-view datium-header {
     border-bottom-right-radius: 2px;
     box-shadow: inset 0 1px 1px -1px PRIMARY_TEXT;
 }
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-next-view,
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-previous-view {
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-next-view,
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-previous-view {
     width: 50%;
     height: 50px;
     transform-origin: 47px 25px;
 }
 
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-next-view:before,
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-next-view:after,
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-previous-view:before,
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-previous-view:after {
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-next-view:before,
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-next-view:after,
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-previous-view:before,
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-previous-view:after {
     top: 23px;
 }
 
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-span-labels {
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-span-labels {
     padding-left: 18px;
     padding-right: 18px;
     left: 0;
@@ -144,9 +152,9 @@ datium-container.STYLE_INSTANCE.datium-portrait-view datium-span-labels {
     bottom: 50px;
     box-shadow: inset 0 -1px 1px -1px PRIMARY_TEXT;
 }
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-span-label {
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-span-label {
     white-space: default;
 }
-datium-container.STYLE_INSTANCE.datium-portrait-view datium-month-element {
+datium-container.STYLE_INSTANCE.datium-landscape-view datium-month-element {
     width: 23%;
 }

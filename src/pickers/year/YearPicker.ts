@@ -1,11 +1,12 @@
 import {Picker} from 'src/pickers/Picker';
 import ViewManager from 'src/common/ViewManager';
 import Header from 'src/header/Header';
+import {IDatiumOptions} from 'src/DatiumOptions';
 
 export default class YearPicker extends Picker {
     
-	constructor(container:HTMLElement, private viewManager:ViewManager) {
-        super(container, viewManager, 'datium-year');
+	constructor(container:HTMLElement, private viewManager:ViewManager, opts:IDatiumOptions) {
+        super(container, viewManager, 'datium-year', opts);
         this.height = 180;
     }
     

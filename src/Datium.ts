@@ -27,7 +27,7 @@ class Datium {
     
     private pickerContainer:HTMLElement;
     private viewManager:ViewManager;
-    private minLevel:ViewLevel;
+    
     private datiumContainer:HTMLElement;
     private isPickerOpen:boolean = false;
     
@@ -44,10 +44,8 @@ class Datium {
         this.datiumContainer = this.createView();
         this.pickerContainer = <HTMLElement>this.datiumContainer.querySelector('datium-all-pickers-container');
         
-        this.viewManager = new ViewManager();
-        
-        this.minLevel = ViewLevel.SECOND;
-        
+        this.viewManager = new ViewManager(this.opts);
+                
         onSwipeLeft(this.datiumContainer, () => {
             if (this.secondPicker.isDragging ||
                 this.minutePicker.isDragging ||
@@ -85,22 +83,22 @@ class Datium {
         
         this.opts.element.setAttribute('readonly', 'true');
         
-        let header = new Header(this.datiumContainer.querySelector('datium-header'), this.viewManager);
+        let header = new Header(this.datiumContainer.querySelector('datium-header'), this.viewManager, this.opts);
         
-        this.yearPicker = new YearPicker(this.pickerContainer, this.viewManager);
-        this.monthPicker = new MonthPicker(this.pickerContainer, this.viewManager);
-        this.dayPicker = new DayPicker(this.pickerContainer, this.viewManager);
-        this.hourPicker = new HourPicker(this.pickerContainer, this.viewManager, header);
-        this.minutePicker = new MinutePicker(this.pickerContainer, this.viewManager, header);
-        this.secondPicker = new SecondPicker(this.pickerContainer, this.viewManager, header);
+        this.yearPicker = new YearPicker(this.pickerContainer, this.viewManager, this.opts);
+        this.monthPicker = new MonthPicker(this.pickerContainer, this.viewManager, this.opts);
+        this.dayPicker = new DayPicker(this.pickerContainer, this.viewManager, this.opts);
+        this.hourPicker = new HourPicker(this.pickerContainer, this.viewManager, header, this.opts);
+        this.minutePicker = new MinutePicker(this.pickerContainer, this.viewManager, header, this.opts);
+        this.secondPicker = new SecondPicker(this.pickerContainer, this.viewManager, header, this.opts);
         
         this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) => {
             this.viewChanged(date, level, lastDate, lastLevel, selectedDate);
         });
         if(this.opts.modal) {
             this.modalBackground = this.createModalBackground();
-            document.body.appendChild(this.datiumContainer);
             document.body.appendChild(this.modalBackground);
+            document.body.appendChild(this.datiumContainer);
             this.datiumContainer.classList.add('datium-modal');
         } else {
             this.insertAfter(this.opts.element, this.datiumContainer);
@@ -108,15 +106,15 @@ class Datium {
         this.insertStyles();
         
         if (window.innerHeight < 380) {
-            this.datiumContainer.classList.add('datium-portrait-view');
+            this.datiumContainer.classList.add('datium-landscape-view');
         }
-        window.onresize = () => {
+        window.addEventListener('resize', () => {
             if (window.innerHeight < 380) {
-                this.datiumContainer.classList.add('datium-portrait-view');
+                this.datiumContainer.classList.add('datium-landscape-view');
             } else {
-                this.datiumContainer.classList.remove('datium-portrait-view');
+                this.datiumContainer.classList.remove('datium-landscape-view');
             }
-        }
+        });
     }
     
     private getRandomId():string {
@@ -154,9 +152,9 @@ class Datium {
         });
     }
     
-    private closePicker():void {
+    private closePicker(stopBlur:boolean = false):void {
         if (this.isPickerOpen === false) return;
-        if (document.activeElement === this.opts.element) this.opts.element.blur();
+        if (!stopBlur && document.activeElement === this.opts.element) this.opts.element.blur();
         this.isPickerOpen = false;
         this.datiumContainer.classList.add('datium-closed');
         if (this.opts.modal) {
@@ -168,15 +166,16 @@ class Datium {
         this.eventListeners = [];
         
         setTimeout(() => {
-            this.viewManager.changeViewLevel(ViewLevel.MONTH);                
+            this.viewManager.changeViewLevel(this.opts.startView);                
         }, 400);
     }
     
     private viewChanged(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) {
         this.opts.element.value = selectedDate.toString();
-        if (level === this.minLevel) {
+        
+        if (level < this.opts.endView) {
             this.currentPicker.destroy(Transition.ZOOM_IN);
-            this.closePicker();
+            this.closePicker(true);
             return;
         }
         let newPicker = this.getNewPicker(level);
@@ -201,12 +200,12 @@ class Datium {
     
     private getNewPicker(level:ViewLevel):Picker {
         switch (level) {
-            case ViewLevel.DECADE: return this.yearPicker;
-            case ViewLevel.YEAR: return this.monthPicker;
-            case ViewLevel.MONTH: return this.dayPicker;
-            case ViewLevel.DAY: return this.hourPicker;
-            case ViewLevel.HOUR: return this.minutePicker;
-            case ViewLevel.MINUTE: return this.secondPicker;
+            case ViewLevel.YEAR: return this.yearPicker;
+            case ViewLevel.MONTH: return this.monthPicker;
+            case ViewLevel.DAY: return this.dayPicker;
+            case ViewLevel.HOUR: return this.hourPicker;
+            case ViewLevel.MINUTE: return this.minutePicker;
+            case ViewLevel.SECOND: return this.secondPicker;
         }
     }
     
@@ -236,7 +235,7 @@ class Datium {
     
     private createModalBackground():HTMLElement {
         let el = document.createElement('datium-modal-background');
-        el.style.zIndex = (this.opts.zIndex - 1).toString();
+        //el.style.zIndex = (this.opts.zIndex - 1).toString();
         el.classList.add(this.pickerId);
         return el;
     }
@@ -246,7 +245,7 @@ class Datium {
         el.innerHTML = headerTemplate + '<datium-all-pickers-container></datium-all-pickers-container>';
         el.classList.add('datium-closed');
         el.classList.add(this.pickerId);
-        el.style.zIndex = this.opts.zIndex.toString();
+        //el.style.zIndex = this.opts.zIndex.toString();
         return el;
     }
     

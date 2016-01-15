@@ -1,7 +1,9 @@
+import {ViewLevel} from 'src/common/ViewManager';
+
 let ElementError = Error('DATIUM - The "element" option is required.');
 let ShowPickerError = Error('DATIUM - The "showPicker" option must be of type boolean.');
 let ModalError = Error('DATIUM - The "modal" option must be of type boolean.');
-let ThemeError = Error('DATIUM - The "theme" option must be a string of value: "light", "dark", or "material". Or an object with the properties: primary, primaryText, secondary, secondaryText, secondaryAccent with each property being a valid hex, rgb, or rgba color code.');
+let ThemeError = Error('DATIUM - The "theme" option must be a string of value: "datium", light", "dark", or "material". Or an object with the properties: primary, primaryText, secondary, secondaryText, secondaryAccent with each property being a valid hex, rgb, or rgba color code.');
 let StartViewError = Error('DATIUM - The "startView" option must be a string of value "year", "month", "day", "hour", "minute" or "second".');
 let EndViewError = Error('DATIUM - The "endView" option must be a string of value "year", "month", "day", "hour", "minute" or "second". It cannot be a bigger view than the start view (i.e. the end view cannot be "month" if the start view is "day").');
 let MaxViewError = Error('DATIUM - The "maxView" option must be a string of value "year", "month", "day", "hour", "minute" or "second". It cannot be a smaller view than the start view (i.e. the max view cannot be "hour" if the start view is "day").');
@@ -29,6 +31,9 @@ function sanitizeShowPicker(showPicker:boolean):boolean {
 function sanitizeModal(modal:boolean):boolean {
     if (modal === void 0) return false; //default
     if (typeof modal !== 'boolean') throw ModalError;
+    if (modal) {
+        console.warn("DATIUM - Warning: Setting the \"modal\" option to true may cause inconsistent performance on mobile devices.");
+    }
     return modal;
 }
 
@@ -45,7 +50,7 @@ function sanitizeColor(color:string):string {
 }
 
 function sanitizeTheme(theme:string|IDatiumTheme):IDatiumTheme {
-    if (theme === void 0) return sanitizeTheme("light"); //default
+    if (theme === void 0) return sanitizeTheme("datium"); //default
     if (typeof theme === 'object') {
         return <IDatiumTheme>{
           primary: sanitizeColor(theme.primary),
@@ -56,6 +61,14 @@ function sanitizeTheme(theme:string|IDatiumTheme):IDatiumTheme {
         };
     } else if (typeof theme === 'string') {
         switch(theme) {
+        case 'datium':
+            return <IDatiumTheme>{
+                primary: '#374248',
+                primaryText: '#fff',
+                secondary: '#263238',
+                secondaryText: '#fff',
+                secondaryAccent: '#ffba3f'
+            }
         case 'light':
             return <IDatiumTheme>{
                 primary: '#eee',
@@ -88,30 +101,44 @@ function sanitizeTheme(theme:string|IDatiumTheme):IDatiumTheme {
     }
 }
 
-let views = ['second', 'minute', 'hour', 'day', 'month', 'year'];
-function sanitizeStartView(startView:string):string {
-    if (startView === void 0) return 'day'; //default
-    if (typeof startView !== 'string') throw StartViewError;
-    if (views.indexOf(startView) === -1) throw StartViewError;
-    return startView;
+function toLevel(level:string):ViewLevel {
+    switch(level) {
+        case 'second': return ViewLevel.SECOND;
+        case 'minute': return ViewLevel.MINUTE;
+        case 'hour': return ViewLevel.HOUR;
+        case 'day': return ViewLevel.DAY;
+        case 'month': return ViewLevel.MONTH;
+        case 'year': return ViewLevel.YEAR;
+        default: return void 0;
+    }
 }
 
-function sanitizeEndView(endView:string, startView:string):string {
+function sanitizeStartView(startView:string):ViewLevel {
+    if (startView === void 0) return ViewLevel.DAY; //default
+    if (typeof startView !== 'string') throw StartViewError;
+    let startLevel = toLevel(startView);
+    if (startLevel === void 0) throw StartViewError;
+    return startLevel;
+}
+
+function sanitizeEndView(endView:string, startView:string):ViewLevel {
     if (endView === void 0) return sanitizeEndView('minute', startView); //default
     if (typeof endView !== 'string') throw EndViewError;
-    if (views.indexOf(endView) === -1) throw EndViewError;
+    let endLevel = toLevel(endView);
+    if (endLevel === void 0) throw EndViewError;
     let sanitizedStartView = sanitizeStartView(startView);
-    if (views.indexOf(endView) > views.indexOf(sanitizedStartView)) throw EndViewError;
-    return endView;
+    if (endLevel > sanitizedStartView) throw EndViewError;
+    return endLevel;
 }
 
-function sanitizeMaxView(maxView:string, startView:string):string {
+function sanitizeMaxView(maxView:string, startView:string):ViewLevel {
     if (maxView === void 0) return sanitizeMaxView('year', startView); //default
     if (typeof maxView !== 'string') throw MaxViewError;
-    if (views.indexOf(maxView) === -1) throw MaxViewError;
+    let maxLevel = toLevel(maxView);
+    if (maxLevel === void 0) throw MaxViewError;
     let sanitizedStartView = sanitizeStartView(startView);
-    if (views.indexOf(maxView) < views.indexOf(sanitizedStartView)) throw MaxViewError;
-    return maxView;
+    if (maxLevel < sanitizedStartView) throw MaxViewError;
+    return maxLevel;
 }
 
 let sanitizeDateRegex = new RegExp('/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/');
@@ -127,7 +154,7 @@ function sanitizeMinDate(minDate:any):Date {
 }
 
 function sanitizeMaxDate(maxDate:any, minDate:any):Date {
-    if (maxDate === void 0) return void 0;
+    if (maxDate === void 0) return void 0; //default
     let returnValue:Date;
     switch(typeof maxDate) {
     case 'string':
@@ -209,6 +236,26 @@ function sanitizeZIndex(zIndex:number):number {
 }
 
 export function SanitizeOptions(opts:any):IDatiumOptions {
+    for (let key in opts) {
+        if (key !== 'element' &&
+            key !== 'showPicker' &&
+            key !== 'modal' &&
+            key !== 'theme' &&
+            key !== 'startView' &&
+            key !== 'endView' &&
+            key !== 'maxView' &&
+            key !== 'minDate' &&
+            key !== 'maxDate' &&
+            key !== 'hourSelectionInterval' &&
+            key !== 'minuteSelectionInterval' &&
+            key !== 'secondSelectionInterval' &&
+            key !== 'militaryTime' &&
+            key !== 'dataFormat' &&
+            key !== 'displayFormat' &&
+            key !== 'zIndex') {
+                throw Error(`DATIUM - "${key}" is an unrecognized option. Look at the docs for a complete reference.`);
+        }
+    }
     return <IDatiumOptions>{
         element: sanitizeElement(opts.element),
         showPicker: sanitizeShowPicker(opts.showPicker),
@@ -260,9 +307,9 @@ export interface IDatiumOptions {
     /**
      * The color scheme of the picker
      * 
-     * Optional (default: "light")
+     * Optional (default: "material")
      * Type: string|IDatiumTheme
-     * Accepted values: 'light', 'dark', 'material', object of type IDatiumTheme
+     * Accepted values: 'datium', 'light', 'dark', 'material', object of type IDatiumTheme
      */
     theme: IDatiumTheme;
     
@@ -274,7 +321,7 @@ export interface IDatiumOptions {
      * Accepted values:
      *   'year', 'month', 'day', 'hour', 'minute', 'second'
      */
-    startView: string;
+    startView: ViewLevel;
     
     /**
      * The view the picker should close at
@@ -284,7 +331,7 @@ export interface IDatiumOptions {
      * Accepted values:
      *   'year', 'month', 'day', 'hour', 'minute', 'second'
      */
-    endView: string;
+    endView: ViewLevel;
     
     /** 
      * The view the picker shouldn't be able to zoom out beyond
@@ -294,7 +341,7 @@ export interface IDatiumOptions {
      * Accepted values:
      *   'year', 'month', 'day', 'hour', 'minute', 'second'
      */
-    maxView: string;
+    maxView: ViewLevel;
     
     /**
      * The first selectable date

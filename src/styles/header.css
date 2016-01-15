@@ -79,10 +79,11 @@
   position: absolute;
   transition: .2s ease all;
 }
-.STYLE_INSTANCE datium-span-labels:active {
+.STYLE_INSTANCE datium-span-labels:not(.datium-header-inactive):active {
   opacity: .85;
   transition: none;
 }
+
 .STYLE_INSTANCE datium-span-label {
   display: block;
   position: absolute;
@@ -130,6 +131,11 @@
 .STYLE_INSTANCE datium-span-label.datium-hidden-bottom {
   transform: translateY(90px) scale(1.2);
 }
+
+.STYLE_INSTANCE .datium-max-view datium-zoom-out-icon {
+    display: none;
+}
+
 .STYLE_INSTANCE datium-zoom-out-icon {
   position: relative;
   width: 16px;

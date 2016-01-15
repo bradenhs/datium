@@ -4,12 +4,13 @@ import clockTemplate from 'src/pickers/clock.html!text';
 import {onDrag, onTap} from 'src/common/Events';
 import TimePicker from 'src/pickers/TimePicker';
 import Header from 'src/header/Header';
+import {IDatiumOptions} from 'src/DatiumOptions';
 
 export default class HourPicker extends TimePicker {
     
-	constructor(container:HTMLElement, viewManager:ViewManager, header:Header) {
+	constructor(container:HTMLElement, viewManager:ViewManager, header:Header, opts:IDatiumOptions) {
         
-        super(container, viewManager, 'datium-hour', header);
+        super(container, viewManager, 'datium-hour', header, opts);
         
         onTap(container, 'datium-meridiem-switcher', () => {
            this.switchMeridiem();
@@ -90,6 +91,7 @@ export default class HourPicker extends TimePicker {
     protected rotationToTime(rotation:number):number {
         let num = rotation / 30 - 6;
         num = Math.round(num < 0 ? num + 12 : num);
+        num = Math.round(num / this.opts.hourSelectionInterval) * this.opts.hourSelectionInterval;
         while(num < 0) num += 12;
         while(num > 12) num -= 12;
         return num === 0 ? 12 : num;

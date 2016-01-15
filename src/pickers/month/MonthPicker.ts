@@ -2,10 +2,11 @@ import {Picker} from 'src/pickers/Picker';
 import ViewManager from 'src/common/ViewManager';
 import monthTemplate from 'src/pickers/month/month-picker.html!text';
 import Header from 'src/header/Header';
+import {IDatiumOptions} from 'src/DatiumOptions';
 
 export default class MonthPicker extends Picker {   
-	constructor(container:HTMLElement, private viewManager:ViewManager) {
-        super(container, viewManager, 'datium-month');
+	constructor(container:HTMLElement, private viewManager:ViewManager, opts:IDatiumOptions) {
+        super(container, viewManager, 'datium-month', opts);
         this.height = 180;
     }    
     protected populatePicker(picker:HTMLElement, date:Date):void {
@@ -17,7 +18,8 @@ export default class MonthPicker extends Picker {
             if (node.attributes !== void 0) {
                 let val = node.attributes.getNamedItem('datium-data').nodeValue;
                 if (parseInt(val) === this.viewManager.getSelectedDate().getMonth() &&
-                    date.getFullYear() === this.viewManager.getSelectedDate().getFullYear()) {
+                    date.getFullYear() === this.viewManager.getSelectedDate().getFullYear() &&
+                    date.getMonth() === this.viewManager.getSelectedDate().getMonth()) {
                     node.classList.add('datium-current-selection');
                     break;
                 }

@@ -1,3 +1,5 @@
+import {IDatiumOptions} from 'src/DatiumOptions';
+
 // Order here is important
 export enum ViewLevel {
 	SECOND,
@@ -5,8 +7,7 @@ export enum ViewLevel {
 	HOUR,
 	DAY,
 	MONTH,
-	YEAR,
-	DECADE
+	YEAR
 }
 
 export default class ViewManager {
@@ -36,33 +37,35 @@ export default class ViewManager {
         return this.selectedDate;
     }
 	
-	constructor() {
+	constructor(private opts:IDatiumOptions) {
 		this.date = new Date();
         this.selectedDate = new Date(this.date.valueOf());
-		this.level = ViewLevel.DAY;
+		this.level = this.opts.startView;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;
 	}
-	
+    
 	private goToView(value:number, level:ViewLevel):void {
 		this.lastDate = new Date(this.date.valueOf());
 		this.lastLevel = this.level;
 		this.level = level;
 		switch(level) {
-		case ViewLevel.DECADE:
 		case ViewLevel.YEAR:
 			this.date.setFullYear(value);
 			break;
 		case ViewLevel.MONTH:
-			this.date.setMonth(value);
+			this.date.setFullYear(value);
 			break;
 		case ViewLevel.DAY:
-			this.date.setDate(value);
+			this.date.setMonth(value);
 			break;
 		case ViewLevel.HOUR:
-			this.date.setHours(value);
+			this.date.setDate(value);
 			break;
 		case ViewLevel.MINUTE:
+			this.date.setHours(value);
+			break;
+		case ViewLevel.SECOND:
 			this.date.setMinutes(value);
 			break;
 		default:
@@ -76,19 +79,20 @@ export default class ViewManager {
 	}
 	
 	public next():void {
-		let change = this.level === ViewLevel.DECADE ? 10 : 1;
+		let change = this.level === ViewLevel.YEAR ? 10 : 1;
 		let value:number = this.getValue(this.level) + change;
 		this.goToView(value, this.level);
 	}
 	
 	public previous():void {
-		let change = this.level === ViewLevel.DECADE ? 10 : 1;
+		let change = this.level === ViewLevel.YEAR ? 10 : 1;
 		let value:number = this.getValue(this.level) - change;
 		this.goToView(value, this.level);
 	}
 	
 	public zoomOut():void {
-		let newLevel:ViewLevel = this.level === ViewLevel.DECADE ? this.level : this.level + 1;
+		let newLevel:ViewLevel = this.level === ViewLevel.YEAR ? this.level : this.level + 1;
+        if (newLevel > this.opts.maxView) return;
 		let value:number = this.getValue(newLevel);
 		this.goToView(value, newLevel);
 	}
@@ -105,11 +109,11 @@ export default class ViewManager {
 	
 	private getValue(level:ViewLevel):number {
 		switch(level) {
-			case ViewLevel.SECOND: return this.date.getSeconds();
-			case ViewLevel.MINUTE: return this.date.getMinutes();
-			case ViewLevel.HOUR: return this.date.getHours();
-			case ViewLevel.DAY: return this.date.getDate();
-			case ViewLevel.MONTH: return this.date.getMonth();
+			case ViewLevel.SECOND: return this.date.getMinutes();
+			case ViewLevel.MINUTE: return this.date.getHours();
+			case ViewLevel.HOUR: return this.date.getDate();
+			case ViewLevel.DAY: return this.date.getMonth();
+			case ViewLevel.MONTH: return this.date.getFullYear();
 			default: return this.date.getFullYear();
 		}
 	}
