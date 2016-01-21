@@ -36,6 +36,7 @@ export default class TimePicker extends Picker {
         this.dragMove(e);
     }
     
+    
     protected dragMove(e:Event):void {
         let centerX = this.clockElement.getBoundingClientRect().left + 80;
         let centerY = this.clockElement.getBoundingClientRect().top + 80;
@@ -46,15 +47,29 @@ export default class TimePicker extends Picker {
         let offsetX = centerX - clientX;
         let offsetY = centerY - clientY;        
         
-        let newRotation = 180-Math.atan2(offsetX, offsetY)*180/Math.PI;        
-        this.rotation = this.normalizeRotation(newRotation);
+        let lastRotation = this.rotation;
+        let newRotation = this.normalizeRotation(180-Math.atan2(offsetX, offsetY)*180/Math.PI);
+        
+        let newTime = this.rotationToTime(newRotation);
+        
+        let lastMeridiem = this.meridiem;
+        this.rotation = newRotation;
+        if (this.shouldSwitchMeridiem(this.time, newTime)) {
+            this.meridiem = this.meridiem === 'PM' ? 'AM' : 'PM';
+        }
+        this.rotation = lastRotation;
+        
+        if (!this.isInactive(newTime)) {
+            this.time = newTime;
+            this.rotation = newRotation;
+        }
+        
+        this.meridiem = lastMeridiem;
         
         this.updateTimeDragElement();
-        
-        this.time = this.rotationToTime(this.rotation);
         this.updateHeaderTime();
         this.updateHandElements();
-        this.updateTimeBubbleElement();   
+        this.updateTimeBubbleElement();
     }
     
     private dragEnd(e:Event):void {
@@ -65,7 +80,7 @@ export default class TimePicker extends Picker {
         this.isDragging = false;
     }
     
-    private updateTimeDragElement():void {
+    protected updateTimeDragElement():void {
         this.timeDragElement.style.transform = `rotate(${this.rotation}deg)`;        
     }
     
@@ -81,6 +96,9 @@ export default class TimePicker extends Picker {
             tick.appendChild(tickLabel);
         }
         
+        if (this.isInactive(data)) {
+            tick.classList.add('datium-time-inactive');
+        }
         tick.style.transform = `rotate(${angle}deg)`;
         
         return tick;
@@ -138,8 +156,6 @@ export default class TimePicker extends Picker {
             currentTimeElement.style.transform = `rotate(${curTimeRotation}deg)`;
         }
         
-        
-        
         for (let tickPosition = 1; tickPosition <= 12; tickPosition++) {
             let angle = (tickPosition - 6) * 30;
             let label = this.getLabelFromTickPosition(tickPosition);
@@ -166,18 +182,20 @@ export default class TimePicker extends Picker {
     }
     
     // Overridable
-    protected getCurrentTimeRotation(date:Date, selectedDate:Date):number { throw this.EmptyMethodException(); }
-    protected getLabelFromTickPosition(tickPosition:number):string { throw this.EmptyMethodException(); }
-    protected getDataFromTickPosition(tickPosition:number):number { throw this.EmptyMethodException(); }
-    protected rotationToTime(rotation:number):number { throw this.EmptyMethodException(); }
-    protected timeToRotation(rotation:number):number { throw this.EmptyMethodException(); }
-    protected setInitialTime(date:Date):void { throw this.EmptyMethodException(); }
-    protected getZoomToTime():number { throw this.EmptyMethodException(); }
-    protected updateTimeBubbleElement():void { throw this.EmptyMethodException(); }
-    protected updateHandElements():void { throw this.EmptyMethodException(); }
-    protected updateHeaderTime():void { throw this.EmptyMethodException(); }
+    protected getCurrentTimeRotation(date:Date, selectedDate:Date):number { throw this.EmptyMethodException('getCurrentTimeRotation'); }
+    protected getLabelFromTickPosition(tickPosition:number):string { throw this.EmptyMethodException('getLabelFromTickPosition'); }
+    protected getDataFromTickPosition(tickPosition:number):number { throw this.EmptyMethodException('getDataFromTickPosition'); }
+    protected rotationToTime(rotation:number):number { throw this.EmptyMethodException('rotationToTime'); }
+    protected timeToRotation(time:number):number { throw this.EmptyMethodException('timeToRotation'); }
+    protected setInitialTime(date:Date):void { throw this.EmptyMethodException('setInitialTime'); }
+    protected getZoomToTime():number { throw this.EmptyMethodException('getZoomToTime'); }
+    protected updateTimeBubbleElement():void { throw this.EmptyMethodException('updateTimeBubbleElement'); }
+    protected updateHandElements():void { throw this.EmptyMethodException('updateHandElements'); }
+    protected updateHeaderTime():void { throw this.EmptyMethodException('updateHeaderTime'); }
+    protected isInactive(data:number):boolean { throw this.EmptyMethodException('isInactive'); }
+    protected shouldSwitchMeridiem(lastTime?:number, newTime?:number):boolean { throw this.EmptyMethodException('shouldSwitchMeridiem'); }
     
-    private EmptyMethodException() {
-        return new Error('Method needs to be overrriden');
+    private EmptyMethodException(methodName:string) {
+        return new Error(`Method "${methodName}" needs to be overrriden`);
     }
 }

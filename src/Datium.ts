@@ -38,6 +38,11 @@ class Datium {
     constructor(options:any) {
         this.opts = SanitizeOptions(options);
         
+        if (this.opts.minDate !== void 0) {
+            console.log('MIN', this.opts.minDate);
+            console.log('MAX', this.opts.maxDate);
+        }
+        
         Datium.pickersOnPage++;
         this.pickerId = this.getRandomId() + Datium.pickersOnPage.toString();
         

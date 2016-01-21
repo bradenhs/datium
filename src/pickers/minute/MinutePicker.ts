@@ -53,6 +53,24 @@ export default class MinutePicker extends TimePicker {
         return num;
     }
     
+    protected shouldSwitchMeridiem():boolean {
+        return false;
+    }
+    
+    protected isInactive(data:number):boolean {
+        if (this.opts.minDate !== void 0) {
+            let endDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.date.getHours(), data + 1, 0, 1);
+            if (endDate.valueOf() < this.opts.minDate.valueOf()) return true;
+        }
+        
+        if (this.opts.maxDate !== void 0) {
+            let startDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), this.date.getHours(), data, 0, -1);
+            if (startDate.valueOf() > this.opts.maxDate.valueOf()) return true;
+        }
+        
+        return false;
+    }
+    
     protected getCurrentTimeRotation(date:Date, selectedDate:Date):number {
         if (date.getFullYear() === selectedDate.getFullYear() &&
             date.getMonth() === selectedDate.getMonth() &&

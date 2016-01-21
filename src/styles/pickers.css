@@ -12,7 +12,7 @@
 
 .STYLE_INSTANCE datium-day-element.datium-day-inactive,
 .STYLE_INSTANCE datium-day-element.datium-weekday-label {
-    opacity: .6;
+    opacity: .5;
 }
 
 .STYLE_INSTANCE .datium-weekday-label {
@@ -33,6 +33,14 @@
   text-align: center;
   transition: .3s all ease;
   color: SECONDARY_TEXT;
+}
+.STYLE_INSTANCE .datium-month-inactive {
+    opacity: .5;
+    pointer-events: none;
+}
+.STYLE_INSTANCE .datium-year-inactive {
+    opacity: .5;
+    pointer-events: none;
 }
 .STYLE_INSTANCE datium-month-element:active,
 .STYLE_INSTANCE datium-year-element:active {
@@ -116,6 +124,12 @@
   left: 50%;
   transform-origin: 0 0;
 }
+.STYLE_INSTANCE .datium-time-inactive {
+    pointer-events: none;
+}
+.STYLE_INSTANCE .datium-time-inactive datium-tick-label {
+    opacity: .3;
+}
 .STYLE_INSTANCE datium-current-time {
   display: block;
   position: absolute;
@@ -157,6 +171,7 @@
   margin-bottom: -20px;
   border-radius: 25px;
   color: SECONDARY_TEXT;
+  transition: all ease .3s;
 }
 .STYLE_INSTANCE datium-tick-label datium-span {
   transition: .2s ease all;
@@ -371,6 +386,12 @@
   right: 0;
   color: SECONDARY_TEXT;
 }
+.STYLE_INSTANCE .datium-military-time datium-meridiem-switcher:before {
+    content: '-12';
+}
+.STYLE_INSTANCE .datium-military-time datium-meridiem-switcher:after {
+    content: '+12';
+}
 datium-container.STYLE_INSTANCE.datium-is-dragging datium-time-drag {
   transition: none;
 }
@@ -434,6 +455,12 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
 .STYLE_INSTANCE .datium-pm datium-meridiem-switcher:active datium-bubble:after {
   content: 'AM';
 }
+.STYLE_INSTANCE .datium-am.datium-military-time datium-meridiem-switcher:active datium-bubble:after {
+  content: '+12';
+}
+.STYLE_INSTANCE .datium-pm.datium-military-time datium-meridiem-switcher:active datium-bubble:after {
+  content: '-12';
+}
 .STYLE_INSTANCE [datium-data]:not(.datium-day-inactive):active > datium-bubble {
   opacity: 1;
   transition-delay: .1s;
@@ -449,6 +476,9 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
 }
 .STYLE_INSTANCE .datium-hour-view .datium-am datium-bubble:after {
   content: 'AM';
+}
+.STYLE_INSTANCE .datium-hour-view .datium-military-time datium-bubble:after {
+  content: 'h';
 }
 .STYLE_INSTANCE .datium-minute-view datium-bubble:after {
   content: 'm';

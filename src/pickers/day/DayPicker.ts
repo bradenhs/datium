@@ -20,7 +20,17 @@ export default class DayPicker extends Picker {
 		let rows = 1;
 		do {
 			for (let i = 0; i < 7; i++) {
-				picker.appendChild(this.mkDay(d, d.getMonth() !== date.getMonth()));
+                let inactive = d.getMonth() !== date.getMonth();
+                
+                let dStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, -1);
+                let dEnd = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1, 0, 0, 0, 1);
+                
+                if (this.opts.minDate !== void 0 && dEnd.valueOf() < this.opts.minDate.valueOf()) {
+                    inactive = true;
+                } else if (this.opts.maxDate !== void 0 && dStart.valueOf() > this.opts.maxDate.valueOf()) {
+                    inactive = true;
+                }   
+				picker.appendChild(this.mkDay(d, inactive));
 				d.setDate(1 + d.getDate());
 			}
 			rows++;

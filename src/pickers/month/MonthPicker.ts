@@ -1,6 +1,5 @@
 import {Picker} from 'src/pickers/Picker';
 import ViewManager from 'src/common/ViewManager';
-import monthTemplate from 'src/pickers/month/month-picker.html!text';
 import Header from 'src/header/Header';
 import {IDatiumOptions} from 'src/DatiumOptions';
 
@@ -9,21 +8,36 @@ export default class MonthPicker extends Picker {
         super(container, viewManager, 'datium-month', opts);
         this.height = 180;
     }    
+    private months:string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     protected populatePicker(picker:HTMLElement, date:Date):void {
-        picker.innerHTML = monthTemplate;
         picker.classList.add('datium-month-view');
         
-        for (let i = 0; i < picker.childNodes.length; i++) {
-            let node = <HTMLElement>picker.childNodes.item(i);
-            if (node.attributes !== void 0) {
-                let val = node.attributes.getNamedItem('datium-data').nodeValue;
-                if (parseInt(val) === this.viewManager.getSelectedDate().getMonth() &&
-                    date.getFullYear() === this.viewManager.getSelectedDate().getFullYear() &&
-                    date.getMonth() === this.viewManager.getSelectedDate().getMonth()) {
-                    node.classList.add('datium-current-selection');
-                    break;
-                }
+        for (let month = 0; month < 12; month++) {
+            let el = document.createElement('datium-month-element');
+            el.setAttribute('datium-data', month.toString());
+            el.innerHTML = `${this.months[month]}<datium-bubble>${this.months[month]}</datium-bubble>`;
+            let inactive = false;
+            
+            let dStart = new Date(date.getFullYear(), month, 1, 0, 0, 0, -1);
+            let dEnd = new Date(date.getFullYear(), month + 1, 1, 0, 0, 0, -1);
+            
+            if (this.opts.minDate !== void 0 && dEnd.valueOf() < this.opts.minDate.valueOf()) {
+                inactive = true;
+            } else if (this.opts.maxDate !== void 0 && dStart.valueOf() > this.opts.maxDate.valueOf()) {
+                inactive = true;
             }
+            
+            if (inactive) {
+                el.classList.add('datium-month-inactive');
+            } else {
+                el.classList.add('datium-month-selectable');
+            }
+            if (month === this.viewManager.getSelectedDate().getMonth() &&
+                date.getFullYear() === this.viewManager.getSelectedDate().getFullYear() &&
+                date.getMonth() === this.viewManager.getSelectedDate().getMonth()) {
+                el.classList.add('datium-current-selection');
+            }
+            picker.appendChild(el);
         }
     }
 }

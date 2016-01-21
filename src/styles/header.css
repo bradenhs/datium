@@ -66,6 +66,10 @@
 .STYLE_INSTANCE datium-previous-view:after {
   transform: rotate(-45deg);
 }
+.STYLE_INSTANCE .datium-view-change-disabled {
+   opacity: .5;
+   pointer-events: none;
+}
 .STYLE_INSTANCE datium-previous-view:before {
   transform: rotate(45deg);
 }

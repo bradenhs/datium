@@ -19,7 +19,17 @@ export default class HourPicker extends TimePicker {
     
     protected updateTimeBubbleElement():void {
         let timeBubbleRotation = -this.rotation;
-        this.timeBubbleElement.innerText = this.padNum(this.time) + this.meridiem;
+        if (this.opts.militaryTime) {
+            let t = this.time;
+            if (this.meridiem === 'PM') {
+                t += 12;    
+            }
+            if (t === 12) t = 0;
+            if (t === 24) t = 12; 
+            this.timeBubbleElement.innerText = this.padNum(t) + 'h';
+        } else {
+            this.timeBubbleElement.innerText = this.padNum(this.time) + this.meridiem;
+        }
         this.timeBubbleElement.style.transform = `rotate(${timeBubbleRotation}deg)`;        
     }    
     
@@ -38,13 +48,20 @@ export default class HourPicker extends TimePicker {
     protected dragMove(e:Event):void {
         let lastTime = this.time;
         super.dragMove(e);
-        if (lastTime !== this.time) {
+        if (this.shouldSwitchMeridiem(lastTime, this.time)) {
+            this.switchMeridiem();
+        }
+    }
+    
+    protected shouldSwitchMeridiem(lastTime:number, newTime:number):boolean {
+        if (lastTime !== newTime) {
             if (Math.round((this.rotation + 15) / 360) % 2 === 0) {
-                if (this.meridiem === 'PM') this.switchMeridiem();
+                if (this.meridiem === 'PM') return true;
             } else {
-                if (this.meridiem === 'AM') this.switchMeridiem();
+                if (this.meridiem === 'AM') return true;
             }
         }
+        return false;
     }
     
     protected getZoomToTime():number {
@@ -55,10 +72,64 @@ export default class HourPicker extends TimePicker {
     
     private switchMeridiem():void {
         this.meridiem = this.meridiem === 'AM' ? 'PM' : 'AM';
+        
+        let ticks = this.clockElement.querySelectorAll('datium-tick');
+        for (let key in ticks) {
+            if (typeof ticks[key] !== 'object') continue;
+            let tickLabel = <HTMLElement>ticks[key].querySelector('datium-span');
+            if (tickLabel === null) continue;
+            let dataVal = parseInt(tickLabel.getAttribute('datium-data'));
+            if (this.isInactive(dataVal)) {
+                ticks[key].classList.add('datium-time-inactive');
+            } else {
+                ticks[key].classList.remove('datium-time-inactive');
+            }
+            if (this.opts.militaryTime) {
+                if (dataVal === 12) dataVal = 0;
+                if (dataVal === 24) dataVal = 12;
+                if (this.meridiem === 'PM') {
+                    let newText = dataVal + 12;
+                    tickLabel.innerHTML = `${newText}<datium-bubble>${newText}</datium-bubble>`;
+                } else {
+                    let newText = dataVal < 10 ? '0' + dataVal : dataVal;
+                    tickLabel.innerHTML = `${newText}<datium-bubble>${newText}</datium-bubble>`;
+                }
+            }
+        }
+        
+        
+        if (this.isInactive(this.time)) {
+            while(this.isInactive(this.time)) {
+                this.time--;
+                if (this.time < 0) this.time = 12;
+            }
+            this.rotation = this.normalizeRotation(this.timeToRotation(this.time));
+            this.updateTimeDragElement();
+            this.updateHandElements();
+        }
+        
+        
         this.updateMeridiemPicker();
         this.updateHeaderTime();
         this.updateTimeBubbleElement();
     }   
+    
+    protected isInactive(data:number):boolean {
+        let time = this.meridiem === 'PM' ? data + 12 : data;
+        if (time === 12) time = 0;
+        if (time === 24) time = 12;
+        if (this.opts.minDate !== void 0) {
+            let endDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), time + 1, 0, 0, 1);
+            if (endDate.valueOf() < this.opts.minDate.valueOf()) return true;
+        }
+        
+        if (this.opts.maxDate !== void 0) {
+            let startDate = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), time, 0, 0, -1);
+            if (startDate.valueOf() > this.opts.maxDate.valueOf()) return true;
+        }
+        
+        return false;
+    }
     
     private updateMeridiemPicker():void {     
         if (this.meridiem === 'AM') {
@@ -73,10 +144,20 @@ export default class HourPicker extends TimePicker {
     protected populatePicker(picker:HTMLElement, date:Date):void {
         super.populatePicker(picker, date);
         this.updateMeridiemPicker();
+        if (this.opts.militaryTime) {
+            this.clockElement.classList.add('datium-military-time');
+        }
     }
     
     protected getLabelFromTickPosition(tickPosition:number):string {
-        return tickPosition.toString();
+        if (this.opts.militaryTime) {
+            let label = this.meridiem === 'PM' ? tickPosition + 12 : tickPosition;
+            if (label === 12) label = 0;
+            if (label === 24) label = 12;
+            return label < 10 ? '0' + label : label.toString();
+        } else {
+            return tickPosition.toString();
+        }
     }
     
     protected getCurrentTimeRotation(date:Date, selectedDate:Date):number {
@@ -111,11 +192,7 @@ export default class HourPicker extends TimePicker {
     }
     
     protected getDataFromTickPosition(tickPosition:number):number {
-        if (tickPosition === 12) {
-            return 0;
-        } else {
-            return tickPosition;
-        }        
+        return tickPosition;        
     }       
     
 }

@@ -24,10 +24,16 @@ export default class Header {
 	private hourExtendedLabelText:HTMLElement;
 	private minuteExtendedLabelText:HTMLElement;
     
+    private nextViewElement:Element;
+    private previousViewElement:Element;
+    
     private spanLabelsContainer:Element;
 	
 	constructor(el:Element, private viewManager:ViewManager, private opts:IDatiumOptions) {
         this.spanLabelsContainer = el.querySelector('datium-span-labels');
+        
+        this.nextViewElement = el.querySelector('datium-next-view');
+        this.previousViewElement = el.querySelector('datium-previous-view');
         
 		this.decadeLabel = el.querySelector('.datium-decade-label');
 		this.yearLabel = el.querySelector('.datium-year-label');
@@ -91,8 +97,12 @@ export default class Header {
 	private days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 	
     public updateDayLabel(date:Date) {
-        if (this.level === ViewLevel.HOUR) {  
-        this.dayLabelText.innerHTML = this.getDayText(date) + ' <datium-changing-label>' + this.getHourText(date) + this.getMeridiemText(date) + '</datium-changing-label>';
+        if (this.level === ViewLevel.HOUR) {
+            if (this.opts.militaryTime) {
+                this.dayLabelText.innerHTML = this.getDayText(date) + ' <datium-changing-label>' + this.getHourText(date) + '</datium-changing-label>';
+            } else {
+                this.dayLabelText.innerHTML = this.getDayText(date) + ' <datium-changing-label>' + this.getHourText(date) + this.getMeridiemText(date) + '</datium-changing-label>';
+            }
         } else {
             this.dayLabelText.innerHTML = this.getDayText(date);
         }
@@ -102,17 +112,29 @@ export default class Header {
         if (this.level === ViewLevel.SECOND) {
             this.hourLabelText.innerHTML = '';    
         } else if (this.level === ViewLevel.MINUTE) {
-            this.hourLabelText.innerHTML = this.getHourText(date) + ':<datium-changing-label>' + this.getMinuteText(date) + '</datium-changing-label>' + this.getMeridiemText(date);
+            this.hourLabelText.innerHTML = this.getHourText(date) + ':<datium-changing-label>' + this.getMinuteText(date) + '</datium-changing-label>';
+            if (!this.opts.militaryTime) {
+                this.hourLabelText.innerHTML += this.getMeridiemText(date);   
+            }
         } else {
-            this.hourLabelText.innerHTML = this.getHourText(date) + this.getMeridiemText(date);
+            this.hourLabelText.innerHTML = this.getHourText(date);
+            if (!this.opts.militaryTime) {
+                this.hourLabelText.innerHTML += this.getMeridiemText(date); 
+            }
         }
     }
     
     public updateMinuteLabel(date:Date) {
         if (this.level === ViewLevel.SECOND) {            
-            this.minuteLabelText.innerHTML = this.getHourText(date) + ':' + this.getMinuteText(date) + ':<datium-changing-label>' + this.getSecondText(date) + '</datium-changing-label>' + this.getMeridiemText(date);
+            this.minuteLabelText.innerHTML = this.getHourText(date) + ':' + this.getMinuteText(date) + ':<datium-changing-label>' + this.getSecondText(date) + '</datium-changing-label>';
+            if (!this.opts.militaryTime) {
+                this.minuteLabelText.innerHTML += this.getMeridiemText(date);
+            }
         } else {
-            this.minuteLabelText.innerHTML = this.getHourText(date) + ':' + this.getMinuteText(date) + this.getMeridiemText(date);
+            this.minuteLabelText.innerHTML = this.getHourText(date) + ':' + this.getMinuteText(date);
+            if (!this.opts.militaryTime) {
+                this.minuteLabelText.innerHTML += this.getMeridiemText(date);
+            }
         }
     }
     
@@ -141,11 +163,13 @@ export default class Header {
     
     private getHourText(date:Date):string {        
 		let hour = date.getHours();
-		if (hour === 0) {
-			hour = 12;
-		} else if (hour > 12) {
-			hour -= 12;
-		}
+        if (!this.opts.militaryTime) {
+            if (hour === 0) {
+                hour = 12;
+            } else if (hour > 12) {
+                hour -= 12;
+            }
+        }
 		let hourPrefix = '';
 		if (hour < 10) {
 			hourPrefix = '0';
@@ -206,31 +230,26 @@ export default class Header {
 		if (level === ViewLevel.YEAR) {
 			this.mkBottom(this.decadeLabel);
 			this.mkHiddenBottom(this.yearLabel, this.monthLabel, this.dayLabel, this.hourLabel, this.minuteLabel);
-		}
-		if (level === ViewLevel.MONTH) {
+		} else if (level === ViewLevel.MONTH) {
 			this.mkTop(this.decadeLabel);
 			this.mkBottom(this.yearLabel);
 			this.mkHiddenBottom(this.monthLabel, this.dayLabel, this.hourLabel, this.minuteLabel);
-		}
-		if (level === ViewLevel.DAY) {
+		} else if (level === ViewLevel.DAY) {
 			this.mkHiddenTop(this.decadeLabel);
 			this.mkTop(this.yearLabel);
 			this.mkBottom(this.monthLabel);
 			this.mkHiddenBottom(this.dayLabel, this.hourLabel, this.minuteLabel);			
-		}
-		if (level === ViewLevel.HOUR) {
+		} else if (level === ViewLevel.HOUR) {
 			this.mkHiddenTop(this.decadeLabel, this.yearLabel);
 			this.mkTop(this.monthLabel);
 			this.mkBottom(this.dayLabel);
 			this.mkHiddenBottom(this.hourLabel, this.minuteLabel);			
-		}
-		if (level === ViewLevel.MINUTE) {
+		} else if (level === ViewLevel.MINUTE) {
 			this.mkHiddenTop(this.decadeLabel, this.yearLabel, this.monthLabel);
 			this.mkTop(this.dayLabel);
 			this.mkBottom(this.hourLabel);
 			this.mkHiddenBottom(this.minuteLabel);			
-		}
-		if (level === ViewLevel.SECOND) {
+		} else if (level === ViewLevel.SECOND) {
 			this.mkHiddenTop(this.decadeLabel, this.yearLabel, this.monthLabel, this.dayLabel);
 			this.mkTop(this.hourLabel);
 			this.mkBottom(this.minuteLabel);	
@@ -239,6 +258,18 @@ export default class Header {
             this.spanLabelsContainer.classList.add('datium-header-inactive');
         } else {
             this.spanLabelsContainer.classList.remove('datium-header-inactive');
+        }
+        
+        if (this.viewManager.isNextDisabled()) {
+            this.nextViewElement.classList.add('datium-view-change-disabled');
+        } else {
+            this.nextViewElement.classList.remove('datium-view-change-disabled');
+        }
+        
+        if (this.viewManager.isPreviousDisabled()) {
+            this.previousViewElement.classList.add('datium-view-change-disabled');
+        } else {
+            this.previousViewElement.classList.remove('datium-view-change-disabled');
         }
 	}
 	

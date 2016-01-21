@@ -7,7 +7,8 @@ let ThemeError = Error('DATIUM - The "theme" option must be a string of value: "
 let StartViewError = Error('DATIUM - The "startView" option must be a string of value "year", "month", "day", "hour", "minute" or "second".');
 let EndViewError = Error('DATIUM - The "endView" option must be a string of value "year", "month", "day", "hour", "minute" or "second". It cannot be a bigger view than the start view (i.e. the end view cannot be "month" if the start view is "day").');
 let MaxViewError = Error('DATIUM - The "maxView" option must be a string of value "year", "month", "day", "hour", "minute" or "second". It cannot be a smaller view than the start view (i.e. the max view cannot be "hour" if the start view is "day").');
-let MinDateError = Error('DATIUM - The "minDate" option must be an ISO format string, number of milliseconds since midnight 01 January, 1970 UTC, or date object.');
+let MinDateError = Error('DATIUM - The "minDate" option must be a date string, number of milliseconds since midnight 01 January, 1970 UTC, or date object.');
+let MaxDateError = Error('DATIUM - The "maxDate" option must be a date string, number of milliseconds since midnight 01 January, 1970 UTC, or date object.');
 let HourSelectionIntervalError = Error('DATIUM - The "hourSelectionInterval" option must be a number with a value of 1, 2, 3, 4 or 6.');
 let MinuteSelectionIntervalError = Error('DATIUM - The "minuteSelectionInterval" option must be a number with a value of 1, 5, 10, 15, 20 or 30.');
 let SecondSelectionIntervalError = Error('DATIUM - The "secondSelectionInterval" option must be a number with a value of 1, 5, 10, 15, 20 or 30.');
@@ -141,15 +142,23 @@ function sanitizeMaxView(maxView:string, startView:string):ViewLevel {
     return maxLevel;
 }
 
-let sanitizeDateRegex = new RegExp('/^([\+-]?\d{4}(?!\d{2}\b))((-?)((0[1-9]|1[0-2])(\3([12]\d|0[1-9]|3[01]))?|W([0-4]\d|5[0-2])(-?[1-7])?|(00[1-9]|0[1-9]\d|[12]\d{2}|3([0-5]\d|6[1-6])))([T\s]((([01]\d|2[0-3])((:?)[0-5]\d)?|24\:?00)([\.,]\d+(?!:))?)?(\17[0-5]\d([\.,]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)?$/');
 function sanitizeMinDate(minDate:any):Date {
     if (minDate === void 0) return void 0; //default
     switch(typeof minDate) {
-        case 'string':
-        if (sanitizeDateRegex.test(<string>minDate)) return new Date(<string>minDate);
-        case 'number': return new Date(<number>minDate);
-        case 'date': return <Date>minDate;
-        default: throw MinDateError;
+    case 'string':
+        let date = new Date(<string>minDate);
+        if (date.toString() === 'Invalid Date') throw MinDateError;
+        return date;
+    case 'number':
+        return new Date(<number>minDate);
+    case 'object':
+        if (minDate instanceof Date) {
+            return <Date>minDate;
+        } else {
+            throw MinDateError;
+        }
+    default:
+        throw MinDateError;
     }
 }
 
@@ -158,21 +167,23 @@ function sanitizeMaxDate(maxDate:any, minDate:any):Date {
     let returnValue:Date;
     switch(typeof maxDate) {
     case 'string':
-        if (sanitizeDateRegex.test(<string>maxDate)) {
-            returnValue = new Date(<string>maxDate);
-            break;
-        }
+        returnValue = new Date(<string>maxDate);
+        if (returnValue.toString() === 'Invalid Date') throw MaxDateError;
     case 'number':
         returnValue = new Date(<number>maxDate);
         break;
-    case 'date': 
-        returnValue = <Date>maxDate;
+    case 'object': 
+        if (maxDate instanceof Date) {
+            returnValue = <Date>maxDate;
+        } else {
+            throw MaxDateError;
+        }
         break;
     default:
-        throw MinDateError;
+        throw MaxDateError;
     }
     let sanitizedMinDate = sanitizeMinDate(minDate);
-    if (sanitizedMinDate !== void 0 && returnValue.valueOf() <= sanitizedMinDate.valueOf()) throw MinDateError;
+    if (sanitizedMinDate !== void 0 && returnValue.valueOf() <= sanitizedMinDate.valueOf()) throw MaxDateError;
     return returnValue;
 }
 
@@ -344,7 +355,7 @@ export interface IDatiumOptions {
     maxView: ViewLevel;
     
     /**
-     * The first selectable date
+     * The first selectable date down to the day (time constraints will be ignored).
      * 
      * Optional (default: undefined)
      * Type: string|number|Date
@@ -354,7 +365,7 @@ export interface IDatiumOptions {
     minDate: Date;
     
     /**
-     * The last selectable date
+     * The last selectable date down to the day (time constraints will be ignored).
      * 
      * Optional (default: undefined)
      * Type: string|number|Date

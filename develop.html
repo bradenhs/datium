@@ -60,12 +60,12 @@
       System.import('src/Datium').then(function() {
         new Datium({
           element: document.querySelector('#test-element'),
-          startView: 'hour',
+          startView: 'day',
           endView: 'second',
-          hourSelectionInterval: 2,
-          minuteSelectionInterval: 15,
-          secondSelectionInterval: 15,
-          modal: true
+          modal: true,
+          minDate: new Date().valueOf() - 38600000,
+          maxDate: new Date().valueOf() + 8600000,
+          militaryTime: true
         });
         new Datium({
           element: document.querySelector('#test-element1'),
