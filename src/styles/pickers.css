@@ -138,6 +138,11 @@
   top: 50%;
   left: 50%;
   transform-origin: 0 0;
+  transition: .2s ease opacity;
+  pointer-events: none;
+}
+.STYLE_INSTANCE datium-current-time.datium-hide-current-time {
+  opacity: 0;
 }
 .STYLE_INSTANCE datium-current-time:after {
   position: absolute;

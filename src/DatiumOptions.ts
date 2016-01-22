@@ -16,6 +16,7 @@ let MilitaryTimeError = Error('DATIUM - The "militaryTime" option must be of typ
 let DataFormatError = Error('DATIUM - The "dataFormat" option must be of type string.');
 let DisplayFormatError = Error('DATIUM - The "displayFormat" option must be of type string.');
 let ZIndexError = Error('DATIUM - The "zIndex" option must be of type number.');
+let TransitionError = Error('DATIUM - The "transition" option must be of type boolean.');
 
 function sanitizeElement(element:HTMLInputElement):HTMLInputElement {
     if (typeof element === void 0) throw ElementError;
@@ -223,7 +224,7 @@ function sanitizeSecondSelectionInterval(secondSelectionInterval:number):number 
 }
 
 function sanitizeMilitaryTime(militaryTime:boolean):boolean {
-    if (militaryTime === void 0) return true; //default
+    if (militaryTime === void 0) return false; //default
     if (typeof militaryTime !== 'boolean') throw MilitaryTimeError;
     return militaryTime;
 }
@@ -246,6 +247,12 @@ function sanitizeZIndex(zIndex:number):number {
     return zIndex;
 }
 
+function sanitizeTransition(transition:boolean):boolean {
+    if (transition === void 0) return true; //default
+    if (typeof transition !== 'boolean') throw TransitionError;
+    return transition;
+}
+
 export function SanitizeOptions(opts:any):IDatiumOptions {
     for (let key in opts) {
         if (key !== 'element' &&
@@ -263,27 +270,29 @@ export function SanitizeOptions(opts:any):IDatiumOptions {
             key !== 'militaryTime' &&
             key !== 'dataFormat' &&
             key !== 'displayFormat' &&
-            key !== 'zIndex') {
+            key !== 'zIndex' &&
+            key !== 'transition') {
                 throw Error(`DATIUM - "${key}" is an unrecognized option. Look at the docs for a complete reference.`);
         }
     }
     return <IDatiumOptions>{
         element: sanitizeElement(opts.element),
-        showPicker: sanitizeShowPicker(opts.showPicker),
-        modal: sanitizeModal(opts.modal),
-        theme: sanitizeTheme(opts.theme),
-        startView: sanitizeStartView(opts.startView),
-        endView: sanitizeEndView(opts.endView, opts.startView),
-        maxView: sanitizeMaxView(opts.maxView, opts.startView),
-        minDate: <Date>sanitizeMinDate(opts.minDate),
-        maxDate: <Date>sanitizeMaxDate(opts.maxDate, opts.minDate),
-        hourSelectionInterval: sanitizeHourSelectionInterval(opts.hourSelectionInterval),
-        minuteSelectionInterval: sanitizeMinuteSelectionInterval(opts.minuteSelectionInterval),
-        secondSelectionInterval: sanitizeSecondSelectionInterval(opts.secondSelectionInterval),
-        militaryTime: sanitizeMilitaryTime(opts.militaryTime),
+        showPicker: sanitizeShowPicker(opts.showPicker), //done
+        modal: sanitizeModal(opts.modal), //done
+        theme: sanitizeTheme(opts.theme), //done
+        startView: sanitizeStartView(opts.startView), //done
+        endView: sanitizeEndView(opts.endView, opts.startView), //done
+        maxView: sanitizeMaxView(opts.maxView, opts.startView), //done
+        minDate: <Date>sanitizeMinDate(opts.minDate), //done
+        maxDate: <Date>sanitizeMaxDate(opts.maxDate, opts.minDate), //done
+        hourSelectionInterval: sanitizeHourSelectionInterval(opts.hourSelectionInterval), //done
+        minuteSelectionInterval: sanitizeMinuteSelectionInterval(opts.minuteSelectionInterval), //done
+        secondSelectionInterval: sanitizeSecondSelectionInterval(opts.secondSelectionInterval), //done
+        militaryTime: sanitizeMilitaryTime(opts.militaryTime), //done
         dataFormat: sanitizeDataFormat(opts.dataFormat),
         displayFormat: sanitizeDisplayFormat(opts.displayFormat),
-        zIndex: sanitizeZIndex(opts.zIndex)
+        zIndex: sanitizeZIndex(opts.zIndex), //done
+        transition: sanitizeTransition(opts.transition) //done
     }
 }
 
@@ -437,6 +446,14 @@ export interface IDatiumOptions {
      * Type: number
      */
     zIndex: number;
+        
+    /**
+     * Toggle if the datepicker should have smooth transitions
+     * 
+     * Optional (default: true)
+     * Type: boolean
+     */
+    transition: boolean;
 }
 
 export interface IDatiumTheme {

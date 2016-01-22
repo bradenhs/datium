@@ -65,6 +65,7 @@ export function onTap(...params:any[]):ListenerReference[] {
         let yDiff = e.changedTouches[0].clientY - startTouchY;
         
         if (Math.sqrt(xDiff * xDiff + yDiff * yDiff) < 10) {
+            console.log('triggered');
             e.preventDefault();
             callback(e);
         }
@@ -186,6 +187,12 @@ export function removeListeners(listeners:ListenerReference[]):void {
 
 export function onMouseDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
     attachEvents(['mousedown'], element, (e) => {
+        callback(e);
+    }); 
+};
+
+export function onDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void):ListenerReference[] {
+    return attachEvents(['mousedown', 'touchstart'], element, (e) => {
         callback(e);
     }); 
 };

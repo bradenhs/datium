@@ -9,6 +9,10 @@ datium-container.STYLE_INSTANCE, datium-container.STYLE_INSTANCE * {
 	cursor: default;
 }
 
+datium-container.STYLE_INSTANCE.datium-no-transition, datium-container.STYLE_INSTANCE.datium-no-transition * {
+    transition: none !important;
+}
+
 .STYLE_INSTANCE datium-all-pickers-container {
 	display: block;
 	position: relative;

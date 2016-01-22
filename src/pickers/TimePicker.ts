@@ -18,6 +18,8 @@ export default class TimePicker extends Picker {
     protected minuteHandElement:HTMLElement;
     protected secondHandElement:HTMLElement;
     
+    protected currentTimeElement:HTMLElement;
+    
     constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string, protected header:Header, opts:IDatiumOptions) {
         super(container, viewManager, selectorPrefix, opts);
         this.height = 260;
@@ -75,8 +77,10 @@ export default class TimePicker extends Picker {
     private dragEnd(e:Event):void {
         this.rotation = this.timeToRotation(this.time);
         this.updateHeaderTime();  
-        this.container.parentElement.classList.remove('datium-is-dragging');     
-        this.viewManager.zoomTo(this.getZoomToTime());
+        this.container.parentElement.classList.remove('datium-is-dragging');
+        if (!this.isInactive(this.time)) {  
+            this.viewManager.zoomTo(this.getZoomToTime());
+        }
         this.isDragging = false;
     }
     
@@ -131,6 +135,8 @@ export default class TimePicker extends Picker {
     protected populatePicker(picker:HTMLElement, date:Date):void {
         this.meridiem = date.getHours() < 12 ? 'AM' : 'PM';
         this.date = date;
+        
+        
         picker.innerHTML = clockTemplate;
         
         let className:string = '';
@@ -147,14 +153,10 @@ export default class TimePicker extends Picker {
         this.clockElement = <HTMLElement>picker.querySelector('datium-clock');
         this.clockMiddleElement = <HTMLElement>picker.querySelector('datium-clock-middle');
         this.timeBubbleElement = <HTMLElement>picker.querySelector('datium-time-bubble');
+        this.currentTimeElement = <HTMLElement>picker.querySelector('datium-current-time');
         
-        let currentTimeElement = <HTMLElement>picker.querySelector('datium-current-time');
-        let curTimeRotation = this.getCurrentTimeRotation(date, this.viewManager.getSelectedDate());
-        if (curTimeRotation === void 0) {
-            currentTimeElement.remove();
-        } else {
-            currentTimeElement.style.transform = `rotate(${curTimeRotation}deg)`;
-        }
+        
+        this.updateCurrentTimeElement();
         
         for (let tickPosition = 1; tickPosition <= 12; tickPosition++) {
             let angle = (tickPosition - 6) * 30;
@@ -175,6 +177,16 @@ export default class TimePicker extends Picker {
         this.updateTimeDragElement();           
         this.updateHandElements();
         this.updateHeaderTime();
+    }
+    
+    protected updateCurrentTimeElement():void {
+        let curTimeRotation = this.getCurrentTimeRotation(this.date, this.viewManager.getSelectedDate());
+        this.currentTimeElement.style.transform = `rotate(${curTimeRotation}deg)`;
+        if (curTimeRotation === void 0) {
+            this.currentTimeElement.classList.add('datium-hide-current-time');
+        } else {
+            this.currentTimeElement.classList.remove('datium-hide-current-time');
+        }
     }
     
     protected padNum(num:number):string {

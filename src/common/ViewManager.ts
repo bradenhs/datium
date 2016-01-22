@@ -57,6 +57,10 @@ export default class ViewManager {
         return this.nextDisabled;
     }
     
+    public refresh():void {
+        this.goToView(this.getValue(this.level), this.level);
+    }
+    
 	private goToView(value:number, level:ViewLevel):void {
 		this.lastDate = new Date(this.date.valueOf());
 		this.lastLevel = this.level;

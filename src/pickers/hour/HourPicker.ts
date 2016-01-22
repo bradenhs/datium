@@ -96,19 +96,7 @@ export default class HourPicker extends TimePicker {
                 }
             }
         }
-        
-        
-        if (this.isInactive(this.time)) {
-            while(this.isInactive(this.time)) {
-                this.time--;
-                if (this.time < 0) this.time = 12;
-            }
-            this.rotation = this.normalizeRotation(this.timeToRotation(this.time));
-            this.updateTimeDragElement();
-            this.updateHandElements();
-        }
-        
-        
+        this.updateCurrentTimeElement();
         this.updateMeridiemPicker();
         this.updateHeaderTime();
         this.updateTimeBubbleElement();
@@ -164,6 +152,10 @@ export default class HourPicker extends TimePicker {
         if (date.getFullYear() === selectedDate.getFullYear() &&
             date.getMonth() === selectedDate.getMonth() &&
             date.getDate() === selectedDate.getDate()) {
+            if ((this.meridiem === 'PM' && selectedDate.getHours() <= 11) ||
+                (this.meridiem === 'AM' && selectedDate.getHours() >= 12)) {
+               return void 0; 
+            }
             return this.timeToRotation(selectedDate.getHours());    
         }
         return void 0;

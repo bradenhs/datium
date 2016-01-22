@@ -35,11 +35,13 @@ export class Picker {
         this.picker = document.createElement('datium-picker-container');
         this.populatePicker(this.picker, date);
         
-        let className = this.getTransitionClass(transition);
-        if (className !== '') this.picker.classList.add(className);
-        setTimeout(() => {
-            if (className !== '') this.picker.classList.remove(className);
-        }, 10);
+        if (this.opts.transition) {
+            let className = this.getTransitionClass(transition);
+            if (className !== '') this.picker.classList.add(className);
+            setTimeout(() => {
+                if (className !== '') this.picker.classList.remove(className);
+            }, 10);
+        }
         this.container.appendChild(this.picker);
     }
     

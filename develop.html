@@ -63,16 +63,16 @@
           startView: 'day',
           endView: 'second',
           modal: true,
-          minDate: new Date().valueOf() - 38600000,
-          maxDate: new Date().valueOf() + 8600000,
-          militaryTime: true
+          minDate: new Date().valueOf(),
+          maxDate: new Date().valueOf() + 8600000
         });
         new Datium({
           element: document.querySelector('#test-element1'),
-          startView: 'hour',
+          startView: 'day',
           endView: 'hour',
-          maxView: 'hour',
-          theme: 'material'
+          maxView: 'day',
+          theme: 'material',
+          transition: false
         });
       });      
     </script>
