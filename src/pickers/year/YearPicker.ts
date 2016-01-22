@@ -7,7 +7,7 @@ export default class YearPicker extends Picker {
     
 	constructor(container:HTMLElement, private viewManager:ViewManager, opts:IDatiumOptions) {
         super(container, viewManager, 'datium-year', opts);
-        this.height = 180;
+        this.height = this.opts.small ? 120 : 180;
     }
     
     protected populatePicker(picker:HTMLElement, date:Date):void {

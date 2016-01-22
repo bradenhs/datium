@@ -38,11 +38,6 @@ export default class DatiumInternals {
     constructor(options:any) {
         this.opts = SanitizeOptions(options);
         
-        if (this.opts.minDate !== void 0) {
-            console.log('MIN', this.opts.minDate);
-            console.log('MAX', this.opts.maxDate);
-        }
-        
         DatiumInternals.pickersOnPage++;
         this.pickerId = this.getRandomId() + DatiumInternals.pickersOnPage.toString();
         
@@ -51,6 +46,10 @@ export default class DatiumInternals {
         
         if (!this.opts.transition) {
             this.datiumContainer.classList.add('datium-no-transition');
+        }
+        
+        if (this.opts.small) {
+            this.datiumContainer.classList.add('datium-small');
         }
         
         this.viewManager = new ViewManager(this.opts);
@@ -114,10 +113,12 @@ export default class DatiumInternals {
         }
         this.insertStyles();
         
-        if (window.innerHeight < 380) {
+        if (!this.opts.small && window.innerHeight < 380) {
             this.datiumContainer.classList.add('datium-landscape-view');
         }
+        
         window.addEventListener('resize', () => {
+            if (this.opts.small) return;
             if (window.innerHeight < 380) {
                 this.datiumContainer.classList.add('datium-landscape-view');
             } else {

@@ -6,7 +6,7 @@ import {IDatiumOptions} from 'src/DatiumOptions';
 export default class MonthPicker extends Picker {   
 	constructor(container:HTMLElement, private viewManager:ViewManager, opts:IDatiumOptions) {
         super(container, viewManager, 'datium-month', opts);
-        this.height = 180;
+        this.height = this.opts.small ? 120 : 180;
     }    
     private months:string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     protected populatePicker(picker:HTMLElement, date:Date):void {

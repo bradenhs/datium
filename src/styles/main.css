@@ -52,7 +52,7 @@ datium-container.STYLE_INSTANCE.datium-no-transition, datium-container.STYLE_INS
 
 datium-container.STYLE_INSTANCE {
     font-family: Roboto, Arial, Helvetica, sans-serif;
-    margin-top: 4px;
+    margin-top: 2px;
     display: block;
     width: 300px;
     position: absolute;
@@ -161,4 +161,119 @@ datium-container.STYLE_INSTANCE.datium-landscape-view datium-span-label {
 }
 datium-container.STYLE_INSTANCE.datium-landscape-view datium-month-element {
     width: 23%;
+}
+
+/* FOR SMALL PICKER */
+datium-container.STYLE_INSTANCE.datium-small {
+    width: 210px;
+}
+
+.STYLE_INSTANCE.datium-small datium-header {
+  height: 52px;
+}
+.STYLE_INSTANCE.datium-small datium-next-view,
+.STYLE_INSTANCE.datium-small datium-previous-view {
+  width: 30px;
+  height: 52px;
+  transform-origin: 15px 34px;
+}
+.STYLE_INSTANCE.datium-small datium-next-view:after,
+.STYLE_INSTANCE.datium-small datium-next-view:before,
+.STYLE_INSTANCE.datium-small datium-previous-view:after,
+.STYLE_INSTANCE.datium-small datium-previous-view:before {
+  top: 34px;
+  width: 2px;
+  height: 6px;
+}
+
+.STYLE_INSTANCE.datium-small datium-picker-container {
+	transform-origin: 105px 105px;
+}
+
+.STYLE_INSTANCE.datium-small datium-next-view:before,
+.STYLE_INSTANCE.datium-small datium-previous-view:before {
+  margin-top: -3px;
+}
+
+
+
+.STYLE_INSTANCE.datium-small datium-span-labels {
+  left: 30px;
+  right: 30px;
+}
+.STYLE_INSTANCE.datium-small datium-span-label {
+  font-size: 15pt;
+}
+
+.STYLE_INSTANCE.datium-small datium-span-label.datium-top {
+  transform: translateY(8px) scale(0.66);
+  width: 151%;
+}
+.STYLE_INSTANCE.datium-small datium-span-label.datium-hidden-top {
+  transform: translateY(-5px) scale(0.5);
+}
+.STYLE_INSTANCE.datium-small datium-span-label.datium-bottom {
+  transform: translateY(23px) scale(1);
+}
+.STYLE_INSTANCE.datium-small datium-span-label.datium-hidden-bottom {
+  transform: translateY(52px) scale(1.2);
+}
+.STYLE_INSTANCE.datium-small datium-span-label datium-changing-label {
+  padding: 0 3px;
+  top: -1px;
+  font-size: 13pt;
+}
+.STYLE_INSTANCE.datium-small datium-zoom-out-icon {
+  transform: scale(.9) translate(-2px, 2px);
+}
+.STYLE_INSTANCE.datium-small datium-day-element {
+    font-size: 11pt;
+    line-height: 24px;
+}
+.STYLE_INSTANCE.datium-small .datium-current-selection:after {
+  margin-top: 9px;
+}
+.STYLE_INSTANCE.datium-small datium-month-element,
+.STYLE_INSTANCE.datium-small datium-year-element {
+    line-height: 40px;
+}
+
+.STYLE_INSTANCE.datium-small datium-clock {
+  top: 105px;
+  margin-left: -60px;
+  margin-top: -60px;
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+}
+.STYLE_INSTANCE.datium-small datium-time-drag {
+  height: 60px;
+}
+.STYLE_INSTANCE.datium-small datium-clock datium-meridiem-switcher {
+    margin-top: 6px;
+}
+.STYLE_INSTANCE.datium-small datium-hour-hand {
+  border-top: 25px solid SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE.datium-small datium-minute-hand {
+  border-top: 35px solid SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE.datium-small datium-second-hand {
+  border-top: 45px solid SECONDARY_ACCENT;
+}
+.STYLE_INSTANCE.datium-small .datium-year-view .datium-current-selection:after {
+  width: 34px;
+  margin-left: -16px;
+}
+.STYLE_INSTANCE.datium-small .datium-month-view .datium-current-selection:after {
+  width: 24px;
+  margin-left: -12px;
+}
+.STYLE_INSTANCE.datium-small .datium-day-view .datium-current-selection:after {
+  width: 16px;
+  margin-left: -8px;
+}
+
+.STYLE_INSTANCE.datium-small [datium-data]:not(.datium-day-inactive):active > datium-bubble {
+  transition: .3s cubic-bezier(1.000, -0.600, 1.000, -0.600) opacity !important;
 }

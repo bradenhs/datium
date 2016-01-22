@@ -62,16 +62,17 @@
           element: document.querySelector('#test-element'),
           startView: 'day',
           endView: 'second',
+          theme: 'light',
           modal: true,
-          minDate: new Date().valueOf(),
-          maxDate: new Date().valueOf() + 8600000
+          minDate: new Date(),
+          minuteSelectionInterval: 5
         });
         new Datium({
           element: document.querySelector('#test-element1'),
-          startView: 'day',
-          endView: 'hour',
-          maxView: 'day',
-          theme: 'material',
+          theme: 'dark',
+          startView: 'hour',
+          endView: 'second',
+          small: true,
           transition: false
         });
       });      

@@ -448,7 +448,7 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
 }
 .STYLE_INSTANCE datium-meridiem-switcher:active datium-bubble {
   opacity: 1;
-  transition-delay: .2s;
+  transition-delay: .3s;
   transform: scale(1);
 }
 .STYLE_INSTANCE datium-meridiem-switcher datium-bubble:after {
@@ -468,7 +468,7 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
 }
 .STYLE_INSTANCE [datium-data]:not(.datium-day-inactive):active > datium-bubble {
   opacity: 1;
-  transition-delay: .1s;
+  transition-delay: .3s;
   transform: scale(1.1111);
 }
 .STYLE_INSTANCE .datium-hour-view [datium-data]:active > datium-bubble,

@@ -3,7 +3,7 @@ import {ViewLevel} from 'src/common/ViewManager';
 let ElementError = Error('DATIUM - The "element" option is required.');
 let ShowPickerError = Error('DATIUM - The "showPicker" option must be of type boolean.');
 let ModalError = Error('DATIUM - The "modal" option must be of type boolean.');
-let ThemeError = Error('DATIUM - The "theme" option must be a string of value: "datium", light", "dark", or "material". Or an object with the properties: primary, primaryText, secondary, secondaryText, secondaryAccent with each property being a valid hex, rgb, or rgba color code.');
+let ThemeError = Error('DATIUM - The "theme" option must be a string of value: "light", "dark", or "material". Or an object with the properties: primary, primaryText, secondary, secondaryText, secondaryAccent with each property being a valid hex, rgb, or rgba color code.');
 let StartViewError = Error('DATIUM - The "startView" option must be a string of value "year", "month", "day", "hour", "minute" or "second".');
 let EndViewError = Error('DATIUM - The "endView" option must be a string of value "year", "month", "day", "hour", "minute" or "second". It cannot be a bigger view than the start view (i.e. the end view cannot be "month" if the start view is "day").');
 let MaxViewError = Error('DATIUM - The "maxView" option must be a string of value "year", "month", "day", "hour", "minute" or "second". It cannot be a smaller view than the start view (i.e. the max view cannot be "hour" if the start view is "day").');
@@ -17,6 +17,7 @@ let DataFormatError = Error('DATIUM - The "dataFormat" option must be of type st
 let DisplayFormatError = Error('DATIUM - The "displayFormat" option must be of type string.');
 let ZIndexError = Error('DATIUM - The "zIndex" option must be of type number.');
 let TransitionError = Error('DATIUM - The "transition" option must be of type boolean.');
+let SmallError = Error('DATIUM - The "small" option must be of type boolean.');
 
 function sanitizeElement(element:HTMLInputElement):HTMLInputElement {
     if (typeof element === void 0) throw ElementError;
@@ -52,7 +53,7 @@ function sanitizeColor(color:string):string {
 }
 
 function sanitizeTheme(theme:string|IDatiumTheme):IDatiumTheme {
-    if (theme === void 0) return sanitizeTheme("datium"); //default
+    if (theme === void 0) return sanitizeTheme("light"); //default
     if (typeof theme === 'object') {
         return <IDatiumTheme>{
           primary: sanitizeColor(theme.primary),
@@ -63,14 +64,6 @@ function sanitizeTheme(theme:string|IDatiumTheme):IDatiumTheme {
         };
     } else if (typeof theme === 'string') {
         switch(theme) {
-        case 'datium':
-            return <IDatiumTheme>{
-                primary: '#374248',
-                primaryText: '#fff',
-                secondary: '#263238',
-                secondaryText: '#fff',
-                secondaryAccent: '#ffba3f'
-            }
         case 'light':
             return <IDatiumTheme>{
                 primary: '#eee',
@@ -82,10 +75,10 @@ function sanitizeTheme(theme:string|IDatiumTheme):IDatiumTheme {
         case 'dark':
             return <IDatiumTheme>{
                 primary: '#444',
-                primaryText: '#ccc',
+                primaryText: '#eee',
                 secondary: '#333',
-                secondaryText: '#888',
-                secondaryAccent: '#ccc'
+                secondaryText: '#eee',
+                secondaryAccent: '#fff'
             }
         case 'material':
             return <IDatiumTheme>{
@@ -242,7 +235,7 @@ function sanitizeDisplayFormat(displayFormat:string):string {
 }
 
 function sanitizeZIndex(zIndex:number):number {
-    if (zIndex === void 0) return 2147483647;
+    if (zIndex === void 0) return 2147483647; //default
     if (typeof zIndex !== 'number') throw ZIndexError;
     return zIndex;
 }
@@ -251,6 +244,12 @@ function sanitizeTransition(transition:boolean):boolean {
     if (transition === void 0) return true; //default
     if (typeof transition !== 'boolean') throw TransitionError;
     return transition;
+}
+
+function sanitizeSmall(small:boolean):boolean {
+    if (small === void 0) return false; //default
+    if (typeof small !== 'boolean') throw SmallError;
+    return small;
 }
 
 export function SanitizeOptions(opts:any):IDatiumOptions {
@@ -271,7 +270,8 @@ export function SanitizeOptions(opts:any):IDatiumOptions {
             key !== 'dataFormat' &&
             key !== 'displayFormat' &&
             key !== 'zIndex' &&
-            key !== 'transition') {
+            key !== 'transition' &&
+            key !== 'small') {
                 throw Error(`DATIUM - "${key}" is an unrecognized option. Look at the docs for a complete reference.`);
         }
     }
@@ -292,7 +292,8 @@ export function SanitizeOptions(opts:any):IDatiumOptions {
         dataFormat: sanitizeDataFormat(opts.dataFormat),
         displayFormat: sanitizeDisplayFormat(opts.displayFormat),
         zIndex: sanitizeZIndex(opts.zIndex), //done
-        transition: sanitizeTransition(opts.transition) //done
+        transition: sanitizeTransition(opts.transition), //done
+        small: sanitizeSmall(opts.small)
     }
 }
 
@@ -327,9 +328,9 @@ export interface IDatiumOptions {
     /**
      * The color scheme of the picker
      * 
-     * Optional (default: "material")
+     * Optional (default: "light")
      * Type: string|IDatiumTheme
-     * Accepted values: 'datium', 'light', 'dark', 'material', object of type IDatiumTheme
+     * Accepted values: 'light', 'dark', 'material', object of type IDatiumTheme
      */
     theme: IDatiumTheme;
     
@@ -454,6 +455,14 @@ export interface IDatiumOptions {
      * Type: boolean
      */
     transition: boolean;
+        
+    /**
+     * Toggle if the datepicker should be of the small variety
+     * 
+     * Optional (default: true)
+     * Type: boolean
+     */
+    small: boolean;
 }
 
 export interface IDatiumTheme {

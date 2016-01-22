@@ -22,7 +22,7 @@ export default class TimePicker extends Picker {
     
     constructor(container:HTMLElement, private viewManager:ViewManager, private selectorPrefix:string, protected header:Header, opts:IDatiumOptions) {
         super(container, viewManager, selectorPrefix, opts);
-        this.height = 260;
+        this.height = this.opts.small ? 210 : 260;
         onDrag(container, selectorPrefix+'-time-drag', {
            dragStart: (e:Event) => { this.dragStart(e); },
            dragMove: (e:MouseEvent) => { this.dragMove(e); },
@@ -40,8 +40,9 @@ export default class TimePicker extends Picker {
     
     
     protected dragMove(e:Event):void {
-        let centerX = this.clockElement.getBoundingClientRect().left + 80;
-        let centerY = this.clockElement.getBoundingClientRect().top + 80;
+        let half = this.opts.small ? 60 : 80;
+        let centerX = this.clockElement.getBoundingClientRect().left + half;
+        let centerY = this.clockElement.getBoundingClientRect().top + half;
         
         let clientX = (<MouseEvent>e).clientX === void 0 ? (<TouchEvent>e).touches[0].clientX : (<MouseEvent>e).clientX;
         let clientY = (<MouseEvent>e).clientY === void 0 ? (<TouchEvent>e).touches[0].clientY : (<MouseEvent>e).clientY;

@@ -35,7 +35,12 @@ export default class DayPicker extends Picker {
 			}
 			rows++;
 		} while(d.getMonth() === date.getMonth());
-		this.height = rows * 37;
+        if (this.opts.small) {
+            this.height = rows * 24;
+        } else {
+            this.height = rows * 37;
+        }
+		
 	}
 	
 	private days:string[] = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
