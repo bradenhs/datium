@@ -16,8 +16,11 @@
   width: 40px;
   height: 90px;
   bottom: 0;
-  transform-origin: 20px 56px;
-  transition: all ease .2s;
+  -webkit-transform-origin: 20px 56px;
+      -ms-transform-origin: 20px 56px;
+          transform-origin: 20px 56px;
+  -webkit-transition: all ease .2s;
+          transition: all ease .2s;
 }
 .STYLE_INSTANCE datium-next-view:after,
 .STYLE_INSTANCE datium-previous-view:after,
@@ -37,9 +40,13 @@
 }
 .STYLE_INSTANCE datium-next-view:active,
 .STYLE_INSTANCE datium-previous-view:active {
-  transform: scale(0.9);
+  -webkit-transform: scale(0.9);
+      -ms-transform: scale(0.9);
+          transform: scale(0.9);
   opacity: .9;
-  transition: none;
+  filter: alpha(opacity=90);
+  -webkit-transition: none;
+          transition: none;
 }
 .STYLE_INSTANCE datium-next-view {
   right: 0;
@@ -50,10 +57,14 @@
   margin-left: -2px;
 }
 .STYLE_INSTANCE datium-next-view:after {
-  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+          transform: rotate(45deg);
 }
 .STYLE_INSTANCE datium-next-view:before {
-  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+          transform: rotate(-45deg);
 }
 .STYLE_INSTANCE datium-previous-view {
   left: 0;
@@ -64,14 +75,19 @@
   margin-right: -2px;
 }
 .STYLE_INSTANCE datium-previous-view:after {
-  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+          transform: rotate(-45deg);
 }
 .STYLE_INSTANCE .datium-view-change-disabled {
    opacity: .5;
+   filter: alpha(opacity=50);
    pointer-events: none;
 }
 .STYLE_INSTANCE datium-previous-view:before {
-  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+          transform: rotate(45deg);
 }
 .STYLE_INSTANCE datium-span-labels {
   overflow: hidden;
@@ -81,11 +97,14 @@
   bottom: 0;
   display: block;
   position: absolute;
-  transition: .2s ease all;
+  -webkit-transition: .2s ease all;
+          transition: .2s ease all;
 }
 .STYLE_INSTANCE datium-span-labels:not(.datium-header-inactive):active {
   opacity: .85;
-  transition: none;
+  filter: alpha(opacity=85);
+  -webkit-transition: none;
+          transition: none;
 }
 
 .STYLE_INSTANCE datium-span-label {
@@ -94,13 +113,17 @@
   width: 100%;
   overflow: hidden;
   white-space: nowrap;
-  transition: all ease .2s;
-  transform-origin: 0 0;
+  -webkit-transition: all ease .2s;
+          transition: all ease .2s;
+  -webkit-transform-origin: 0 0;
+      -ms-transform-origin: 0 0;
+          transform-origin: 0 0;
   font-size: 18pt;
 }
 .STYLE_INSTANCE datium-span-label datium-changing-label {
   border-radius: 5px;
   opacity: .8;
+  filter: alpha(opacity=80);
   padding: 0 4px;
   font-size: 14pt;
   position: relative;
@@ -110,30 +133,44 @@
   color: PRIMARY;
 }
 .STYLE_INSTANCE datium-span-label.datium-top {
-  transform: translateY(22px) scale(0.66);
+  -webkit-transform: translateY(22px) scale(0.66);
+      -ms-transform: translateY(22px) scale(0.66);
+          transform: translateY(22px) scale(0.66);
   opacity: .6;
+  filter: alpha(opacity=60);
   width: 151%;
 }
 .STYLE_INSTANCE datium-span-label.datium-hidden-top {
-  transform: translateY(10px) scale(0.5);
+  -webkit-transform: translateY(10px) scale(0.5);
+      -ms-transform: translateY(10px) scale(0.5);
+          transform: translateY(10px) scale(0.5);
   opacity: 0;
+  filter: alpha(opacity=0);
 }
 .STYLE_INSTANCE datium-span-label datium-extended-label-text {
   opacity: 1;
-  transition: all ease .2s;
+  filter: alpha(opacity=100);
+  -webkit-transition: all ease .2s;
+          transition: all ease .2s;
 }
 .STYLE_INSTANCE datium-span-label.datium-bottom > datium-extended-label-text,
 .STYLE_INSTANCE datium-span-label.datium-hidden-bottom > datium-extended-label-text {
   opacity: 0;
+  filter: alpha(opacity=0);
 }
 .STYLE_INSTANCE datium-span-label.datium-bottom {
-  transform: translateY(44px) scale(1);
+  -webkit-transform: translateY(44px) scale(1);
+      -ms-transform: translateY(44px) scale(1);
+          transform: translateY(44px) scale(1);
 }
 .STYLE_INSTANCE datium-span-label.datium-bottom > datium-zoom-out-icon {
   opacity: 0;
+  filter: alpha(opacity=0);
 }
 .STYLE_INSTANCE datium-span-label.datium-hidden-bottom {
-  transform: translateY(90px) scale(1.2);
+  -webkit-transform: translateY(90px) scale(1.2);
+      -ms-transform: translateY(90px) scale(1.2);
+          transform: translateY(90px) scale(1.2);
 }
 
 .STYLE_INSTANCE .datium-max-view datium-zoom-out-icon {
@@ -162,8 +199,12 @@
   position: absolute;
   width: 3px;
   height: 7px;
-  transform: rotate(-45deg);
-  transform-origin: 1.5px 7px;
+  -webkit-transform: rotate(-45deg);
+      -ms-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+  -webkit-transform-origin: 1.5px 7px;
+      -ms-transform-origin: 1.5px 7px;
+          transform-origin: 1.5px 7px;
   bottom: 0;
   right: -1.5px;
   background: PRIMARY_TEXT;

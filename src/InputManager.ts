@@ -121,6 +121,8 @@ export default class InputManager {
         let utcOffsetWithColon = this.getUTCOffset(this.currentDate, true);
         let utcOffset = this.getUTCOffset(this.currentDate, false);
         
+        //result.match(this.fourDigitYearRegex);
+        
         result = result.replace(this.fourDigitYearRegex, fourDigitYear);
         result = result.replace(this.twoDigitYearRegex, twoDigitYear);
         result = result.replace(this.longMonthNameRegex, longMonthName);

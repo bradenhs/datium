@@ -6,13 +6,15 @@
 	position: relative;
     position: relative;
 	font-size: 12pt;
-    transition: .3s all ease;
+    -webkit-transition: .3s all ease;
+            transition: .3s all ease;
     color: SECONDARY_TEXT;
 }
 
 .STYLE_INSTANCE datium-day-element.datium-day-inactive,
 .STYLE_INSTANCE datium-day-element.datium-weekday-label {
     opacity: .5;
+    filter: alpha(opacity=50);
 }
 
 .STYLE_INSTANCE .datium-weekday-label {
@@ -20,8 +22,11 @@
 }
 
 .STYLE_INSTANCE datium-day-element.datium-day-selectable:active {
-    transform: scale(.9);
-    transition: none;
+    -webkit-transform: scale(.9);
+        -ms-transform: scale(.9);
+            transform: scale(.9);
+    -webkit-transition: none;
+            transition: none;
 }
 
 .STYLE_INSTANCE datium-month-element,
@@ -31,29 +36,37 @@
   line-height: 60px;
   position: relative;
   text-align: center;
-  transition: .3s all ease;
+  -webkit-transition: .3s all ease;
+          transition: .3s all ease;
   color: SECONDARY_TEXT;
 }
 .STYLE_INSTANCE .datium-month-inactive {
     opacity: .5;
+    filter: alpha(opacity=50);
     pointer-events: none;
 }
 .STYLE_INSTANCE .datium-year-inactive {
     opacity: .5;
+    filter: alpha(opacity=50);
     pointer-events: none;
 }
 .STYLE_INSTANCE datium-month-element:active,
 .STYLE_INSTANCE datium-year-element:active {
-  transform: scale(0.9);
-  transition: none;
+  -webkit-transform: scale(0.9);
+      -ms-transform: scale(0.9);
+          transform: scale(0.9);
+  -webkit-transition: none;
+          transition: none;
 }
 .STYLE_INSTANCE .datium-minute-view datium-hour-hand,
 .STYLE_INSTANCE .datium-second-view datium-hour-hand {
   opacity: .3;
+  filter: alpha(opacity=30);
   border-top-color: SECONDARY_TEXT;
 }
 .STYLE_INSTANCE .datium-second-view datium-minute-hand {
   opacity: .3;
+  filter: alpha(opacity=30);
   border-top-color: SECONDARY_TEXT;
 }
 .STYLE_INSTANCE .datium-hour-view datium-minute-hand,
@@ -122,13 +135,16 @@
   height: 50%;
   top: 50%;
   left: 50%;
-  transform-origin: 0 0;
+  -webkit-transform-origin: 0 0;
+      -ms-transform-origin: 0 0;
+          transform-origin: 0 0;
 }
 .STYLE_INSTANCE .datium-time-inactive {
     pointer-events: none;
 }
 .STYLE_INSTANCE .datium-time-inactive datium-tick-label {
     opacity: .3;
+    filter: alpha(opacity=30);
 }
 .STYLE_INSTANCE datium-current-time {
   display: block;
@@ -137,12 +153,16 @@
   height: 50%;
   top: 50%;
   left: 50%;
-  transform-origin: 0 0;
-  transition: .2s ease opacity;
+  -webkit-transform-origin: 0 0;
+      -ms-transform-origin: 0 0;
+          transform-origin: 0 0;
+  -webkit-transition: .2s ease opacity;
+          transition: .2s ease opacity;
   pointer-events: none;
 }
 .STYLE_INSTANCE datium-current-time.datium-hide-current-time {
   opacity: 0;
+  filter: alpha(opacity=0);
 }
 .STYLE_INSTANCE datium-current-time:after {
   position: absolute;
@@ -161,6 +181,7 @@
   left: -1px;
   height: 6px;
   opacity: .3;
+  filter: alpha(opacity=30);
   bottom: -3px;
   background: SECONDARY_TEXT;
 }
@@ -173,13 +194,16 @@
   font-size: 10pt;
   height: 50px;
   opacity: 1;
+  filter: alpha(opacity=100);
   margin-bottom: -20px;
   border-radius: 25px;
   color: SECONDARY_TEXT;
-  transition: all ease .3s;
+  -webkit-transition: all ease .3s;
+          transition: all ease .3s;
 }
 .STYLE_INSTANCE datium-tick-label datium-span {
-  transition: .2s ease all;
+  -webkit-transition: .2s ease all;
+          transition: .2s ease all;
   position: absolute;
   line-height: 50px;
   left: 0;
@@ -188,8 +212,11 @@
   bottom: 0;
 }
 .STYLE_INSTANCE datium-tick-label:active > datium-span {
-  transform: scale(0.8);
-  transition: none;
+  -webkit-transform: scale(0.8);
+      -ms-transform: scale(0.8);
+          transform: scale(0.8);
+  -webkit-transition: none;
+          transition: none;
 }
 .STYLE_INSTANCE datium-time-drag {
   position: absolute;
@@ -197,10 +224,15 @@
   top: 50%;
   height: 80px;
   width: 0;
-  transform-origin: 0 0;
+  -webkit-transform-origin: 0 0;
+      -ms-transform-origin: 0 0;
+          transform-origin: 0 0;
   z-index: 1;
-  transform: rotate(180deg);
-  transition: .4s ease all;
+  -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+  -webkit-transition: .4s ease all;
+          transition: .4s ease all;
 }
 .STYLE_INSTANCE datium-time-drag:before {
   content: '';
@@ -210,13 +242,15 @@
   width: 14px;
   height: 14px;
   border-radius: 100%;
-  transition: .3s ease all;
+  -webkit-transition: .3s ease all;
+          transition: .3s ease all;
   border: 2px solid SECONDARY_ACCENT;
   box-shadow: inset 0 0 0 2px SECONDARY;
   background: SECONDARY_ACCENT;
 }
 .STYLE_INSTANCE datium-time-drag:active:before {
-  transition: none;
+  -webkit-transition: none;
+          transition: none;
   box-shadow: inset 0 0 0 3px SECONDARY;
 }
 .STYLE_INSTANCE datium-drag-selection-area {
@@ -264,8 +298,12 @@
   left: 50%;
   margin-left: -3px;
   margin-top: -3px;
-  transform-origin: 3px 3px;
-  transform: rotate(240deg);
+  -webkit-transform-origin: 3px 3px;
+      -ms-transform-origin: 3px 3px;
+          transform-origin: 3px 3px;
+  -webkit-transform: rotate(240deg);
+      -ms-transform: rotate(240deg);
+          transform: rotate(240deg);
   border-left: 3px solid transparent;
   border-right: 3px solid transparent;
   border-top: 32px solid SECONDARY_ACCENT;
@@ -280,7 +318,9 @@
   left: 50%;
   margin-left: -2px;
   margin-top: -2px;
-  transform-origin: 2px 2px;
+  -webkit-transform-origin: 2px 2px;
+      -ms-transform-origin: 2px 2px;
+          transform-origin: 2px 2px;
   border-left: 2px solid transparent;
   border-right: 2px solid transparent;
   border-top: 48px solid SECONDARY_ACCENT;
@@ -295,8 +335,12 @@
   left: 50%;
   margin-left: -1px;
   margin-top: -1px;
-  transform-origin: 1px 1px;
-  transform: rotate(120deg);
+  -webkit-transform-origin: 1px 1px;
+      -ms-transform-origin: 1px 1px;
+          transform-origin: 1px 1px;
+  -webkit-transform: rotate(120deg);
+      -ms-transform: rotate(120deg);
+          transform: rotate(120deg);
   border-left: 1px solid transparent;
   border-right: 1px solid transparent;
   border-top: 64px solid SECONDARY_ACCENT;
@@ -312,10 +356,14 @@
   border-radius: 2px;
   font-size: 12pt;
   font-weight: bold;
-  transform-origin: 28px 56px;
+  -webkit-transform-origin: 28px 56px;
+      -ms-transform-origin: 28px 56px;
+          transform-origin: 28px 56px;
   pointer-events: none;
   opacity: 0;
-  transition: .4s ease opacity;
+  filter: alpha(opacity=0);
+  -webkit-transition: .4s ease opacity;
+          transition: .4s ease opacity;
   background: SECONDARY_ACCENT;
   color: SECONDARY;
   box-shadow: 0 0 1px 0 SECONDARY;
@@ -330,29 +378,47 @@
   border-top-color: SECONDARY_ACCENT;
 }
 .STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher:active:before {
-  transform: scale(0.8) !important;
-  transition: none;
+  -webkit-transform: scale(0.8) !important;
+      -ms-transform: scale(0.8) !important;
+          transform: scale(0.8) !important;
+  -webkit-transition: none;
+          transition: none;
 }
 .STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher:active:after {
-  transform: scale(0.7) !important;
-  transition: none;
+  -webkit-transform: scale(0.7) !important;
+      -ms-transform: scale(0.7) !important;
+          transform: scale(0.7) !important;
+  -webkit-transition: none;
+          transition: none;
 }
 .STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher:active:before {
-  transform: scale(0.7) !important;
-  transition: none;
+  -webkit-transform: scale(0.7) !important;
+      -ms-transform: scale(0.7) !important;
+          transform: scale(0.7) !important;
+  -webkit-transition: none;
+          transition: none;
 }
 .STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher:active:after {
-  transform: scale(0.8) !important;
-  transition: none;
+  -webkit-transform: scale(0.8) !important;
+      -ms-transform: scale(0.8) !important;
+          transform: scale(0.8) !important;
+  -webkit-transition: none;
+          transition: none;
 }
 .STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher:before {
   opacity: 1;
-  transform: scale(1);
+  filter: alpha(opacity=100);
+  -webkit-transform: scale(1);
+      -ms-transform: scale(1);
+          transform: scale(1);
   color: SECONDARY_ACCENT;
 }
 .STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher:after {
   opacity: 1;
-  transform: scale(1);
+  filter: alpha(opacity=100);
+  -webkit-transform: scale(1);
+      -ms-transform: scale(1);
+          transform: scale(1);
   color: SECONDARY_ACCENT;
 }
 .STYLE_INSTANCE datium-clock datium-meridiem-switcher {
@@ -364,7 +430,8 @@
   top: 50%;
   z-index: 1;
   margin-top: 20px;
-  transition: all ease .2s;
+  -webkit-transition: all ease .2s;
+          transition: all ease .2s;
 }
 .STYLE_INSTANCE datium-meridiem-switcher:after,
 .STYLE_INSTANCE datium-meridiem-switcher:before {
@@ -375,11 +442,16 @@
   font-size: 12pt;
   font-weight: bold;
   opacity: .6;
-  transition: all ease .2s;
-  transform: scale(0.8);
+  filter: alpha(opacity=60);
+  -webkit-transition: all ease .2s;
+          transition: all ease .2s;
+  -webkit-transform: scale(0.8);
+      -ms-transform: scale(0.8);
+          transform: scale(0.8);
 }
 .STYLE_INSTANCE datium-meridiem-switcher:active {
-  transition: none;
+  -webkit-transition: none;
+          transition: none;
 }
 .STYLE_INSTANCE datium-meridiem-switcher:before {
   content: 'AM';
@@ -398,10 +470,12 @@
     content: '+12';
 }
 datium-container.STYLE_INSTANCE.datium-is-dragging datium-time-drag {
-  transition: none;
+  -webkit-transition: none;
+          transition: none;
 }
 datium-container.STYLE_INSTANCE.datium-is-dragging datium-time-drag datium-time-bubble {
   opacity: 1;
+  filter: alpha(opacity=100);
 }
 datium-container.STYLE_INSTANCE:active {
   overflow: visible !important;
@@ -428,11 +502,17 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
   border-radius: 2px;
   font-size: 12pt;
   font-weight: bold;
-  transform-origin: 28px 56px;
+  -webkit-transform-origin: 28px 56px;
+      -ms-transform-origin: 28px 56px;
+          transform-origin: 28px 56px;
   pointer-events: none;
   opacity: 0;
-  transition: .2s ease all;
-  transform: scale(0.9);
+  filter: alpha(opacity=0);
+  -webkit-transition: .2s ease all;
+          transition: .2s ease all;
+  -webkit-transform: scale(0.9);
+      -ms-transform: scale(0.9);
+          transform: scale(0.9);
   background: SECONDARY_ACCENT;
   color: SECONDARY;
   box-shadow: 0 0 1px 0 SECONDARY, 0 18px 8px -14px SECONDARY;
@@ -448,8 +528,12 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
 }
 .STYLE_INSTANCE datium-meridiem-switcher:active datium-bubble {
   opacity: 1;
-  transition-delay: .3s;
-  transform: scale(1);
+  filter: alpha(opacity=100);
+  -webkit-transition-delay: .3s;
+          transition-delay: .3s;
+  -webkit-transform: scale(1);
+      -ms-transform: scale(1);
+          transform: scale(1);
 }
 .STYLE_INSTANCE datium-meridiem-switcher datium-bubble:after {
   content: '';
@@ -468,13 +552,19 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
 }
 .STYLE_INSTANCE [datium-data]:not(.datium-day-inactive):active > datium-bubble {
   opacity: 1;
-  transition-delay: .3s;
-  transform: scale(1.1111);
+  filter: alpha(opacity=100);
+  -webkit-transition-delay: .3s;
+          transition-delay: .3s;
+  -webkit-transform: scale(1.1111);
+      -ms-transform: scale(1.1111);
+          transform: scale(1.1111);
 }
 .STYLE_INSTANCE .datium-hour-view [datium-data]:active > datium-bubble,
 .STYLE_INSTANCE .datium-minute-view [datium-data]:active > datium-bubble,
 .STYLE_INSTANCE .datium-second-view [datium-data]:active > datium-bubble {
-  transform: scale(1.25);
+  -webkit-transform: scale(1.25);
+      -ms-transform: scale(1.25);
+          transform: scale(1.25);
 }
 .STYLE_INSTANCE .datium-hour-view .datium-pm datium-bubble:after {
   content: 'PM';

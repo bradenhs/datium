@@ -10,13 +10,15 @@ datium-container.STYLE_INSTANCE, datium-container.STYLE_INSTANCE * {
 }
 
 datium-container.STYLE_INSTANCE.datium-no-transition, datium-container.STYLE_INSTANCE.datium-no-transition * {
-    transition: none !important;
+    -webkit-transition: none !important;
+            transition: none !important;
 }
 
 .STYLE_INSTANCE datium-all-pickers-container {
 	display: block;
 	position: relative;
-	transition: .4s ease all;
+	-webkit-transition: .4s ease all;
+	        transition: .4s ease all;
     overflow: hidden;
     background: SECONDARY;
 }
@@ -28,26 +30,39 @@ datium-container.STYLE_INSTANCE.datium-no-transition, datium-container.STYLE_INS
 	right: 0;
     bottom: 0;
     top: 0;
-	transition: .4s ease all;
-	transform-origin: 150px 150px;
+	-webkit-transition: .4s ease all;
+	        transition: .4s ease all;
+	-webkit-transform-origin: 150px 150px;
+	    -ms-transform-origin: 150px 150px;
+	        transform-origin: 150px 150px;
 }
 
 .STYLE_INSTANCE datium-picker-container.datium-transition-in {
 	opacity: 0;
-	transform: scale(.8);
+	filter:alpha(opacity=0);
+	-webkit-transform: scale(.8);
+	    -ms-transform: scale(.8);
+	        transform: scale(.8);
 }
 
 .STYLE_INSTANCE datium-picker-container.datium-transition-out {
 	opacity: 0;
-	transform: scale(1.2);
+	filter:alpha(opacity=0);
+	-webkit-transform: scale(1.2);
+	    -ms-transform: scale(1.2);
+	        transform: scale(1.2);
 }
 
 .STYLE_INSTANCE datium-picker-container.datium-transition-left {
-    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+        -ms-transform: translateX(-100%);
+            transform: translateX(-100%);
 }
 
 .STYLE_INSTANCE datium-picker-container.datium-transition-right {
-    transform: translateX(100%);
+    -webkit-transform: translateX(100%);
+        -ms-transform: translateX(100%);
+            transform: translateX(100%);
 }
 
 datium-container.STYLE_INSTANCE {
@@ -57,9 +72,12 @@ datium-container.STYLE_INSTANCE {
     width: 300px;
     position: absolute;
     border-radius: 2px;
-    transition: all ease .4s;
+    -webkit-transition: all ease .4s;
+            transition: all ease .4s;
     overflow: hidden;
-    transform-origin: 20px -4px;
+    -webkit-transform-origin: 20px -4px;
+        -ms-transform-origin: 20px -4px;
+            transform-origin: 20px -4px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23), inset 0 1px 1px -1px SECONDARY_TEXT;
     -webkit-transform: translate3d(0,0,0);
 }
@@ -72,6 +90,7 @@ datium-modal-background.STYLE_INSTANCE {
     bottom: 0;
     background: rgba(100,100,100,.7);
     opacity: 0;
+    filter:alpha(opacity=0);
     pointer-events: none;
     -webkit-touch-callout:none;
     -webkit-user-select:none;
@@ -80,11 +99,13 @@ datium-modal-background.STYLE_INSTANCE {
     -ms-user-select:none;
     user-select:none;
     -webkit-tap-highlight-color:rgba(0,0,0,0);
-    transition: all ease .4s;
+    -webkit-transition: all ease .4s;
+            transition: all ease .4s;
 }
 
 datium-modal-background.STYLE_INSTANCE.datium-showing {
     opacity: 1;
+    filter:alpha(opacity=100);
     cursor: default;
     pointer-events: auto;
 }
@@ -99,8 +120,11 @@ datium-container.STYLE_INSTANCE.datium-modal {
 
 datium-container.STYLE_INSTANCE.datium-closed {
     opacity: 0;
+    filter:alpha(opacity=0);
     pointer-events: none;
-    transform: scale(.9) translateY(-6px);    
+    -webkit-transform: scale(.9) translateY(-6px);
+        -ms-transform: scale(.9) translateY(-6px);
+            transform: scale(.9) translateY(-6px);    
 }
 
 datium-container.STYLE_INSTANCE.datium-closed datium-all-pickers-container {
@@ -112,7 +136,9 @@ datium-container.STYLE_INSTANCE.datium-landscape-view.datium-modal {
     margin-left: -240px;
     top: 50%;
     margin-top: -135px;
-    transform-origin: 240px 135px;
+    -webkit-transform-origin: 240px 135px;
+        -ms-transform-origin: 240px 135px;
+            transform-origin: 240px 135px;
 }
 
 datium-container.STYLE_INSTANCE.datium-landscape-view {
@@ -136,7 +162,9 @@ datium-container.STYLE_INSTANCE.datium-landscape-view datium-next-view,
 datium-container.STYLE_INSTANCE.datium-landscape-view datium-previous-view {
     width: 50%;
     height: 50px;
-    transform-origin: 47px 25px;
+    -webkit-transform-origin: 47px 25px;
+        -ms-transform-origin: 47px 25px;
+            transform-origin: 47px 25px;
 }
 
 datium-container.STYLE_INSTANCE.datium-landscape-view datium-next-view:before,
@@ -175,7 +203,9 @@ datium-container.STYLE_INSTANCE.datium-small {
 .STYLE_INSTANCE.datium-small datium-previous-view {
   width: 30px;
   height: 52px;
-  transform-origin: 15px 34px;
+  -webkit-transform-origin: 15px 34px;
+      -ms-transform-origin: 15px 34px;
+          transform-origin: 15px 34px;
 }
 .STYLE_INSTANCE.datium-small datium-next-view:after,
 .STYLE_INSTANCE.datium-small datium-next-view:before,
@@ -187,7 +217,9 @@ datium-container.STYLE_INSTANCE.datium-small {
 }
 
 .STYLE_INSTANCE.datium-small datium-picker-container {
-	transform-origin: 105px 105px;
+	-webkit-transform-origin: 105px 105px;
+	    -ms-transform-origin: 105px 105px;
+	        transform-origin: 105px 105px;
 }
 
 .STYLE_INSTANCE.datium-small datium-next-view:before,
@@ -206,17 +238,25 @@ datium-container.STYLE_INSTANCE.datium-small {
 }
 
 .STYLE_INSTANCE.datium-small datium-span-label.datium-top {
-  transform: translateY(8px) scale(0.66);
+  -webkit-transform: translateY(8px) scale(0.66);
+      -ms-transform: translateY(8px) scale(0.66);
+          transform: translateY(8px) scale(0.66);
   width: 151%;
 }
 .STYLE_INSTANCE.datium-small datium-span-label.datium-hidden-top {
-  transform: translateY(-5px) scale(0.5);
+  -webkit-transform: translateY(-5px) scale(0.5);
+      -ms-transform: translateY(-5px) scale(0.5);
+          transform: translateY(-5px) scale(0.5);
 }
 .STYLE_INSTANCE.datium-small datium-span-label.datium-bottom {
-  transform: translateY(23px) scale(1);
+  -webkit-transform: translateY(23px) scale(1);
+      -ms-transform: translateY(23px) scale(1);
+          transform: translateY(23px) scale(1);
 }
 .STYLE_INSTANCE.datium-small datium-span-label.datium-hidden-bottom {
-  transform: translateY(52px) scale(1.2);
+  -webkit-transform: translateY(52px) scale(1.2);
+      -ms-transform: translateY(52px) scale(1.2);
+          transform: translateY(52px) scale(1.2);
 }
 .STYLE_INSTANCE.datium-small datium-span-label datium-changing-label {
   padding: 0 3px;
@@ -224,7 +264,9 @@ datium-container.STYLE_INSTANCE.datium-small {
   font-size: 13pt;
 }
 .STYLE_INSTANCE.datium-small datium-zoom-out-icon {
-  transform: scale(.9) translate(-2px, 2px);
+  -webkit-transform: scale(.9) translate(-2px, 2px);
+      -ms-transform: scale(.9) translate(-2px, 2px);
+          transform: scale(.9) translate(-2px, 2px);
 }
 .STYLE_INSTANCE.datium-small datium-day-element {
     font-size: 11pt;
@@ -275,5 +317,6 @@ datium-container.STYLE_INSTANCE.datium-small {
 }
 
 .STYLE_INSTANCE.datium-small [datium-data]:not(.datium-day-inactive):active > datium-bubble {
-  transition: .3s cubic-bezier(1.000, -0.600, 1.000, -0.600) opacity !important;
+  -webkit-transition: .3s cubic-bezier(1.000, -0.600, 1.000, -0.600) opacity !important;
+          transition: .3s cubic-bezier(1.000, -0.600, 1.000, -0.600) opacity !important;
 }
