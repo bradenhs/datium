@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>Datium Develop</title>
+    
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
     
     <!-- Start Production Code -->
@@ -43,6 +44,36 @@
         blandit justo nulla, vitae hendrerit enim scelerisque at. Sed ipsum sem, sodales luctus pharetra ut, hendrerit nec
         dui.
     </p>
+    <p>
+        Nullam pretium rhoncus arcu vitae iaculis. Donec maximus placerat leo at rhoncus. Praesent ut elit pellentesque, ullamcorper
+        eros laoreet, ullamcorper est. In metus leo, aliquet non tortor aliquam, fermentum cursus ligula. Vivamus eget pulvinar
+        turpis. Vestibulum hendrerit venenatis tincidunt. Pellentesque feugiat ante ac nisl congue vehicula eget nec leo.
+        In gravida nibh non malesuada laoreet. Nam mollis malesuada nunc, nec tempus urna ullamcorper sed.
+    </p>
+    <p>
+        In rhoncus tempor eros, vel pellentesque dolor laoreet et. Aenean a lectus porta, congue nisi non, cursus magna. Nulla tempus
+        rhoncus odio in dapibus. Vivamus sit amet leo aliquet, luctus erat sit amet, mollis mi. Aliquam in pellentesque urna.
+        Pellentesque in tristique turpis. Mauris in tempor sem. Suspendisse id tincidunt tortor. In scelerisque congue ante
+        et ultrices. Suspendisse sed ornare erat. Maecenas sollicitudin commodo erat, ac fringilla est vestibulum et. Proin
+        sem orci, hendrerit nec nulla sed, hendrerit imperdiet eros. Morbi placerat leo eget libero sagittis fringilla. Integer
+        blandit justo nulla, vitae hendrerit enim scelerisque at. Sed ipsum sem, sodales luctus pharetra ut, hendrerit nec
+        dui.
+    </p>
+    <p>
+        Nullam pretium rhoncus arcu vitae iaculis. Donec maximus placerat leo at rhoncus. Praesent ut elit pellentesque, ullamcorper
+        eros laoreet, ullamcorper est. In metus leo, aliquet non tortor aliquam, fermentum cursus ligula. Vivamus eget pulvinar
+        turpis. Vestibulum hendrerit venenatis tincidunt. Pellentesque feugiat ante ac nisl congue vehicula eget nec leo.
+        In gravida nibh non malesuada laoreet. Nam mollis malesuada nunc, nec tempus urna ullamcorper sed.
+    </p>
+    <p>
+        In rhoncus tempor eros, vel pellentesque dolor laoreet et. Aenean a lectus porta, congue nisi non, cursus magna. Nulla tempus
+        rhoncus odio in dapibus. Vivamus sit amet leo aliquet, luctus erat sit amet, mollis mi. Aliquam in pellentesque urna.
+        Pellentesque in tristique turpis. Mauris in tempor sem. Suspendisse id tincidunt tortor. In scelerisque congue ante
+        et ultrices. Suspendisse sed ornare erat. Maecenas sollicitudin commodo erat, ac fringilla est vestibulum et. Proin
+        sem orci, hendrerit nec nulla sed, hendrerit imperdiet eros. Morbi placerat leo eget libero sagittis fringilla. Integer
+        blandit justo nulla, vitae hendrerit enim scelerisque at. Sed ipsum sem, sodales luctus pharetra ut, hendrerit nec
+        dui.
+    </p>
     <style>
         input {
             padding: 10px;
@@ -60,16 +91,13 @@
       System.import('src/Datium').then(function() {
         new Datium({
           element: document.querySelector('#test-element'),
-          startView: 'day',
           endView: 'second',
-          theme: 'light',
-          modal: true,
-          minDate: new Date(),
+          minDate: new Date().valueOf() + 999999999,
           minuteSelectionInterval: 5
         });
         new Datium({
           element: document.querySelector('#test-element1'),
-          theme: 'dark',
+          theme: 'material',
           startView: 'hour',
           endView: 'second',
           small: true,

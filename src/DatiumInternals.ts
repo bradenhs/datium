@@ -13,6 +13,7 @@ import {IDatiumOptions, IDatiumTheme, SanitizeOptions} from 'src/DatiumOptions';
 import mainCss from 'src/styles/main.css!text';
 import headerCss from 'src/styles/header.css!text';
 import pickerCss from 'src/styles/pickers.css!text';
+import InputManager from 'src/InputManager';
 
 export default class DatiumInternals {
     private static pickersOnPage: number = 0;
@@ -103,6 +104,12 @@ export default class DatiumInternals {
         this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) => {
             this.viewChanged(date, level, lastDate, lastLevel, selectedDate);
         });
+        
+        let inputManager = new InputManager(this.opts);
+        this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) => {
+            inputManager.update(date, level, lastDate, lastLevel, selectedDate);
+        });
+        
         if(this.opts.modal) {
             this.modalBackground = this.createModalBackground();
             document.body.appendChild(this.modalBackground);
@@ -183,8 +190,6 @@ export default class DatiumInternals {
     }
     
     private viewChanged(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) {
-        this.opts.element.value = selectedDate.toString();
-        
         if (level < this.opts.endView) {
             this.currentPicker.destroy(Transition.ZOOM_IN);
             this.closePicker(true);

@@ -38,8 +38,14 @@ export default class ViewManager {
     }
 	
 	constructor(private opts:IDatiumOptions) {
-		this.date = new Date();
-        this.selectedDate = new Date(this.date.valueOf());
+        this.selectedDate = new Date(); // this will be anything in the text box initially maybe
+        if (this.opts.minDate !== void 0 && this.selectedDate.valueOf() < this.opts.minDate.valueOf()) {
+            this.selectedDate = new Date(this.opts.minDate.valueOf());
+        }
+        if (this.opts.maxDate !== void 0 && this.selectedDate.valueOf() > this.opts.maxDate.valueOf()) {
+            this.selectedDate = new Date(this.opts.maxDate.valueOf());
+        }
+        this.date = new Date(this.selectedDate.valueOf());
 		this.level = this.opts.startView;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;

@@ -229,7 +229,7 @@ function sanitizeDataFormat(dataFormat:string):string {
 }
 
 function sanitizeDisplayFormat(displayFormat:string):string {
-    if (displayFormat === void 0) return 'HH:mmA MMM DD, YYYY';
+    if (displayFormat === void 0) return 'hh:mmA MMM DD, YYYY';
     if (typeof displayFormat !== 'string') throw DisplayFormatError;
     return displayFormat;
 }
@@ -289,7 +289,7 @@ export function SanitizeOptions(opts:any):IDatiumOptions {
         minuteSelectionInterval: sanitizeMinuteSelectionInterval(opts.minuteSelectionInterval), //done
         secondSelectionInterval: sanitizeSecondSelectionInterval(opts.secondSelectionInterval), //done
         militaryTime: sanitizeMilitaryTime(opts.militaryTime), //done
-        dataFormat: sanitizeDataFormat(opts.dataFormat),
+        dataFormat: sanitizeDataFormat(opts.dataFormat), // IS THIS NEEDED?
         displayFormat: sanitizeDisplayFormat(opts.displayFormat),
         zIndex: sanitizeZIndex(opts.zIndex), //done
         transition: sanitizeTransition(opts.transition), //done
