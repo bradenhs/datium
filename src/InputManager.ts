@@ -73,6 +73,19 @@ export default class InputManager {
         return dif + this.pad(tzo / 60, 2) + colon + this.pad(tzo % 60, 2);
     }
     
+    private replace(str:string, regex:RegExp, replaceWith:string):string {
+        let splits = str.split(/\[([^[\]]+)\]/g);
+        for (let i = 0; i < splits.length; i += 2) {
+            splits[i] = splits[i].replace(regex, '['+replaceWith+']');
+        }
+        let join = '[';
+        while (splits.length > 1) {
+            splits[1] = [splits[0], splits[1]].join(join);
+            splits.splice(0, 1);
+            join = join === '[' ? ']' : '[';
+        }
+        return splits[0];
+    }
     
     
     public update(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date):void {
@@ -80,10 +93,8 @@ export default class InputManager {
             return;
         }
         this.currentDate = new Date(selectedDate.valueOf());
-        
-        let result = this.opts.displayFormat;
-        
         // Get time parts
+        
         
         // DO MATCHEDS WITH REGEX INSTEAD
         
@@ -123,29 +134,34 @@ export default class InputManager {
         
         //result.match(this.fourDigitYearRegex);
         
-        result = result.replace(this.fourDigitYearRegex, fourDigitYear);
-        result = result.replace(this.twoDigitYearRegex, twoDigitYear);
-        result = result.replace(this.longMonthNameRegex, longMonthName);
-        result = result.replace(this.shortMonthNameRegex, shortMonthName);
-        result = result.replace(this.paddedMonthDigitRegex, paddedMonthDigit);
-        result = result.replace(this.monthDigitRegex, monthDigit);
-        result = result.replace(this.paddedDayOfMonthRegex, paddedDayOfMonth);
-        result = result.replace(this.dayOfMonthWithOrdinalRegex, dayOfMonthWithOrdinal);
-        result = result.replace(this.dayOfMonthRegex, dayOfMonth);
-        result = result.replace(this.unixTimeStampRegex, unixTimeStamp);
-        result = result.replace(this.unixMillisecondTimeStampRegex, unixMillisecondTimeStamp);
-        result = result.replace(this.paddedMilitaryTimeRegex, paddedMilitaryTime);
-        result = result.replace(this.militaryTimeRegex, militaryTime);
-        result = result.replace(this.paddedHourRegex, paddedHour);
-        result = result.replace(this.hourRegex, hour);
-        result = result.replace(this.capitalMeridiemRegex, capitalMeridiem);
-        result = result.replace(this.lowercaseMeridiemRegex, lowercaseMeridiem);
-        result = result.replace(this.paddedMinutesRegex, paddedMinutes);
-        result = result.replace(this.minutesRegex, minutes);
-        result = result.replace(this.paddedSecondsRegex, paddedSeconds);
-        result = result.replace(this.secondsRegex, seconds);
-        result = result.replace(this.utcOffsetWithColonRegex, utcOffsetWithColon);
-        result = result.replace(this.utcOffsetRegex, utcOffset);
+        let result = this.opts.displayFormat;
+        
+        result = this.replace(result, this.fourDigitYearRegex, fourDigitYear);
+        result = this.replace(result, this.fourDigitYearRegex, fourDigitYear);
+        result = this.replace(result, this.twoDigitYearRegex, twoDigitYear);
+        result = this.replace(result, this.longMonthNameRegex, longMonthName);
+        result = this.replace(result, this.shortMonthNameRegex, shortMonthName);
+        result = this.replace(result, this.paddedMonthDigitRegex, paddedMonthDigit);
+        result = this.replace(result, this.monthDigitRegex, monthDigit);
+        result = this.replace(result, this.paddedDayOfMonthRegex, paddedDayOfMonth);
+        result = this.replace(result, this.dayOfMonthWithOrdinalRegex, dayOfMonthWithOrdinal);
+        result = this.replace(result, this.dayOfMonthRegex, dayOfMonth);
+        result = this.replace(result, this.unixTimeStampRegex, unixTimeStamp);
+        result = this.replace(result, this.unixMillisecondTimeStampRegex, unixMillisecondTimeStamp);
+        result = this.replace(result, this.paddedMilitaryTimeRegex, paddedMilitaryTime);
+        result = this.replace(result, this.militaryTimeRegex, militaryTime);
+        result = this.replace(result, this.paddedHourRegex, paddedHour);
+        result = this.replace(result, this.hourRegex, hour);
+        result = this.replace(result, this.capitalMeridiemRegex, capitalMeridiem);
+        result = this.replace(result, this.lowercaseMeridiemRegex, lowercaseMeridiem);
+        result = this.replace(result, this.paddedMinutesRegex, paddedMinutes);
+        result = this.replace(result, this.minutesRegex, minutes);
+        result = this.replace(result, this.paddedSecondsRegex, paddedSeconds);
+        result = this.replace(result, this.secondsRegex, seconds);
+        result = this.replace(result, this.utcOffsetWithColonRegex, utcOffsetWithColon);
+        result = this.replace(result, this.utcOffsetRegex, utcOffset);
+        
+        result = result.replace(/\[|\]/g, '');
         
         this.opts.element.value = result;
     }

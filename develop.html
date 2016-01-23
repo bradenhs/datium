@@ -77,9 +77,10 @@
     <style>
         input {
             padding: 10px;
-            width: 400px;
+            width: 300px;
             border: 1px solid #aaa;
             border-radius: 2px;
+            font-size: 16pt;
             transition: all ease .2s;
         }
         
@@ -93,7 +94,8 @@
           element: document.querySelector('#test-element'),
           endView: 'second',
           minDate: new Date().valueOf() + 999999999,
-          minuteSelectionInterval: 5
+          minuteSelectionInterval: 5,
+          displayFormat: 'hh:mmA MMM DD, YYYY'
         });
         new Datium({
           element: document.querySelector('#test-element1'),
