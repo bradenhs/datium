@@ -10,9 +10,14 @@ export default class MinutePicker extends TimePicker {
     }
     
     protected updateHandElements():void {
+        (<any>this.minuteHandElement.style).msTransform = `rotate(${this.rotation}deg)`;
+        this.minuteHandElement.style.webkitTransform = `rotate(${this.rotation}deg)`;  
         this.minuteHandElement.style.transform = `rotate(${this.rotation}deg)`;
         
         let hourAngle = this.date.getHours() * 30 + 180 + this.time/2;
+        
+        (<any>this.hourHandElement.style).msTransform = `rotate(${hourAngle}deg)`;
+        this.hourHandElement.style.webkitTransform = `rotate(${hourAngle}deg)`;  
         this.hourHandElement.style.transform = `rotate(${hourAngle}deg)`;       
     }
     
@@ -84,6 +89,9 @@ export default class MinutePicker extends TimePicker {
     protected updateTimeBubbleElement():void {
         let timeBubbleRotation = -this.rotation;
         this.timeBubbleElement.innerHTML = this.padNum(this.time)+'m';
+        
+        (<any>this.timeBubbleElement.style).msTransform = `rotate(${timeBubbleRotation}deg)`;
+        this.timeBubbleElement.style.webkitTransform = `rotate(${timeBubbleRotation}deg)`;  
         this.timeBubbleElement.style.transform = `rotate(${timeBubbleRotation}deg)`;        
     } 
 }

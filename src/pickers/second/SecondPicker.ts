@@ -10,12 +10,18 @@ export default class SecondPicker extends TimePicker {
     }
     
     protected updateHandElements():void {
+        (<any>this.secondHandElement.style).msTransform = `rotate(${this.rotation}deg)`;
+        this.secondHandElement.style.webkitTransform = `rotate(${this.rotation}deg)`;  
         this.secondHandElement.style.transform = `rotate(${this.rotation}deg)`;
         
         let minuteAngle = this.date.getMinutes() * 6 + 180;
+        (<any>this.minuteHandElement.style).msTransform = `rotate(${minuteAngle}deg)`;
+        this.minuteHandElement.style.webkitTransform = `rotate(${minuteAngle}deg)`;  
         this.minuteHandElement.style.transform = `rotate(${minuteAngle}deg)`;
         
         let hourAngle = this.date.getHours() * 30 + 180 + this.rotationToTime(minuteAngle) / 2;
+        (<any>this.hourHandElement.style).msTransform = `rotate(${hourAngle}deg)`;
+        this.hourHandElement.style.webkitTransform = `rotate(${hourAngle}deg)`;  
         this.hourHandElement.style.transform = `rotate(${hourAngle}deg)`;       
     }
     
@@ -88,6 +94,9 @@ export default class SecondPicker extends TimePicker {
     protected updateTimeBubbleElement():void {
         let timeBubbleRotation = -this.rotation;
         this.timeBubbleElement.innerText = this.padNum(this.time) + 's';
+        
+        (<any>this.timeBubbleElement.style).msTransform = `rotate(${timeBubbleRotation}deg)`;
+        this.timeBubbleElement.style.webkitTransform = `rotate(${timeBubbleRotation}deg)`;  
         this.timeBubbleElement.style.transform = `rotate(${timeBubbleRotation}deg)`;        
     } 
 }

@@ -168,6 +168,8 @@
   filter: alpha(opacity=0);
 }
 .STYLE_INSTANCE datium-span-label.datium-hidden-bottom {
+  opacity: 0;
+  filter: alpha(opacity=0);
   -webkit-transform: translateY(90px) scale(1.2);
       -ms-transform: translateY(90px) scale(1.2);
           transform: translateY(90px) scale(1.2);

@@ -86,6 +86,8 @@ export default class TimePicker extends Picker {
     }
     
     protected updateTimeDragElement():void {
+        (<any>this.timeDragElement.style).msTransform = `rotate(${this.rotation}deg)`;
+        this.timeDragElement.style.webkitTransform = `rotate(${this.rotation}deg)`;  
         this.timeDragElement.style.transform = `rotate(${this.rotation}deg)`;        
     }
     
@@ -94,7 +96,11 @@ export default class TimePicker extends Picker {
         let tickLabel = document.createElement('datium-tick-label');
         
         tickLabel.innerHTML = `<datium-span class="${this.selectorPrefix}-selectable" datium-data="${data}">${label}</datium-span>`;
+        
+        (<any>tickLabel.style).msTransform = `rotate(${-angle}deg)`;
+        tickLabel.style.webkitTransform = `rotate(${-angle}deg)`;  
         tickLabel.style.transform = `rotate(${-angle}deg)`;
+        
         tick.appendChild(document.createElement('datium-tick-mark'));
         
         if (this.appendTickLabel(data)) {
@@ -104,6 +110,9 @@ export default class TimePicker extends Picker {
         if (this.isInactive(data)) {
             tick.classList.add('datium-time-inactive');
         }
+        
+        (<any>tick.style).msTransform = `rotate(${angle}deg)`;
+        tick.style.webkitTransform = `rotate(${angle}deg)`;  
         tick.style.transform = `rotate(${angle}deg)`;
         
         return tick;
@@ -182,7 +191,11 @@ export default class TimePicker extends Picker {
     
     protected updateCurrentTimeElement():void {
         let curTimeRotation = this.getCurrentTimeRotation(this.date, this.viewManager.getSelectedDate());
+        
+        (<any>this.currentTimeElement.style).msTransform = `rotate(${curTimeRotation}deg)`;
+        this.currentTimeElement.style.webkitTransform = `rotate(${curTimeRotation}deg)`;  
         this.currentTimeElement.style.transform = `rotate(${curTimeRotation}deg)`;
+        
         if (curTimeRotation === void 0) {
             this.currentTimeElement.classList.add('datium-hide-current-time');
         } else {

@@ -30,6 +30,8 @@ export default class HourPicker extends TimePicker {
         } else {
             this.timeBubbleElement.innerText = this.padNum(this.time) + this.meridiem;
         }
+        (<any>this.timeBubbleElement.style).msTransform = `rotate(${timeBubbleRotation}deg)`;
+        this.timeBubbleElement.style.webkitTransform = `rotate(${timeBubbleRotation}deg)`;      
         this.timeBubbleElement.style.transform = `rotate(${timeBubbleRotation}deg)`;        
     }    
     
@@ -180,6 +182,8 @@ export default class HourPicker extends TimePicker {
     }
     
     protected updateHandElements():void {
+        (<any>this.hourHandElement.style).msTransform = `rotate(${this.rotation}deg)`;
+        this.hourHandElement.style.webkitTransform = `rotate(${this.rotation}deg)`;   
         this.hourHandElement.style.transform = `rotate(${this.rotation}deg)`;        
     }
     

@@ -73,20 +73,27 @@ export default class InputManager {
         return dif + this.pad(tzo / 60, 2) + colon + this.pad(tzo % 60, 2);
     }
     
+    private split(str:string):string[] {
+        return str.split(/\[([^[\]]+)\]/g);
+    }
+    
     private replace(str:string, regex:RegExp, replaceWith:string):string {
-        let splits = str.split(/\[([^[\]]+)\]/g);
+        let splits = this.split(str);
         for (let i = 0; i < splits.length; i += 2) {
             splits[i] = splits[i].replace(regex, '['+replaceWith+']');
         }
-        let join = '[';
-        while (splits.length > 1) {
-            splits[1] = [splits[0], splits[1]].join(join);
-            splits.splice(0, 1);
-            join = join === '[' ? ']' : '[';
-        }
-        return splits[0];
+        return this.join(splits, '[', ']');
     }
     
+    private join(array:string[], leftJoin:string, rightJoin:string):string {
+        let join = leftJoin;
+        while (array.length > 1) {
+            array[1] = [array[0], array[1]].join(join);
+            array.splice(0, 1);
+            join = join === leftJoin ? rightJoin : leftJoin;
+        }
+        return array[0];
+    }
     
     public update(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date):void {
         if (this.currentDate !== void 0 && this.currentDate.valueOf() === selectedDate.valueOf() && level === lastLevel) {
@@ -98,72 +105,135 @@ export default class InputManager {
         
         // DO MATCHEDS WITH REGEX INSTEAD
         
-        let fourDigitYear = this.pad(this.currentDate.getFullYear(), 4);
-        let twoDigitYear = fourDigitYear.slice(2, 4); 
+        let fourDigitYear = 'Y'+this.pad(this.currentDate.getFullYear(), 4);
+        let twoDigitYear = 'Y'+fourDigitYear.slice(2, 4); 
         
-        let longMonthName = this.longMonthNames[this.currentDate.getMonth()];
-        let shortMonthName = this.shortMonthNames[this.currentDate.getMonth()];
+        let longMonthName = 'M'+this.longMonthNames[this.currentDate.getMonth()];
+        let shortMonthName = 'M'+this.shortMonthNames[this.currentDate.getMonth()];
         
-        let paddedMonthDigit = this.pad(this.currentDate.getMonth() + 1, 2);
-        let monthDigit = (this.currentDate.getMonth() + 1).toString();
+        let paddedMonthDigit = 'M'+this.pad(this.currentDate.getMonth() + 1, 2);
+        let monthDigit = 'M'+(this.currentDate.getMonth() + 1).toString();
         
-        let paddedDayOfMonth = this.pad(this.currentDate.getDate(), 2);
-        let dayOfMonthWithOrdinal = this.appendOrdinalTo(this.currentDate.getDate());
-        let dayOfMonth = this.currentDate.getDate().toString();
+        let paddedDayOfMonth = 'D'+this.pad(this.currentDate.getDate(), 2);
+        let dayOfMonthWithOrdinal = 'D'+this.appendOrdinalTo(this.currentDate.getDate());
+        let dayOfMonth = 'D'+this.currentDate.getDate().toString();
         
-        let unixTimeStamp = Math.round(this.currentDate.valueOf() / 1000).toString();
-        let unixMillisecondTimeStamp = this.currentDate.valueOf().toString();
+        let unixTimeStamp = 'X'+Math.round(this.currentDate.valueOf() / 1000).toString();
+        let unixMillisecondTimeStamp = 'X'+this.currentDate.valueOf().toString();
         
-        let paddedMilitaryTime = this.pad(this.currentDate.getHours(), 2);
-        let militaryTime = this.currentDate.getHours().toString();
+        let paddedMilitaryTime = 'H'+this.pad(this.currentDate.getHours(), 2);
+        let militaryTime = 'H'+this.currentDate.getHours().toString();
         
-        let paddedHour = this.pad(this.militaryToNormal(this.currentDate.getHours()), 2);
-        let hour = this.militaryToNormal(this.currentDate.getHours()).toString();
+        let paddedHour = 'H'+this.pad(this.militaryToNormal(this.currentDate.getHours()), 2);
+        let hour = 'H'+this.militaryToNormal(this.currentDate.getHours()).toString();
         
-        let capitalMeridiem = this.currentDate.getHours() > 11 ? 'PM' : 'AM';
-        let lowercaseMeridiem = capitalMeridiem.toLowerCase();
+        let capitalMeridiem = 'A'+(this.currentDate.getHours() > 11 ? 'PM' : 'AM');
+        let lowercaseMeridiem = 'A'+capitalMeridiem.toLowerCase();
         
-        let paddedMinutes = this.pad(this.currentDate.getMinutes(), 2);
-        let minutes = this.currentDate.getMinutes().toString();
+        let paddedMinutes = 'm'+this.pad(this.currentDate.getMinutes(), 2);
+        let minutes = 'm'+this.currentDate.getMinutes().toString();
         
-        let paddedSeconds = this.pad(this.currentDate.getSeconds(), 2);
-        let seconds = this.currentDate.getSeconds().toString();
+        let paddedSeconds = 's'+this.pad(this.currentDate.getSeconds(), 2);
+        let seconds = 's'+this.currentDate.getSeconds().toString();
         
-        let utcOffsetWithColon = this.getUTCOffset(this.currentDate, true);
-        let utcOffset = this.getUTCOffset(this.currentDate, false);
+        let utcOffsetWithColon = 'Z'+this.getUTCOffset(this.currentDate, true);
+        let utcOffset = 'Z'+this.getUTCOffset(this.currentDate, false);
         
-        //result.match(this.fourDigitYearRegex);
+        let result = this.join(this.split(this.opts.displayFormat), '[~', '~]');
         
-        let result = this.opts.displayFormat;
-        
-        result = this.replace(result, this.fourDigitYearRegex, fourDigitYear);
+        // YEAR
         result = this.replace(result, this.fourDigitYearRegex, fourDigitYear);
         result = this.replace(result, this.twoDigitYearRegex, twoDigitYear);
+        
+        // MONTH
         result = this.replace(result, this.longMonthNameRegex, longMonthName);
         result = this.replace(result, this.shortMonthNameRegex, shortMonthName);
         result = this.replace(result, this.paddedMonthDigitRegex, paddedMonthDigit);
         result = this.replace(result, this.monthDigitRegex, monthDigit);
+        
+        // DAY
         result = this.replace(result, this.paddedDayOfMonthRegex, paddedDayOfMonth);
         result = this.replace(result, this.dayOfMonthWithOrdinalRegex, dayOfMonthWithOrdinal);
         result = this.replace(result, this.dayOfMonthRegex, dayOfMonth);
+        
+        // MISC
         result = this.replace(result, this.unixTimeStampRegex, unixTimeStamp);
         result = this.replace(result, this.unixMillisecondTimeStampRegex, unixMillisecondTimeStamp);
+        
+        // HOUR
         result = this.replace(result, this.paddedMilitaryTimeRegex, paddedMilitaryTime);
         result = this.replace(result, this.militaryTimeRegex, militaryTime);
         result = this.replace(result, this.paddedHourRegex, paddedHour);
         result = this.replace(result, this.hourRegex, hour);
         result = this.replace(result, this.capitalMeridiemRegex, capitalMeridiem);
         result = this.replace(result, this.lowercaseMeridiemRegex, lowercaseMeridiem);
+        
+        // MINUTE
         result = this.replace(result, this.paddedMinutesRegex, paddedMinutes);
         result = this.replace(result, this.minutesRegex, minutes);
-        result = this.replace(result, this.paddedSecondsRegex, paddedSeconds);
+        
+        // SECOND
         result = this.replace(result, this.secondsRegex, seconds);
+        result = this.replace(result, this.paddedSecondsRegex, paddedSeconds);
+        
+        // MISC
         result = this.replace(result, this.utcOffsetWithColonRegex, utcOffsetWithColon);
         result = this.replace(result, this.utcOffsetRegex, utcOffset);
         
-        result = result.replace(/\[|\]/g, '');
+        
+        let selectionStart;
+        let selectionEnd;
+
+        let searches:string[];
+        switch(level) {
+        case ViewLevel.YEAR:
+            searches = [fourDigitYear, twoDigitYear];
+            break;
+        case ViewLevel.MONTH:
+            searches = [longMonthName, shortMonthName, paddedMonthDigit, monthDigit];
+            break;
+        case ViewLevel.DAY:
+            searches = [paddedDayOfMonth, dayOfMonthWithOrdinal, monthDigit];
+            break;
+        case ViewLevel.HOUR:
+            searches = [paddedMilitaryTime, militaryTime, paddedHour, hour];
+            break;
+        case ViewLevel.MINUTE:
+            searches = [paddedMinutes, minutes];
+            break;
+        case ViewLevel.SECOND:
+            searches = [paddedSeconds, seconds];
+            break;
+        }
+
+        let length = (array:string[], until:number) => {
+            let length = 0;
+            for (let i = 0; i < until; i++) {
+                length += array[i].length;
+            }
+            return length;
+        }
+        
+        let split = this.split(result);
+        for (let i:number = 1; i < split.length; i+=2) {
+            if (split[i].charAt(0) === '~' && split[i].charAt(split[i].length - 1) === '~') {
+                split[i] = split[i].slice(1, split[i].length - 1);
+            } else {
+                if (selectionStart === void 0) {
+                    let found = searches.indexOf(split[i]);
+                    if (found > -1) {
+                        selectionStart = length(split, i);
+                        selectionEnd = selectionStart + searches[found].length - 1;
+                    }
+                }
+                split[i] = split[i].slice(1, split[i].length);
+            }
+        }        
+        result = split.join('');
         
         this.opts.element.value = result;
+        
+        this.opts.element.setSelectionRange(selectionStart, selectionEnd);
     }
     
     private pad(num:number, totalDigits:number):string {
