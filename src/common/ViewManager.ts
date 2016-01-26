@@ -173,7 +173,7 @@ export default class ViewManager {
 		this.goToView(newValue, newLevel);
 	}
 	
-	private getValue(level:ViewLevel):number {
+	public getValue(level:ViewLevel):number {
 		switch(level) {
 			case ViewLevel.SECOND: return this.date.getMinutes();
 			case ViewLevel.MINUTE: return this.date.getHours();

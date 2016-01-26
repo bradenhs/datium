@@ -36,6 +36,8 @@ export default class DatiumInternals {
     private opts:IDatiumOptions;
     private modalBackground:HTMLElement;
     
+    private inputManager:InputManager;
+    
     constructor(options:any) {
         this.opts = SanitizeOptions(options);
         
@@ -105,9 +107,9 @@ export default class DatiumInternals {
             this.viewChanged(date, level, lastDate, lastLevel, selectedDate);
         });
         
-        let inputManager = new InputManager(this.opts);
+        this.inputManager = new InputManager(this.opts, this.viewManager);
         this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) => {
-            inputManager.update(date, level, lastDate, lastLevel, selectedDate);
+            this.inputManager.update(date, level, lastDate, lastLevel, selectedDate);
         });
         
         if(this.opts.modal) {
@@ -153,6 +155,7 @@ export default class DatiumInternals {
             this.modalBackground.classList.add('datium-showing');
         }
         this.datiumContainer.classList.remove('datium-closed');
+        this.inputManager.update(this.viewManager.getSelectedDate(), this.viewManager.getViewLevel(), this.viewManager.getSelectedDate(), void 0, this.viewManager.getSelectedDate());
         
         let cancelClose = true;
         setTimeout(() => {

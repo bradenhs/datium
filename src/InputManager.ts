@@ -1,10 +1,124 @@
 import {IDatiumOptions} from 'src/DatiumOptions';
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
+import {onKeyDown, KeyCodes} from 'src/common/Events';
 
 export default class InputManager {
     private currentDate:Date;
-    constructor(private opts:IDatiumOptions) {
+    private levelOrder:ViewLevel[];
+    constructor(private opts:IDatiumOptions, private viewManager:ViewManager) {
+        let dateStr = this.join(this.split(this.opts.displayFormat), '[~', '~]');
         
+        // YEAR
+        dateStr = this.replace(dateStr, this.fourDigitYearRegex, 'YYYY');
+        dateStr = this.replace(dateStr, this.twoDigitYearRegex, 'YY');
+        
+        // MONTH
+        dateStr = this.replace(dateStr, this.longMonthNameRegex, 'MMMM');
+        dateStr = this.replace(dateStr, this.shortMonthNameRegex, 'MMM');
+        dateStr = this.replace(dateStr, this.paddedMonthDigitRegex, 'MM');
+        dateStr = this.replace(dateStr, this.monthDigitRegex, 'M');
+        
+        // DAY
+        dateStr = this.replace(dateStr, this.paddedDayOfMonthRegex, 'DD');
+        dateStr = this.replace(dateStr, this.dayOfMonthWithOrdinalRegex, 'Do');
+        dateStr = this.replace(dateStr, this.dayOfMonthRegex, 'D');
+        
+        // MISC
+        dateStr = this.replace(dateStr, this.unixTimeStampRegex, 'X');
+        dateStr = this.replace(dateStr, this.unixMillisecondTimeStampRegex, 'x');
+        
+        // HOUR
+        dateStr = this.replace(dateStr, this.paddedMilitaryTimeRegex, 'HH');
+        dateStr = this.replace(dateStr, this.militaryTimeRegex, 'H');
+        dateStr = this.replace(dateStr, this.paddedHourRegex, 'hh');
+        dateStr = this.replace(dateStr, this.hourRegex, 'h');
+        dateStr = this.replace(dateStr, this.capitalMeridiemRegex, 'A');
+        dateStr = this.replace(dateStr, this.lowercaseMeridiemRegex, 'a');
+        
+        // MINUTE
+        dateStr = this.replace(dateStr, this.paddedMinutesRegex, 'mm');
+        dateStr = this.replace(dateStr, this.minutesRegex, 'm');
+        
+        // SECOND
+        dateStr = this.replace(dateStr, this.paddedSecondsRegex, 'ss');
+        dateStr = this.replace(dateStr, this.secondsRegex, 's');
+        
+        // MISC
+        dateStr = this.replace(dateStr, this.utcOffsetWithColonRegex, 'X');
+        dateStr = this.replace(dateStr, this.utcOffsetRegex, 'x');
+        
+        let split = this.split(dateStr);
+        this.levelOrder = [];
+        for (let i:number = 1; i < split.length; i+=2) {
+            if ((split[i].charAt(0) === '~' && split[i].charAt(split[i].length - 1) === '~') ||
+                split[i].toLowerCase() === 'a') {
+                continue;
+            } else {
+                let level = this.getLevel(split[i]);
+                if (level !== void 0 && this.levelOrder.indexOf(level) === -1) {
+                    this.levelOrder.push(level);
+                }
+            }
+        }
+        
+        onKeyDown(this.opts.element, (e:KeyboardEvent) => {
+           if (e.keyCode === KeyCodes.LEFT || (e.shiftKey && e.keyCode === KeyCodes.TAB)) {
+               if (this.previous()) {
+                   e.preventDefault();    
+               }
+           } else if (e.keyCode === KeyCodes.RIGHT || e.keyCode === KeyCodes.TAB) {
+               if (this.next()) {
+                   e.preventDefault();
+               }
+           }
+        });
+    }
+    
+    private previous():boolean {
+        let curIndex = this.levelOrder.indexOf(this.viewManager.getViewLevel());
+        if (curIndex !== void 0 && curIndex - 1 > -1) {
+            this.viewManager.changeViewLevel(this.levelOrder[curIndex - 1]);
+            return true;
+        }
+        return false;
+    }
+    
+    private next():boolean {
+        let curIndex = this.levelOrder.indexOf(this.viewManager.getViewLevel());
+        if (curIndex !== void 0 && curIndex + 1 < this.levelOrder.length) {
+            this.viewManager.changeViewLevel(this.levelOrder[curIndex + 1]);
+            return true;
+        }
+        return false;
+    }
+    
+    private getLevel(str:string):ViewLevel {
+        switch(str) {
+            case 'YYYY':
+            case 'YY':
+                return ViewLevel.YEAR;
+            case 'MMMM':
+            case 'MMM':
+            case 'MM':
+            case 'M':
+                return ViewLevel.MONTH;
+            case 'DD':
+            case 'Do':
+            case 'D':
+                return ViewLevel.DAY;
+            case 'HH':
+            case 'H':
+            case 'hh':
+            case 'h':
+                return ViewLevel.HOUR;
+            case 'mm':
+            case 'm':
+                return ViewLevel.MINUTE;
+            case 'ss':
+            case 's':
+                return ViewLevel.SECOND;
+        }
+        return void 0;
     }
     
     private longMonthNames:string[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -100,13 +214,9 @@ export default class InputManager {
             return;
         }
         this.currentDate = new Date(selectedDate.valueOf());
-        // Get time parts
-        
-        
-        // DO MATCHEDS WITH REGEX INSTEAD
-        
+                
         let fourDigitYear = 'Y'+this.pad(this.currentDate.getFullYear(), 4);
-        let twoDigitYear = 'Y'+fourDigitYear.slice(2, 4); 
+        let twoDigitYear = 'Y'+fourDigitYear.slice(3, 5); 
         
         let longMonthName = 'M'+this.longMonthNames[this.currentDate.getMonth()];
         let shortMonthName = 'M'+this.shortMonthNames[this.currentDate.getMonth()];
@@ -173,8 +283,8 @@ export default class InputManager {
         result = this.replace(result, this.minutesRegex, minutes);
         
         // SECOND
-        result = this.replace(result, this.secondsRegex, seconds);
         result = this.replace(result, this.paddedSecondsRegex, paddedSeconds);
+        result = this.replace(result, this.secondsRegex, seconds);
         
         // MISC
         result = this.replace(result, this.utcOffsetWithColonRegex, utcOffsetWithColon);
@@ -184,7 +294,7 @@ export default class InputManager {
         let selectionStart;
         let selectionEnd;
 
-        let searches:string[];
+        let searches:string[] = [];
         switch(level) {
         case ViewLevel.YEAR:
             searches = [fourDigitYear, twoDigitYear];
@@ -203,17 +313,9 @@ export default class InputManager {
             break;
         case ViewLevel.SECOND:
             searches = [paddedSeconds, seconds];
-            break;
+            break;        
         }
 
-        let length = (array:string[], until:number) => {
-            let length = 0;
-            for (let i = 0; i < until; i++) {
-                length += array[i].length;
-            }
-            return length;
-        }
-        
         let split = this.split(result);
         for (let i:number = 1; i < split.length; i+=2) {
             if (split[i].charAt(0) === '~' && split[i].charAt(split[i].length - 1) === '~') {
@@ -222,7 +324,7 @@ export default class InputManager {
                 if (selectionStart === void 0) {
                     let found = searches.indexOf(split[i]);
                     if (found > -1) {
-                        selectionStart = length(split, i);
+                        selectionStart = this.getLengthUntil(split, i);
                         selectionEnd = selectionStart + searches[found].length - 1;
                     }
                 }
@@ -232,8 +334,17 @@ export default class InputManager {
         result = split.join('');
         
         this.opts.element.value = result;
-        
-        this.opts.element.setSelectionRange(selectionStart, selectionEnd);
+        if (this.opts.element === document.activeElement) {
+            this.opts.element.setSelectionRange(selectionStart, selectionEnd);
+        }
+    }
+    
+    private getLengthUntil(array:string[], until:number) {
+        let length = 0;
+        for (let i = 0; i < until; i++) {
+            length += array[i].length;
+        }
+        return length;
     }
     
     private pad(num:number, totalDigits:number):string {

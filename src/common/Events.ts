@@ -178,6 +178,12 @@ export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallb
     });
 }
 
+export function onKeyDown(element:Element, callback:(e?:KeyboardEvent) => void) {
+    element.addEventListener('keydown', (e:KeyboardEvent) => {
+       callback(e); 
+    });
+}
+
 export function removeListeners(listeners:ListenerReference[]):void {
     for (let key in listeners) {
         let listener = listeners[key];
@@ -209,3 +215,9 @@ export function onBlur(element:Element, callback:(e?:MouseEvent|TouchEvent) => v
         callback(e);
     }); 
 };
+
+export enum KeyCodes {
+    RIGHT = 39,
+    LEFT = 37,
+    TAB = 9
+}
