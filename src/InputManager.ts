@@ -70,8 +70,23 @@ export default class InputManager {
                if (this.next()) {
                    e.preventDefault();
                }
+           } else if (e.keyCode === KeyCodes.UP) {
+               this.viewManager.increment();
+               e.preventDefault();
+           } else if (e.keyCode === KeyCodes.DOWN) {
+               this.viewManager.decrement();
+               e.preventDefault();
            }
         });
+    }
+    
+    private getIntervalForLevel(level:ViewLevel):number {
+        switch(level) {
+            case ViewLevel.SECOND: return this.opts.secondSelectionInterval;
+            case ViewLevel.MINUTE: return this.opts.minuteSelectionInterval;
+            case ViewLevel.HOUR: return this.opts.hourSelectionInterval;
+            default: return 1;
+        }
     }
     
     private previous():boolean {
@@ -106,6 +121,8 @@ export default class InputManager {
             case 'Do':
             case 'D':
                 return ViewLevel.DAY;
+            case 'A':
+            case 'a':
             case 'HH':
             case 'H':
             case 'hh':

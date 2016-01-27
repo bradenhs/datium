@@ -103,8 +103,8 @@ export default class DatiumInternals {
         this.minutePicker = new MinutePicker(this.pickerContainer, this.viewManager, header, this.opts);
         this.secondPicker = new SecondPicker(this.pickerContainer, this.viewManager, header, this.opts);
         
-        this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) => {
-            this.viewChanged(date, level, lastDate, lastLevel, selectedDate);
+        this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date, transition:boolean) => {
+            this.viewChanged(date, level, lastDate, lastLevel, selectedDate, transition);
         });
         
         this.inputManager = new InputManager(this.opts, this.viewManager);
@@ -155,10 +155,12 @@ export default class DatiumInternals {
             this.modalBackground.classList.add('datium-showing');
         }
         this.datiumContainer.classList.remove('datium-closed');
-        this.inputManager.update(this.viewManager.getSelectedDate(), this.viewManager.getViewLevel(), this.viewManager.getSelectedDate(), void 0, this.viewManager.getSelectedDate());
         
         let cancelClose = true;
+        
+        this.viewManager.changeViewLevel(this.opts.startView);
         setTimeout(() => {
+            this.inputManager.update(this.viewManager.getSelectedDate(), this.viewManager.getViewLevel(), this.viewManager.getSelectedDate(), void 0, this.viewManager.getSelectedDate());
             this.eventListeners = this.eventListeners.concat(onDown(this.opts.element, (e) => {
                 cancelClose = true;
             }));
@@ -186,20 +188,19 @@ export default class DatiumInternals {
         
         removeListeners(this.eventListeners);
         this.eventListeners = [];
-        
-        setTimeout(() => {
-            this.viewManager.changeViewLevel(this.opts.startView);       
-        }, 400);
     }
     
-    private viewChanged(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) {
+    private viewChanged(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date, transition:boolean) {
         if (level < this.opts.endView) {
             this.currentPicker.destroy(Transition.ZOOM_IN);
             this.closePicker(true);
             return;
         }
         let newPicker = this.getNewPicker(level);
-        if (level > lastLevel) {
+        if (transition === false) {
+            this.currentPicker.destroy(Transition.NONE);
+            newPicker.create(Transition.NONE, date);
+        } else if (level > lastLevel) {
             this.currentPicker.destroy(Transition.ZOOM_IN);
             newPicker.create(Transition.ZOOM_OUT, date);
         } else if (level < lastLevel) {

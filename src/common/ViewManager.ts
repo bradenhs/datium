@@ -16,16 +16,16 @@ export default class ViewManager {
 	private date:Date;
     private selectedDate:Date;
 	private lastDate:Date;
-	private observers:((date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel, selectedDate?:Date) => void)[] = [];
+	private observers:((date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel, selectedDate?:Date, transition?:boolean) => void)[] = [];
 	
-	public registerObserver(observer:(date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel, selectedDate?:Date) => void):void {
+	public registerObserver(observer:(date:Date, level:ViewLevel, lastDate?:Date, lastLevel?:ViewLevel, selectedDate?:Date, transition?:boolean) => void):void {
 		observer(this.date, this.level, this.lastDate, this.lastLevel, this.selectedDate);
 		this.observers.push(observer);
 	}
 	
-	private notifyObservers():void {
+	private notifyObservers(transition:boolean = true):void {
 		for (let key in this.observers) {
-			this.observers[key](this.date, this.level, this.lastDate, this.lastLevel, this.selectedDate);
+			this.observers[key](this.date, this.level, this.lastDate, this.lastLevel, this.selectedDate, transition);
 		}
 	}
     
@@ -67,7 +67,7 @@ export default class ViewManager {
         this.goToView(this.getValue(this.level), this.level);
     }
     
-	private goToView(value:number, level:ViewLevel):void {
+	public goToView(value:number, level:ViewLevel):void {        
 		this.lastDate = new Date(this.date.valueOf());
 		this.lastLevel = this.level;
 		this.level = level;
@@ -130,7 +130,97 @@ export default class ViewManager {
 		this.notifyObservers();
 	}
     
-    private levelToString(level:ViewLevel):string {
+    private daysInCurrentMonth():number {
+        return new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() + 1, 0).getDate();
+    }
+    
+    public increment():boolean {
+        return this.step(true);
+    }
+    
+    public decrement():boolean {
+        return this.step(false);
+    }
+    
+    public step(positive:boolean):boolean {
+        let sign:number = positive ? 1 : -1;
+        let newVal;
+        let newDate = new Date(this.selectedDate.valueOf());
+        switch(this.level) {
+            case ViewLevel.SECOND:
+                newVal = newDate.getSeconds() + this.opts.secondSelectionInterval * sign;
+                if (newVal > 59) return false;
+                if (newVal < 0) return false;
+                newDate.setSeconds(newVal);
+                break;
+            case ViewLevel.MINUTE:
+                newVal = newDate.getMinutes() + this.opts.minuteSelectionInterval * sign;
+                if (newVal > 59) return false;
+                if (newVal < 0) return false;
+                newDate.setMinutes(newVal);
+                break;
+            case ViewLevel.HOUR:
+                newVal = newDate.getHours() + this.opts.hourSelectionInterval * sign;
+                if (newVal > 23) return false;
+                if (newVal < 0) return false;
+                newDate.setHours(newVal);
+                // D.L.S. time jazz is super annoying
+                if (newDate.getHours() !== newVal && this.selectedDate.getHours() > newVal) {
+                    newDate.setHours(newDate.getHours() - 2);
+                }
+                break;
+            case ViewLevel.DAY:
+                newVal = newDate.getDate() + sign;
+                if (newVal > this.daysInCurrentMonth()) return false;
+                if (newVal < 1) return false;
+                newDate.setDate(newVal);
+                break;
+            case ViewLevel.MONTH:
+                newVal = newDate.getMonth() + sign;
+                if (newVal > 11) return false;
+                if (newVal < 0) return false;
+                newDate.setMonth(newVal);
+                while (newDate.getMonth() !== newVal) {
+                    newDate.setDate(newDate.getDate() - 1);
+                }
+                break;
+            case ViewLevel.YEAR:
+                newVal = newDate.getFullYear() + sign;
+                newDate.setFullYear(newVal);
+                break;
+        }
+        if (this.opts.minDate !== void 0 && newDate.valueOf() < this.opts.minDate.valueOf()) {
+            newDate = new Date(this.opts.minDate.valueOf());
+        } else if (this.opts.maxDate !== void 0 && newDate.valueOf() > this.opts.maxDate.valueOf()) {
+            newDate = new Date(this.opts.maxDate.valueOf());
+        }
+        switch (this.level) {
+            case ViewLevel.SECOND:
+                if (newDate.getSeconds() === this.selectedDate.getSeconds()) return false;
+                break;
+            case ViewLevel.MINUTE:
+                if (newDate.getMinutes() === this.selectedDate.getMinutes()) return false;
+                break;
+            case ViewLevel.HOUR:
+                if (newDate.getHours() === this.selectedDate.getHours()) return false;
+                break;
+            case ViewLevel.DAY:
+                if (newDate.getDate() === this.selectedDate.getDate()) return false;
+                break;
+            case ViewLevel.MONTH:
+                if (newDate.getMonth() === this.selectedDate.getMonth()) return false;
+                break;
+            case ViewLevel.YEAR:
+                if (newDate.getFullYear() === this.selectedDate.getFullYear()) return false;
+                break; 
+        }  
+        this.date = new Date(newDate.valueOf());
+        this.selectedDate = new Date(newDate.valueOf());
+        this.notifyObservers(false);
+        return true;
+    }
+    
+    public levelToString(level:ViewLevel):string {
         switch (level) {
             case ViewLevel.YEAR: return 'YEAR';
             case ViewLevel.MONTH: return 'MONTH';

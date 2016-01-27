@@ -216,8 +216,10 @@ export function onBlur(element:Element, callback:(e?:MouseEvent|TouchEvent) => v
     }); 
 };
 
-export enum KeyCodes {
+export const enum KeyCodes {
     RIGHT = 39,
     LEFT = 37,
-    TAB = 9
+    TAB = 9,
+    UP = 38,
+    DOWN = 40
 }

@@ -19,16 +19,24 @@ export default class HourPicker extends TimePicker {
     
     protected updateTimeBubbleElement():void {
         let timeBubbleRotation = -this.rotation;
+        let t = this.time;
+        if (this.meridiem === 'PM') {
+            t += 12;    
+        }
+        if (t === 12) t = 0;
+        if (t === 24) t = 12;
+        
+        // Silly D.L.S. time stuff
+        let d = new Date(this.date.valueOf());
+        d.setHours(t);
+        t = d.getHours();
+        
         if (this.opts.militaryTime) {
-            let t = this.time;
-            if (this.meridiem === 'PM') {
-                t += 12;    
-            }
-            if (t === 12) t = 0;
-            if (t === 24) t = 12; 
             this.timeBubbleElement.innerText = this.padNum(t) + 'h';
         } else {
-            this.timeBubbleElement.innerText = this.padNum(this.time) + this.meridiem;
+            if (t > 12) t -= 12;
+            if (t === 0) t += 12;
+            this.timeBubbleElement.innerText = this.padNum(t) + this.meridiem;
         }
         (<any>this.timeBubbleElement.style).msTransform = `rotate(${timeBubbleRotation}deg)`;
         this.timeBubbleElement.style.webkitTransform = `rotate(${timeBubbleRotation}deg)`;      
@@ -86,17 +94,8 @@ export default class HourPicker extends TimePicker {
             } else {
                 ticks[key].classList.remove('datium-time-inactive');
             }
-            if (this.opts.militaryTime) {
-                if (dataVal === 12) dataVal = 0;
-                if (dataVal === 24) dataVal = 12;
-                if (this.meridiem === 'PM') {
-                    let newText = dataVal + 12;
-                    tickLabel.innerHTML = `${newText}<datium-bubble>${newText}</datium-bubble>`;
-                } else {
-                    let newText = dataVal < 10 ? '0' + dataVal : dataVal;
-                    tickLabel.innerHTML = `${newText}<datium-bubble>${newText}</datium-bubble>`;
-                }
-            }
+            let newText = this.getLabelFromTickPosition(dataVal);
+            tickLabel.innerHTML = `${newText}<datium-bubble>${newText}</datium-bubble>`;
         }
         this.updateCurrentTimeElement();
         this.updateMeridiemPicker();
@@ -140,13 +139,24 @@ export default class HourPicker extends TimePicker {
     }
     
     protected getLabelFromTickPosition(tickPosition:number):string {
-        if (this.opts.militaryTime) {
-            let label = this.meridiem === 'PM' ? tickPosition + 12 : tickPosition;
-            if (label === 12) label = 0;
-            if (label === 24) label = 12;
-            return label < 10 ? '0' + label : label.toString();
+        let t = tickPosition;
+        if (this.meridiem === 'PM') {
+            t += 12;    
+        }
+        if (t === 12) t = 0;
+        if (t === 24) t = 12;
+                
+        // Silly D.L.S. time stuff
+        let d = new Date(this.date.valueOf());
+        d.setHours(t);
+        t = d.getHours();
+        
+        if (this.opts.militaryTime) {            
+            return (t < 10 ? '0' + t : t.toString());
         } else {
-            return tickPosition.toString();
+            if (t > 12) return (t - 12).toString();
+            if (t === 0) return "12";
+            return t.toString();
         }
     }
     

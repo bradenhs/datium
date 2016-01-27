@@ -62,6 +62,11 @@ export class Picker {
     }
     
     public destroy(transition:Transition):void {
+        if (transition === Transition.NONE) {
+            this.picker.remove();
+            this.picker = null;
+            return;
+        }
         this.picker.classList.add(this.getTransitionClass(transition));
         setTimeout((elToRemove:HTMLElement) => {
             elToRemove.remove();
