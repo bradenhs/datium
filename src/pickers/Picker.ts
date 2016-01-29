@@ -21,7 +21,8 @@ export class Picker {
     constructor(container:HTMLElement, viewManager:ViewManager, selectorPrefix:string, protected opts:IDatiumOptions) {
         this.container = container;
         onTap(this.container, selectorPrefix+'-selectable', (e:Event) => {
-            let zoomValue = parseInt(e.srcElement.getAttribute('datium-data'));
+            let el = e.srcElement || <Element>e.target;
+            let zoomValue = parseInt(el.getAttribute('datium-data'));
             if (viewManager.getViewLevel() === ViewLevel.HOUR && (<any>this).meridiem === 'PM') {
                 if (zoomValue === 12) zoomValue = 0;
                 if (zoomValue === 24) zoomValue = 12;
@@ -63,13 +64,17 @@ export class Picker {
     
     public destroy(transition:Transition):void {
         if (transition === Transition.NONE) {
-            this.picker.remove();
+            if (this.picker.parentElement !== null) {
+                this.picker.parentElement.removeChild(this.picker);
+            }
             this.picker = null;
             return;
         }
         this.picker.classList.add(this.getTransitionClass(transition));
         setTimeout((elToRemove:HTMLElement) => {
-            elToRemove.remove();
+            if (elToRemove.parentElement !== null) {
+                elToRemove.parentElement.removeChild(elToRemove);
+            }
             elToRemove = null;
         }, 400, this.picker);
     }

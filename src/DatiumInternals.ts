@@ -1,5 +1,5 @@
 import headerTemplate from 'src/header/header.html!text';
-import {onDown, onMouseDown, onBlur, onFocus, onTap, onSwipeLeft, onSwipeRight, ListenerReference, removeListeners} from 'src/common/Events';
+import {onDown, onUp, onMouseDown, onBlur, onFocus, onTap, onSwipeLeft, onSwipeRight, ListenerReference, removeListeners} from 'src/common/Events';
 import Header from 'src/header/Header';
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
 import YearPicker from 'src/pickers/year/YearPicker';
@@ -77,14 +77,33 @@ export default class DatiumInternals {
             return false;
         });
         
+        onDown(this.datiumContainer, 'datium-active-capable', (e) => {
+            let el = e.srcElement || <Element>e.target;
+            while (el !== this.datiumContainer) {
+                if (el.classList.contains('datium-active-capable')) {
+                    el.classList.add('datium-active');
+                }
+                el = el.parentElement;
+            }
+            this.datiumContainer.classList.add('datium-active');
+        });
+        
+        onUp(document, (e) => {
+            let activeElements = this.datiumContainer.querySelectorAll('.datium-active');
+            for (let i = 0; i < activeElements.length; i++) {
+                activeElements[i].classList.remove('datium-active');
+            }
+            this.datiumContainer.classList.remove('datium-active');
+        });
+        
         let reopenOnTapListeners = [];
-        onFocus(this.opts.element, () => {  
+        onFocus(this.opts.element, (e:Event) => {  
             this.openPicker();        
             reopenOnTapListeners = onTap(this.opts.element, () => {
                 if (!this.isPickerOpen && document.activeElement === this.opts.element) {
                     this.openPicker();
                 }
-            });   
+            });
         });
         
         onBlur(this.opts.element, () => {
@@ -230,10 +249,19 @@ export default class DatiumInternals {
     }
     
     private insertStyles():void {
-        let styles = this.transformCss(mainCss) + this.transformCss(headerCss) + this.transformCss(pickerCss);
+        let css = this.transformCss(mainCss) + this.transformCss(headerCss) + this.transformCss(pickerCss);
+        
+        let head = document.head || document.getElementsByTagName('head')[0];
         let styleElement = document.createElement('style');
-        styleElement.innerText = styles;
-        document.head.appendChild(styleElement);        
+
+        styleElement.type = 'text/css';
+        if ((<any>styleElement).styleSheet){
+            (<any>styleElement).styleSheet.cssText = css;
+        } else {
+            styleElement.appendChild(document.createTextNode(css));
+        }
+
+        head.appendChild(styleElement);      
     }
     
     private primary = new RegExp('PRIMARY', 'g');
@@ -265,6 +293,7 @@ export default class DatiumInternals {
         el.innerHTML = headerTemplate + '<datium-all-pickers-container></datium-all-pickers-container>';
         el.classList.add('datium-closed');
         el.classList.add(this.pickerId);
+        el.classList.add('datium-active-capable');
         el.style.zIndex = this.opts.zIndex.toString();
         return el;
     }

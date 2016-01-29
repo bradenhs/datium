@@ -38,8 +38,8 @@
 .STYLE_INSTANCE datium-previous-view:before {
   margin-top: -4px;
 }
-.STYLE_INSTANCE datium-next-view:active,
-.STYLE_INSTANCE datium-previous-view:active {
+.STYLE_INSTANCE datium-next-view.datium-active,
+.STYLE_INSTANCE datium-previous-view.datium-active {
   -webkit-transform: scale(0.9);
       -ms-transform: scale(0.9);
           transform: scale(0.9);
@@ -100,7 +100,7 @@
   -webkit-transition: .2s ease all;
           transition: .2s ease all;
 }
-.STYLE_INSTANCE datium-span-labels:not(.datium-header-inactive):active {
+.STYLE_INSTANCE datium-span-labels:not(.datium-header-inactive).datium-active {
   opacity: .85;
   filter: alpha(opacity=85);
   -webkit-transition: none;

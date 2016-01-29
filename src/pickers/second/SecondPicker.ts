@@ -93,7 +93,7 @@ export default class SecondPicker extends TimePicker {
     
     protected updateTimeBubbleElement():void {
         let timeBubbleRotation = -this.rotation;
-        this.timeBubbleElement.innerText = this.padNum(this.time) + 's';
+        this.timeBubbleElement.innerHTML = this.padNum(this.time) + 's';
         
         (<any>this.timeBubbleElement.style).msTransform = `rotate(${timeBubbleRotation}deg)`;
         this.timeBubbleElement.style.webkitTransform = `rotate(${timeBubbleRotation}deg)`;  

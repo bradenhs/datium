@@ -21,7 +21,7 @@
     font-weight: bold;
 }
 
-.STYLE_INSTANCE datium-day-element.datium-day-selectable:active {
+.STYLE_INSTANCE datium-day-element.datium-day-selectable.datium-active {
     -webkit-transform: scale(.9);
         -ms-transform: scale(.9);
             transform: scale(.9);
@@ -50,8 +50,8 @@
     filter: alpha(opacity=50);
     pointer-events: none;
 }
-.STYLE_INSTANCE datium-month-element:active,
-.STYLE_INSTANCE datium-year-element:active {
+.STYLE_INSTANCE datium-month-element.datium-active,
+.STYLE_INSTANCE datium-year-element.datium-active {
   -webkit-transform: scale(0.9);
       -ms-transform: scale(0.9);
           transform: scale(0.9);
@@ -211,7 +211,7 @@
   top: 0;
   bottom: 0;
 }
-.STYLE_INSTANCE datium-tick-label:active > datium-span {
+.STYLE_INSTANCE datium-tick-label.datium-active > datium-span {
   -webkit-transform: scale(0.8);
       -ms-transform: scale(0.8);
           transform: scale(0.8);
@@ -248,7 +248,7 @@
   box-shadow: inset 0 0 0 2px SECONDARY;
   background: SECONDARY_ACCENT;
 }
-.STYLE_INSTANCE datium-time-drag:active:before {
+.STYLE_INSTANCE datium-time-drag.datium-active:before {
   -webkit-transition: none;
           transition: none;
   box-shadow: inset 0 0 0 3px SECONDARY;
@@ -377,28 +377,28 @@
   top: 29px;
   border-top-color: SECONDARY_ACCENT;
 }
-.STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher:active:before {
+.STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher.datium-active:before {
   -webkit-transform: scale(0.8) !important;
       -ms-transform: scale(0.8) !important;
           transform: scale(0.8) !important;
   -webkit-transition: none;
           transition: none;
 }
-.STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher:active:after {
+.STYLE_INSTANCE datium-clock.datium-am datium-meridiem-switcher.datium-active:after {
   -webkit-transform: scale(0.7) !important;
       -ms-transform: scale(0.7) !important;
           transform: scale(0.7) !important;
   -webkit-transition: none;
           transition: none;
 }
-.STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher:active:before {
+.STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher.datium-active:before {
   -webkit-transform: scale(0.7) !important;
       -ms-transform: scale(0.7) !important;
           transform: scale(0.7) !important;
   -webkit-transition: none;
           transition: none;
 }
-.STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher:active:after {
+.STYLE_INSTANCE datium-clock.datium-pm datium-meridiem-switcher.datium-active:after {
   -webkit-transform: scale(0.8) !important;
       -ms-transform: scale(0.8) !important;
           transform: scale(0.8) !important;
@@ -449,7 +449,7 @@
       -ms-transform: scale(0.8);
           transform: scale(0.8);
 }
-.STYLE_INSTANCE datium-meridiem-switcher:active {
+.STYLE_INSTANCE datium-meridiem-switcher.datium-active {
   -webkit-transition: none;
           transition: none;
 }
@@ -477,16 +477,16 @@ datium-container.STYLE_INSTANCE.datium-is-dragging datium-time-drag datium-time-
   opacity: 1;
   filter: alpha(opacity=100);
 }
-datium-container.STYLE_INSTANCE:active {
+datium-container.STYLE_INSTANCE.datium-active {
   overflow: visible !important;
 }
-datium-container.STYLE_INSTANCE:active datium-all-pickers-container {
+datium-container.STYLE_INSTANCE.datium-active datium-all-pickers-container {
   overflow: visible !important;
 }
-datium-container.STYLE_INSTANCE:active datium-header:active + datium-all-pickers-container {
+datium-container.STYLE_INSTANCE.datium-active datium-header.datium-active + datium-all-pickers-container {
   overflow: hidden !important;
 }
-datium-container.STYLE_INSTANCE:active datium-tick:active {
+datium-container.STYLE_INSTANCE.datium-active datium-tick.datium-active {
   z-index: 3;
 }
 .STYLE_INSTANCE datium-bubble {
@@ -501,6 +501,7 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
   line-height: 30px;
   border-radius: 2px;
   font-size: 12pt;
+  pointer-events: none;
   font-weight: bold;
   -webkit-transform-origin: 28px 56px;
       -ms-transform-origin: 28px 56px;
@@ -526,7 +527,7 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
   top: 29px;
   border-top-color: SECONDARY_ACCENT;
 }
-.STYLE_INSTANCE datium-meridiem-switcher:active datium-bubble {
+.STYLE_INSTANCE datium-meridiem-switcher.datium-active datium-bubble {
   opacity: 1;
   filter: alpha(opacity=100);
   -webkit-transition-delay: .3s;
@@ -538,19 +539,19 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
 .STYLE_INSTANCE datium-meridiem-switcher datium-bubble:after {
   content: '';
 }
-.STYLE_INSTANCE .datium-am datium-meridiem-switcher:active datium-bubble:after {
+.STYLE_INSTANCE .datium-am datium-meridiem-switcher.datium-active datium-bubble:after {
   content: 'PM';
 }
-.STYLE_INSTANCE .datium-pm datium-meridiem-switcher:active datium-bubble:after {
+.STYLE_INSTANCE .datium-pm datium-meridiem-switcher.datium-active datium-bubble:after {
   content: 'AM';
 }
-.STYLE_INSTANCE .datium-am.datium-military-time datium-meridiem-switcher:active datium-bubble:after {
+.STYLE_INSTANCE .datium-am.datium-military-time datium-meridiem-switcher.datium-active datium-bubble:after {
   content: '+12';
 }
-.STYLE_INSTANCE .datium-pm.datium-military-time datium-meridiem-switcher:active datium-bubble:after {
+.STYLE_INSTANCE .datium-pm.datium-military-time datium-meridiem-switcher.datium-active datium-bubble:after {
   content: '-12';
 }
-.STYLE_INSTANCE [datium-data]:not(.datium-day-inactive):active > datium-bubble {
+.STYLE_INSTANCE [datium-data]:not(.datium-day-inactive).datium-active > datium-bubble {
   opacity: 1;
   filter: alpha(opacity=100);
   -webkit-transition-delay: .3s;
@@ -559,9 +560,9 @@ datium-container.STYLE_INSTANCE:active datium-tick:active {
       -ms-transform: scale(1.1111);
           transform: scale(1.1111);
 }
-.STYLE_INSTANCE .datium-hour-view [datium-data]:active > datium-bubble,
-.STYLE_INSTANCE .datium-minute-view [datium-data]:active > datium-bubble,
-.STYLE_INSTANCE .datium-second-view [datium-data]:active > datium-bubble {
+.STYLE_INSTANCE .datium-hour-view [datium-data].datium-active > datium-bubble,
+.STYLE_INSTANCE .datium-minute-view [datium-data].datium-active > datium-bubble,
+.STYLE_INSTANCE .datium-second-view [datium-data].datium-active > datium-bubble {
   -webkit-transform: scale(1.25);
       -ms-transform: scale(1.25);
           transform: scale(1.25);

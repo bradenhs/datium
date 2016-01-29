@@ -18,7 +18,7 @@ export default class YearPicker extends Picker {
         
         for (let year = startYear; year <= startYear + 10; year++) {
             let yearElement = document.createElement('datium-year-element');
-            
+            yearElement.classList.add('datium-active-capable');
             if (year === this.viewManager.getSelectedDate().getFullYear()) {
                 yearElement.classList.add('datium-current-selection');
             }

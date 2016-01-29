@@ -14,6 +14,7 @@ export default class MonthPicker extends Picker {
         
         for (let month = 0; month < 12; month++) {
             let el = document.createElement('datium-month-element');
+            el.classList.add('datium-active-capable');
             el.setAttribute('datium-data', month.toString());
             el.innerHTML = `${this.months[month]}<datium-bubble>${this.months[month]}</datium-bubble>`;
             let inactive = false;

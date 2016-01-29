@@ -316,7 +316,7 @@ datium-container.STYLE_INSTANCE.datium-small {
   margin-left: -8px;
 }
 
-.STYLE_INSTANCE.datium-small [datium-data]:not(.datium-day-inactive):active > datium-bubble {
+.STYLE_INSTANCE.datium-small [datium-data]:not(.datium-day-inactive).datium-active > datium-bubble {
   -webkit-transition: .3s cubic-bezier(1.000, -0.600, 1.000, -0.600) opacity !important;
           transition: .3s cubic-bezier(1.000, -0.600, 1.000, -0.600) opacity !important;
 }

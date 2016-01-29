@@ -93,9 +93,10 @@ export default class TimePicker extends Picker {
     
     protected mkTick(angle:number, label:string, data:number):HTMLElement {
         let tick = document.createElement('datium-tick');
+        tick.classList.add('datium-active-capable');
         let tickLabel = document.createElement('datium-tick-label');
-        
-        tickLabel.innerHTML = `<datium-span class="${this.selectorPrefix}-selectable" datium-data="${data}">${label}</datium-span>`;
+        tickLabel.classList.add('datium-active-capable');
+        tickLabel.innerHTML = `<datium-span class="${this.selectorPrefix}-selectable datium-active-capable" datium-data="${data}">${label}</datium-span>`;
         
         (<any>tickLabel.style).msTransform = `rotate(${-angle}deg)`;
         tickLabel.style.webkitTransform = `rotate(${-angle}deg)`;  

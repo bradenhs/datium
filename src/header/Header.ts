@@ -210,14 +210,14 @@ export default class Header {
     }
     
 	private updateLabels(date:Date, level:ViewLevel):void {
-		this.decadeLabelText.innerText = this.getDecadeText(date);
-		this.yearLabelText.innerText = this.getYearText(date);
-		this.monthLabelText.innerText = this.getMonthText(date);
-		this.monthExtendedLabelText.innerText = this.getYearText(date);		
+		this.decadeLabelText.innerHTML = this.getDecadeText(date);
+		this.yearLabelText.innerHTML = this.getYearText(date);
+		this.monthLabelText.innerHTML = this.getMonthText(date);
+		this.monthExtendedLabelText.innerHTML = this.getYearText(date);		
         this.updateDayLabel(date);
-		this.dayExtendedLabelText.innerText = this.getMonthText(date) + ' ' + this.getYearText(date);
+		this.dayExtendedLabelText.innerHTML = this.getMonthText(date) + ' ' + this.getYearText(date);
         this.updateHourLabel(date);		
-		this.hourExtendedLabelText.innerText = this.getDayText(date) + ' ' + this.getMonthText(date) + ' ' + this.getYearText(date);
+		this.hourExtendedLabelText.innerHTML = this.getDayText(date) + ' ' + this.getMonthText(date) + ' ' + this.getYearText(date);
         this.updateMinuteLabel(date);
 	}
     

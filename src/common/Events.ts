@@ -1,6 +1,7 @@
 function handleDelegateEvent(parent:Element, delegateClass:string, callback:(e?:MouseEvent|TouchEvent) => void) {
 	return (e:MouseEvent|TouchEvent) => {
-		var target = e.srcElement;
+		var target = e.srcElement || <Element>e.target;
+        
 		while(!target.isEqualNode(parent)) {
 			if (target.classList.contains(delegateClass)) {
 				callback(e);
@@ -209,10 +210,18 @@ export function onMouseDown(element:Element, callback:(e?:MouseEvent|TouchEvent)
     }); 
 };
 
-export function onDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void):ListenerReference[] {
-    return attachEvents(['mousedown', 'touchstart'], element, (e) => {
-        callback(<any>e);
-    }); 
+export function onDown(parent:Element, delegateClass:string, callback:(e?:MouseEvent|TouchEvent) => void):ListenerReference[];
+export function onDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void):ListenerReference[];
+export function onDown(...params:any[]) {
+    if (params.length === 3) {
+        return attachEventsDelegate(['mousedown', 'touchstart'], params[0], params[1], (e) => {
+            params[2](<any>e);
+        });
+    } else {
+        return attachEvents(['mousedown', 'touchstart'], params[0], (e) => {
+            params[1](<any>e);
+        });        
+    } 
 };
 
 export function onUp(element:Element|Document, callback:(e?:MouseEvent|TouchEvent) => void):ListenerReference[] {

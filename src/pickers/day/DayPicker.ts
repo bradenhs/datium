@@ -47,13 +47,14 @@ export default class DayPicker extends Picker {
 	
 	private mkDayLabel(weekday:number):HTMLElement {
 		let el = document.createElement('datium-day-element');
-		el.innerText = this.days[weekday];
+		el.innerHTML = this.days[weekday];
 		el.className = 'datium-weekday-label';
 		return el;
 	}
 	
 	private mkDay(date:Date, inactive:boolean):HTMLElement {
 		let el = document.createElement('datium-day-element');
+        el.classList.add('datium-active-capable');
 		el.innerHTML = date.getDate().toString() + '<datium-bubble>' + date.getDate().toString() + '</datium-bubble>';
 		el.setAttribute('datium-data', date.getDate().toString());
         let selectedDate = this.viewManager.getSelectedDate();

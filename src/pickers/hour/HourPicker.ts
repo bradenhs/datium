@@ -32,11 +32,11 @@ export default class HourPicker extends TimePicker {
         t = d.getHours();
         
         if (this.opts.militaryTime) {
-            this.timeBubbleElement.innerText = this.padNum(t) + 'h';
+            this.timeBubbleElement.innerHTML = this.padNum(t) + 'h';
         } else {
             if (t > 12) t -= 12;
             if (t === 0) t += 12;
-            this.timeBubbleElement.innerText = this.padNum(t) + this.meridiem;
+            this.timeBubbleElement.innerHTML = this.padNum(t) + this.meridiem;
         }
         (<any>this.timeBubbleElement.style).msTransform = `rotate(${timeBubbleRotation}deg)`;
         this.timeBubbleElement.style.webkitTransform = `rotate(${timeBubbleRotation}deg)`;      
