@@ -122,9 +122,19 @@ export default class ViewManager {
         if (this.opts.maxDate !== void 0 && nextStart !== void 0 && this.opts.maxDate.valueOf() < nextStart.valueOf()) {
             this.nextDisabled = true;
         }
-        
+                
         if (this.level < this.lastLevel) {
             this.selectedDate = new Date(this.date.valueOf());
+        }
+        
+        if (this.opts.minDate !== void 0 && this.selectedDate.valueOf() < this.opts.minDate.valueOf()) {
+            this.date = new Date(this.opts.minDate.valueOf());
+            this.selectedDate = new Date(this.opts.minDate.valueOf());
+        }
+        
+        if (this.opts.minDate !== void 0 && this.selectedDate.valueOf() < this.opts.minDate.valueOf()) {
+            this.date = new Date(this.opts.maxDate.valueOf());
+            this.selectedDate = new Date(this.opts.maxDate.valueOf());
         }
         
 		this.notifyObservers();

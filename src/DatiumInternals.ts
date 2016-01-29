@@ -158,7 +158,6 @@ export default class DatiumInternals {
         
         let cancelClose = true;
         
-        this.viewManager.changeViewLevel(this.opts.startView);
         setTimeout(() => {
             this.inputManager.update(this.viewManager.getSelectedDate(), this.viewManager.getViewLevel(), this.viewManager.getSelectedDate(), void 0, this.viewManager.getSelectedDate());
             this.eventListeners = this.eventListeners.concat(onDown(this.opts.element, (e) => {

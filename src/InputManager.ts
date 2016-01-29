@@ -1,6 +1,6 @@
 import {IDatiumOptions} from 'src/DatiumOptions';
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
-import {onKeyDown, KeyCodes} from 'src/common/Events';
+import {onKeyDown, onDown, onUp, onFocus, onBlur, KeyCodes, onPaste} from 'src/common/Events';
 
 export default class InputManager {
     private currentDate:Date;
@@ -60,24 +60,124 @@ export default class InputManager {
                 }
             }
         }
-        
-        onKeyDown(this.opts.element, (e:KeyboardEvent) => {
-           if (e.keyCode === KeyCodes.LEFT || (e.shiftKey && e.keyCode === KeyCodes.TAB)) {
-               if (this.previous()) {
-                   e.preventDefault();    
-               }
-           } else if (e.keyCode === KeyCodes.RIGHT || e.keyCode === KeyCodes.TAB) {
-               if (this.next()) {
-                   e.preventDefault();
-               }
-           } else if (e.keyCode === KeyCodes.UP) {
-               this.viewManager.increment();
-               e.preventDefault();
-           } else if (e.keyCode === KeyCodes.DOWN) {
-               this.viewManager.decrement();
-               e.preventDefault();
-           }
+        let tabPressed = false;
+        let shiftTabPressed = false;
+        onKeyDown(document, (e:KeyboardEvent) => {
+            if (e.shiftKey && e.keyCode === KeyCodes.TAB) {
+                shiftTabPressed = true;
+            } else if (e.keyCode === KeyCodes.TAB) {
+                tabPressed = true;
+            }
+            setTimeout(() => {
+                shiftTabPressed = false;
+                tabPressed = false;
+            });
         });
+        onKeyDown(this.opts.element, (e:KeyboardEvent) => {
+            if (e.keyCode === KeyCodes.LEFT || (e.shiftKey && e.keyCode === KeyCodes.TAB)) {
+                if (this.previous()) {
+                    e.preventDefault();    
+                }
+            } else if (e.keyCode === KeyCodes.RIGHT || e.keyCode === KeyCodes.TAB) {
+                if (this.next()) {
+                    e.preventDefault();
+                }
+            } else if (e.keyCode === KeyCodes.UP) {
+                this.viewManager.increment();
+                e.preventDefault();
+            } else if (e.keyCode === KeyCodes.DOWN) {
+                this.viewManager.decrement();
+                e.preventDefault();
+            }
+        });
+        let downed = false;
+        onDown(this.opts.element, () => {
+            if (this.opts.element === document.activeElement) {
+                downed = true;
+                this.downEvent();
+            } else {
+                this.stopUpdate = true;
+            }
+        });
+        onFocus(this.opts.element, (e) => {
+            if (tabPressed) {
+                this.viewManager.changeViewLevel(this.levelOrder[0]);
+            } else if (shiftTabPressed) {
+                this.viewManager.changeViewLevel(this.levelOrder[this.levelOrder.length - 1]);  
+            } else {
+                setTimeout(() => {
+                    this.stopUpdate = false;
+                    downed = true;
+                    this.selectionStart = this.opts.element.selectionStart;
+                    this.upEvent();
+                    downed = false;
+                });
+            }
+        })
+        onUp(this.opts.element, () => {
+            if (downed) {
+                this.upEvent();
+            }
+            downed = false;
+        });
+        onPaste(this.opts.element, (event:ClipboardEvent) => {
+            let originalValue = this.opts.element.value;
+            setTimeout(() => {
+                let d = new Date(this.opts.element.value);
+                if (d.toString() === "Invalid Date") {
+                    this.opts.element.value = originalValue;
+                }
+            });
+        });
+    }
+    
+    private stopUpdate:boolean = false;
+    
+    private selectionStart:number;
+    
+    private downEvent():void {
+        setTimeout(() => {
+            this.selectionStart = this.opts.element.selectionStart;
+        });
+    }
+    
+    private upEvent():void {
+        if (this.opts.element.selectionStart === 0 &&
+            this.opts.element.selectionEnd === this.opts.element.value.length) {
+            return;
+        }
+        
+        let select;
+        if (this.opts.element.selectionStart === this.selectionStart) {
+            select = this.opts.element.selectionEnd;
+        } else if (this.opts.element.selectionEnd === this.selectionStart) {
+            select = this.opts.element.selectionStart;
+        } else {
+            select = this.selectionStart;
+        }
+        
+        if (this.secondSelection !== void 0 && select >= this.secondSelection.start && select <= this.secondSelection.end) {
+            this.viewManager.changeViewLevel(ViewLevel.SECOND);
+            this.opts.element.setSelectionRange(this.secondSelection.start, this.secondSelection.end);
+        } else if (this.minuteSelection !== void 0 && select >= this.minuteSelection.start && select <= this.minuteSelection.end) {
+            this.viewManager.changeViewLevel(ViewLevel.MINUTE);
+            this.opts.element.setSelectionRange(this.minuteSelection.start, this.minuteSelection.end);
+        } else if (this.hourSelection !== void 0 && select >= this.hourSelection.start && select <= this.hourSelection.end) {
+            this.viewManager.changeViewLevel(ViewLevel.HOUR);
+            this.opts.element.setSelectionRange(this.hourSelection.start, this.hourSelection.end);
+        } else if (this.daySelection !== void 0 && select >= this.daySelection.start && select <= this.daySelection.end) {
+            this.viewManager.changeViewLevel(ViewLevel.DAY);
+            this.opts.element.setSelectionRange(this.daySelection.start, this.daySelection.end);
+        } else if (this.monthSelection !== void 0 && select >= this.monthSelection.start && select <= this.monthSelection.end) {
+            this.viewManager.changeViewLevel(ViewLevel.MONTH);
+            this.opts.element.setSelectionRange(this.monthSelection.start, this.monthSelection.end);
+        } else if (this.yearSelection !== void 0 && select >= this.yearSelection.start && select <= this.yearSelection.end) {
+            this.viewManager.changeViewLevel(ViewLevel.YEAR);
+            this.opts.element.setSelectionRange(this.yearSelection.start, this.yearSelection.end);
+        } else {
+            // TODO: just select nearest
+        }
+        
     }
     
     private getIntervalForLevel(level:ViewLevel):number {
@@ -227,6 +327,7 @@ export default class InputManager {
     }
     
     public update(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date):void {
+        if (this.stopUpdate) return;
         if (this.currentDate !== void 0 && this.currentDate.valueOf() === selectedDate.valueOf() && level === lastLevel) {
             return;
         }
@@ -307,44 +408,45 @@ export default class InputManager {
         result = this.replace(result, this.utcOffsetWithColonRegex, utcOffsetWithColon);
         result = this.replace(result, this.utcOffsetRegex, utcOffset);
         
-        
-        let selectionStart;
-        let selectionEnd;
+        let secondSearches = [paddedSeconds, seconds];
+        let minuteSearches = [paddedMinutes, minutes];
+        let hourSearches = [paddedMilitaryTime, militaryTime, paddedHour, hour];
+        let daySearches = [paddedDayOfMonth, dayOfMonthWithOrdinal, monthDigit];
+        let monthSearches = [longMonthName, shortMonthName, paddedMonthDigit, monthDigit];
+        let yearSearches = [fourDigitYear, twoDigitYear];
 
-        let searches:string[] = [];
-        switch(level) {
-        case ViewLevel.YEAR:
-            searches = [fourDigitYear, twoDigitYear];
-            break;
-        case ViewLevel.MONTH:
-            searches = [longMonthName, shortMonthName, paddedMonthDigit, monthDigit];
-            break;
-        case ViewLevel.DAY:
-            searches = [paddedDayOfMonth, dayOfMonthWithOrdinal, monthDigit];
-            break;
-        case ViewLevel.HOUR:
-            searches = [paddedMilitaryTime, militaryTime, paddedHour, hour];
-            break;
-        case ViewLevel.MINUTE:
-            searches = [paddedMinutes, minutes];
-            break;
-        case ViewLevel.SECOND:
-            searches = [paddedSeconds, seconds];
-            break;        
-        }
+        this.secondSelection = void 0;
+        this.minuteSelection = void 0;
+        this.hourSelection = void 0;
+        this.daySelection = void 0;
+        this.monthSelection = void 0;
+        this.yearSelection = void 0;
 
         let split = this.split(result);
         for (let i:number = 1; i < split.length; i+=2) {
             if (split[i].charAt(0) === '~' && split[i].charAt(split[i].length - 1) === '~') {
                 split[i] = split[i].slice(1, split[i].length - 1);
             } else {
-                if (selectionStart === void 0) {
-                    let found = searches.indexOf(split[i]);
-                    if (found > -1) {
-                        selectionStart = this.getLengthUntil(split, i);
-                        selectionEnd = selectionStart + searches[found].length - 1;
-                    }
+                
+                if (this.secondSelection === void 0) {
+                    this.secondSelection = this.updateSelectionGroup(secondSearches, split, i);
                 }
+                if (this.minuteSelection === void 0) {
+                    this.minuteSelection = this.updateSelectionGroup(minuteSearches, split, i);
+                }
+                if (this.hourSelection === void 0) {
+                    this.hourSelection = this.updateSelectionGroup(hourSearches, split, i);
+                }
+                if (this.daySelection === void 0) {
+                    this.daySelection = this.updateSelectionGroup(daySearches, split, i);
+                }
+                if (this.monthSelection === void 0) {
+                    this.monthSelection = this.updateSelectionGroup(monthSearches, split, i);
+                }
+                if (this.yearSelection === void 0) {
+                    this.yearSelection=  this.updateSelectionGroup(yearSearches, split, i);
+                }
+                
                 split[i] = split[i].slice(1, split[i].length);
             }
         }        
@@ -352,9 +454,63 @@ export default class InputManager {
         
         this.opts.element.value = result;
         if (this.opts.element === document.activeElement) {
-            this.opts.element.setSelectionRange(selectionStart, selectionEnd);
+            let selectionStart, selectionEnd;
+            switch (level) {
+                case ViewLevel.SECOND:
+                    if (this.secondSelection === void 0) break;
+                    selectionStart = this.secondSelection.start;
+                    selectionEnd = this.secondSelection.end;
+                    break;
+                case ViewLevel.MINUTE:
+                    if (this.minuteSelection === void 0) break;
+                    selectionStart = this.minuteSelection.start;
+                    selectionEnd = this.minuteSelection.end;
+                    break;
+                case ViewLevel.HOUR:
+                    if (this.hourSelection === void 0) break;
+                    selectionStart = this.hourSelection.start;
+                    selectionEnd = this.hourSelection.end;
+                    break;
+                case ViewLevel.DAY:
+                    if (this.daySelection === void 0) break;
+                    selectionStart = this.daySelection.start;
+                    selectionEnd = this.daySelection.end;
+                    break;
+                case ViewLevel.MONTH:
+                    if (this.monthSelection === void 0) break;
+                    selectionStart = this.monthSelection.start;
+                    selectionEnd = this.monthSelection.end;
+                    break;
+                case ViewLevel.YEAR:
+                    if (this.yearSelection === void 0) break;
+                    selectionStart = this.yearSelection.start;
+                    selectionEnd = this.yearSelection.end;
+                    break;
+            }
+            if (selectionStart !== void 0 && selectionEnd !== void 0) {
+                this.opts.element.setSelectionRange(selectionStart, selectionEnd);
+            }
         }
     }
+    
+    private updateSelectionGroup(searches:string[], split:string[], i:number):Selection {                    
+        let found = searches.indexOf(split[i]);
+        if (found > -1) {
+            let start = this.getLengthUntil(split, i);
+            return new Selection({
+                start: start,
+                end: start + searches[found].length - 1
+            });
+        }
+        return void 0;
+    }
+    
+    private secondSelection:Selection;
+    private minuteSelection:Selection;
+    private hourSelection:Selection;
+    private daySelection:Selection;
+    private monthSelection:Selection;
+    private yearSelection:Selection;
     
     private getLengthUntil(array:string[], until:number) {
         let length = 0;
@@ -370,5 +526,19 @@ export default class InputManager {
             result = '0' + result;
         }
         return result;
+    }
+}
+
+interface ISelection {
+    start:number;
+    end:number;
+}
+
+class Selection {
+    public start:number;
+    public end:number;
+    public constructor(data:ISelection) {
+        this.start = data.start;
+        this.end = data.end;
     }
 }

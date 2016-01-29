@@ -28,7 +28,7 @@ function attachEventsDelegate(events:string[], parent:Element, delegateClass:str
     return listeners;
 }
 
-function attachEvents(events:string[], element:Element|Document, callback:(e?:MouseEvent|TouchEvent) => void):ListenerReference[] {
+function attachEvents(events:string[], element:Element|Document|Window, callback:(e?:MouseEvent|TouchEvent|TextEvent) => void):ListenerReference[] {
     let listeners:ListenerReference[] = [];
     for (let key in events) {
         let event:string = events[key];
@@ -145,14 +145,20 @@ interface DragCallbacks {
 }
 
 export interface ListenerReference {
-    element: Element|Document;
+    element: Element|Document|Window;
     reference: EventListener;
     event: string;
 }
 
-export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallbacks) {
+
+export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallbacks);
+export function onDrag(element:Element, callbacks:DragCallbacks);
+export function onDrag(...params:any[]) {
     let dragging:boolean = false;
-    attachEventsDelegate(['touchstart', 'mousedown'], parent, delegateClass, (e?:MouseEvent|TouchEvent) => {
+    
+    let callbacks:DragCallbacks = params[params.length-1];
+    
+    let startEvents = (e?:MouseEvent|TouchEvent) => {
         dragging = true;
         if (callbacks.dragStart !== void 0) {
             callbacks.dragStart(e);
@@ -174,11 +180,17 @@ export function onDrag(parent:Element, delegateClass:string, callbacks:DragCallb
             }
             dragging = false;
             removeListeners(listeners);            
-        }));        
-    });
+        }));  
+    }
+    
+    if (params.length === 3) {
+        attachEventsDelegate(['touchstart', 'mousedown'], params[0], params[1], startEvents);
+    } else {
+        attachEvents(['touchstart', 'mousedown'], params[0], startEvents);
+    }
 }
 
-export function onKeyDown(element:Element, callback:(e?:KeyboardEvent) => void) {
+export function onKeyDown(element:Element|Document, callback:(e?:KeyboardEvent) => void) {
     element.addEventListener('keydown', (e:KeyboardEvent) => {
        callback(e); 
     });
@@ -193,26 +205,38 @@ export function removeListeners(listeners:ListenerReference[]):void {
 
 export function onMouseDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
     attachEvents(['mousedown'], element, (e) => {
-        callback(e);
+        callback(<any>e);
     }); 
 };
 
 export function onDown(element:Element, callback:(e?:MouseEvent|TouchEvent) => void):ListenerReference[] {
     return attachEvents(['mousedown', 'touchstart'], element, (e) => {
-        callback(e);
+        callback(<any>e);
+    }); 
+};
+
+export function onUp(element:Element|Document, callback:(e?:MouseEvent|TouchEvent) => void):ListenerReference[] {
+    return attachEvents(['mouseup', 'touchend'], element, (e) => {
+        callback(<any>e);
     }); 
 };
 
 export function onFocus(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
     attachEvents(['focus'], element, (e) => {
-        callback(e);
+        callback(<any>e);
     }); 
 };
 
-export function onBlur(element:Element, callback:(e?:MouseEvent|TouchEvent) => void) {
+export function onPaste(element:Element, callback:(e?:ClipboardEvent) => void) {
+    attachEvents(['paste'], element, (e) => {
+        callback(<any>e);
+    }); 
+};
+
+export function onBlur(element:Element|Window, callback:(e?:MouseEvent|TouchEvent) => void) {
     attachEvents(['blur'], element, (e) => {
         e.preventDefault();
-        callback(e);
+        callback(<any>e);
     }); 
 };
 
