@@ -74,21 +74,7 @@ export default class InputManager {
             });
         });
         onKeyDown(this.opts.element, (e:KeyboardEvent) => {
-            if (e.keyCode === KeyCodes.LEFT || (e.shiftKey && e.keyCode === KeyCodes.TAB)) {
-                if (this.previous()) {
-                    e.preventDefault();    
-                }
-            } else if (e.keyCode === KeyCodes.RIGHT || e.keyCode === KeyCodes.TAB) {
-                if (this.next()) {
-                    e.preventDefault();
-                }
-            } else if (e.keyCode === KeyCodes.UP) {
-                this.viewManager.increment();
-                e.preventDefault();
-            } else if (e.keyCode === KeyCodes.DOWN) {
-                this.viewManager.decrement();
-                e.preventDefault();
-            }
+            this.keyDown(e);
         });
         let downed = false;
         onDown(this.opts.element, () => {
@@ -131,6 +117,38 @@ export default class InputManager {
         });
     }
     
+    private textBuffer:string = '';
+    private keyDown(e:KeyboardEvent):void {
+        if (e.keyCode === KeyCodes.LEFT || (e.shiftKey && e.keyCode === KeyCodes.TAB)) {
+            if (this.previous()) {
+                e.preventDefault();    
+            }
+        } else if (e.keyCode === KeyCodes.RIGHT || e.keyCode === KeyCodes.TAB) {
+            if (this.next()) {
+                e.preventDefault();
+            }
+        } else if (e.keyCode === KeyCodes.UP) {
+            this.viewManager.increment();
+            e.preventDefault();
+        } else if (e.keyCode === KeyCodes.DOWN) {
+            this.viewManager.decrement();
+            e.preventDefault();
+        }
+        
+    }
+    
+    private getLevelFormat():string {
+        switch (this.viewManager.getViewLevel()) {
+            case ViewLevel.SECOND:
+            case ViewLevel.MINUTE:
+            case ViewLevel.HOUR:
+            case ViewLevel.DAY:
+            case ViewLevel.MONTH:
+            case ViewLevel.YEAR:
+        }
+        return '';
+    }
+    
     private stopUpdate:boolean = false;
     
     private selectionStart:number;
@@ -156,28 +174,71 @@ export default class InputManager {
             select = this.selectionStart;
         }
         
-        if (this.secondSelection !== void 0 && select >= this.secondSelection.start && select <= this.secondSelection.end) {
-            this.viewManager.changeViewLevel(ViewLevel.SECOND);
-            this.opts.element.setSelectionRange(this.secondSelection.start, this.secondSelection.end);
-        } else if (this.minuteSelection !== void 0 && select >= this.minuteSelection.start && select <= this.minuteSelection.end) {
-            this.viewManager.changeViewLevel(ViewLevel.MINUTE);
-            this.opts.element.setSelectionRange(this.minuteSelection.start, this.minuteSelection.end);
-        } else if (this.hourSelection !== void 0 && select >= this.hourSelection.start && select <= this.hourSelection.end) {
-            this.viewManager.changeViewLevel(ViewLevel.HOUR);
-            this.opts.element.setSelectionRange(this.hourSelection.start, this.hourSelection.end);
-        } else if (this.daySelection !== void 0 && select >= this.daySelection.start && select <= this.daySelection.end) {
-            this.viewManager.changeViewLevel(ViewLevel.DAY);
-            this.opts.element.setSelectionRange(this.daySelection.start, this.daySelection.end);
-        } else if (this.monthSelection !== void 0 && select >= this.monthSelection.start && select <= this.monthSelection.end) {
-            this.viewManager.changeViewLevel(ViewLevel.MONTH);
-            this.opts.element.setSelectionRange(this.monthSelection.start, this.monthSelection.end);
-        } else if (this.yearSelection !== void 0 && select >= this.yearSelection.start && select <= this.yearSelection.end) {
-            this.viewManager.changeViewLevel(ViewLevel.YEAR);
-            this.opts.element.setSelectionRange(this.yearSelection.start, this.yearSelection.end);
-        } else {
-            // TODO: just select nearest
+        let secondDiff = this.getDiff(this.secondSelection, select);
+        let minuteDiff = this.getDiff(this.minuteSelection, select);
+        let hourDiff = this.getDiff(this.hourSelection, select);
+        let dayDiff = this.getDiff(this.daySelection, select);
+        let monthDiff = this.getDiff(this.monthSelection, select);
+        let yearDiff = this.getDiff(this.yearSelection, select);
+        
+        let diffs = [secondDiff, minuteDiff, hourDiff, dayDiff, monthDiff, yearDiff];
+        
+        let lowestDiff;
+        let lowestDiffIndex;
+        for (let i = 0; i < diffs.length; i++) {
+            if (lowestDiff === void 0) {
+                lowestDiff = diffs[i];
+                lowestDiffIndex = i;
+            } else if (diffs[i] !== void 0 && diffs[i] < lowestDiff) {
+                lowestDiff = diffs[i];
+                lowestDiffIndex = i;
+            }
         }
         
+        let closestSelection:Selection;
+        let selectedViewLevel:ViewLevel;
+        switch(lowestDiffIndex) {
+            case 0: //second
+                closestSelection = this.secondSelection;
+                selectedViewLevel = ViewLevel.SECOND;
+                break;
+            case 1: //minute
+                closestSelection = this.minuteSelection;
+                selectedViewLevel = ViewLevel.MINUTE;
+                break;
+            case 2: //hour
+                closestSelection = this.hourSelection;
+                selectedViewLevel = ViewLevel.HOUR;
+                break;
+            case 3: //day
+                closestSelection = this.daySelection;
+                selectedViewLevel = ViewLevel.DAY;
+                break;
+            case 4: //month
+                closestSelection = this.monthSelection;
+                selectedViewLevel = ViewLevel.MONTH;
+                break;
+            case 5: //year
+                closestSelection = this.yearSelection;
+                selectedViewLevel = ViewLevel.YEAR;
+                break;
+        }
+        
+        if (closestSelection === void 0) {
+            this.viewManager.changeViewLevel(this.opts.startView); // TODO figure this out better
+        } else {
+            this.viewManager.changeViewLevel(selectedViewLevel);
+            this.opts.element.setSelectionRange(closestSelection.start, closestSelection.end);            
+        }        
+    }
+    
+    private getDiff(selection:Selection, select:number):number {
+        if (selection !== void 0) {
+            let startDiff = Math.abs(select - selection.start);
+            let endDiff = Math.abs(select - selection.end);
+            return Math.min(startDiff, endDiff);
+        }
+        return void 0;
     }
     
     private getIntervalForLevel(level:ViewLevel):number {
@@ -540,5 +601,14 @@ class Selection {
     public constructor(data:ISelection) {
         this.start = data.start;
         this.end = data.end;
+    }
+}
+
+
+// TODO finish this
+class Format {
+    public acceptedChars:string;
+    protected validate(currentEntry:string):boolean {
+        return false;
     }
 }
