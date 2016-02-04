@@ -236,6 +236,18 @@ export function onFocus(element:Element, callback:(e?:MouseEvent|TouchEvent) => 
     }); 
 };
 
+export function onFocusOut(element:Element|Document, callback:(e?:MouseEvent|TouchEvent) => void) {
+    attachEvents(['focusout'], element, (e) => {
+        callback(<any>e);
+    }); 
+};
+
+export function onFocusIn(element:Element|Document, callback:(e?:MouseEvent|TouchEvent) => void) {
+    attachEvents(['focusin'], element, (e) => {
+        callback(<any>e);
+    }); 
+};
+
 export function onPaste(element:Element, callback:(e?:ClipboardEvent) => void) {
     attachEvents(['paste'], element, (e) => {
         callback(<any>e);
@@ -254,5 +266,14 @@ export const enum KeyCodes {
     LEFT = 37,
     TAB = 9,
     UP = 38,
-    DOWN = 40
+    DOWN = 40,
+    V = 86,
+    v = 118,
+    C = 67,
+    c = 99,
+    A = 65,
+    a = 97,
+    HOME = 36,
+    END = 35,
+    BACKSPACE = 8
 }

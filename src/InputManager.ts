@@ -19,9 +19,13 @@ export default class InputManager {
         dateStr = this.replace(dateStr, this.monthDigitRegex, 'M');
         
         // DAY
-        dateStr = this.replace(dateStr, this.paddedDayOfMonthRegex, 'DD');
-        dateStr = this.replace(dateStr, this.dayOfMonthWithOrdinalRegex, 'Do');
-        dateStr = this.replace(dateStr, this.dayOfMonthRegex, 'D');
+        dateStr = this.replace(dateStr, this.longDayNameRegex, 'dddd');
+        dateStr = this.replace(dateStr, this.shortDayNameRegex, 'ddd');
+        
+        // DATE
+        dateStr = this.replace(dateStr, this.paddedDateOfMonthRegex, 'DD');
+        dateStr = this.replace(dateStr, this.dateOfMonthWithOrdinalRegex, 'Do');
+        dateStr = this.replace(dateStr, this.dateOfMonthRegex, 'D');
         
         // MISC
         dateStr = this.replace(dateStr, this.unixTimeStampRegex, 'X');
@@ -32,6 +36,8 @@ export default class InputManager {
         dateStr = this.replace(dateStr, this.militaryTimeRegex, 'H');
         dateStr = this.replace(dateStr, this.paddedHourRegex, 'hh');
         dateStr = this.replace(dateStr, this.hourRegex, 'h');
+        
+        // MERIDIEM
         dateStr = this.replace(dateStr, this.capitalMeridiemRegex, 'A');
         dateStr = this.replace(dateStr, this.lowercaseMeridiemRegex, 'a');
         
@@ -49,17 +55,32 @@ export default class InputManager {
         
         let split = this.split(dateStr);
         this.levelOrder = [];
-        for (let i:number = 1; i < split.length; i+=2) {
-            if ((split[i].charAt(0) === '~' && split[i].charAt(split[i].length - 1) === '~') ||
-                split[i].toLowerCase() === 'a') {
+        let dateRegexStr:string = '';
+        this.regexesForLevel = [];
+        for (let i:number = 0; i < split.length; i++) {
+            if (i % 2 === 0) {
+                dateRegexStr += this.regexEscape(split[i]);
+                continue;
+            }
+            if ((split[i].charAt(0) === '~' && split[i].charAt(split[i].length - 1) === '~')) {
+                dateRegexStr += this.regexEscape(split[i].slice(1, -1));
                 continue;
             } else {
                 let level = this.getLevel(split[i]);
-                if (level !== void 0 && this.levelOrder.indexOf(level) === -1) {
+                let regexForLevel = this.getDateRegex(split[i]);
+                if (level !== void 0 && this.levelOrder.indexOf(level) === -1) { // TODO consider making duplicates tabbable
                     this.levelOrder.push(level);
+                    this.regexesForLevel.push({
+                        start: new RegExp(dateRegexStr),
+                        selection: new RegExp(regexForLevel),
+                        level: level
+                    });
                 }
+                dateRegexStr += regexForLevel;
             }
         }
+        this.dateRegex = new RegExp("^" + dateRegexStr + "$");        
+        
         let tabPressed = false;
         let shiftTabPressed = false;
         onKeyDown(document, (e:KeyboardEvent) => {
@@ -107,23 +128,100 @@ export default class InputManager {
             downed = false;
         });
         onPaste(this.opts.element, (event:ClipboardEvent) => {
-            let originalValue = this.opts.element.value;
-            setTimeout(() => {
-                let d = new Date(this.opts.element.value);
-                if (d.toString() === "Invalid Date") {
-                    this.opts.element.value = originalValue;
-                }
-            });
+            this.paste();
         });
+        
+        this.opts.element.addEventListener('dragenter', (e) => e.preventDefault());
+        this.opts.element.addEventListener('dragover', (e) => e.preventDefault());
+        this.opts.element.addEventListener('drop', (e) => e.preventDefault());
+        this.opts.element.addEventListener('cut', (e) => e.preventDefault());
+    }
+    
+    
+    private regexesForLevel:{start:RegExp, selection:RegExp, level:ViewLevel}[];
+    private dateRegex:RegExp;
+    
+    private regexEscape(str:string):string {
+        return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    }
+    
+    private getValueFromKeyCode(keyCode:number):string {
+        switch(keyCode) {
+            case 96:
+            case 48: return '0';
+            case 97:
+            case 49: return '1';
+            case 98:
+            case 50: return '2';
+            case 99:
+            case 51: return '3';
+            case 100:
+            case 52: return '4';
+            case 101:
+            case 53: return '5';
+            case 102:
+            case 54: return '6';
+            case 103:
+            case 55: return '7';
+            case 104:
+            case 56: return '8';
+            case 105:
+            case 57: return '9';
+            case 65: return 'a';
+            case 66: return 'b';
+            case 67: return 'c';
+            case 68: return 'd';
+            case 69: return 'e';
+            case 70: return 'f';
+            case 71: return 'g';
+            case 72: return 'h';
+            case 73: return 'i';
+            case 74: return 'j';
+            case 75: return 'k';
+            case 76: return 'l';
+            case 77: return 'm';
+            case 78: return 'n';
+            case 79: return 'o';
+            case 80: return 'p';
+            case 81: return 'q';
+            case 82: return 'r';
+            case 83: return 's';
+            case 84: return 't';
+            case 85: return 'u';
+            case 86: return 'v';
+            case 87: return 'w';
+            case 88: return 'x';
+            case 89: return 'y';
+            case 90: return 'z';
+        }
     }
     
     private textBuffer:string = '';
     private keyDown(e:KeyboardEvent):void {
-        if (e.keyCode === KeyCodes.LEFT || (e.shiftKey && e.keyCode === KeyCodes.TAB)) {
+        //TODO home and end keys
+        if ((e.keyCode === KeyCodes.HOME || e.keyCode === KeyCodes.END) && e.shiftKey) return;
+        if ((e.keyCode === KeyCodes.C || e.keyCode === KeyCodes.c) && e.ctrlKey) return;
+        if ((e.keyCode === KeyCodes.A || e.keyCode === KeyCodes.a) && e.ctrlKey) return;
+        if ((e.keyCode === KeyCodes.V || e.keyCode === KeyCodes.v) && e.ctrlKey) return;
+        if ((e.keyCode === KeyCodes.LEFT || e.keyCode === KeyCodes.RIGHT) && e.shiftKey) return;
+        
+        if (e.keyCode === KeyCodes.HOME) {
+            this.viewManager.changeViewLevel(this.levelOrder[0]);
+            e.preventDefault();    
+        } else if (e.keyCode === KeyCodes.END) {
+            this.viewManager.changeViewLevel(this.levelOrder[this.levelOrder.length - 1]);
+            e.preventDefault();    
+        } else if (e.keyCode === KeyCodes.LEFT) {
+            this.previous();
+            e.preventDefault();
+        } else if (e.shiftKey && e.keyCode === KeyCodes.TAB) {
             if (this.previous()) {
-                e.preventDefault();    
+                e.preventDefault();
             }
-        } else if (e.keyCode === KeyCodes.RIGHT || e.keyCode === KeyCodes.TAB) {
+        } else if (e.keyCode === KeyCodes.RIGHT) {
+            this.next();
+            e.preventDefault();
+        } else if (e.keyCode === KeyCodes.TAB) {
             if (this.next()) {
                 e.preventDefault();
             }
@@ -133,20 +231,237 @@ export default class InputManager {
         } else if (e.keyCode === KeyCodes.DOWN) {
             this.viewManager.decrement();
             e.preventDefault();
+        } else {
+            e.preventDefault();
         }
         
+        let keyPressed = this.getValueFromKeyCode(e.keyCode);
+        
+        if (e.keyCode === KeyCodes.BACKSPACE) {
+            this.backspace();
+        } else if (keyPressed === void 0) {
+            this.textBuffer = '';
+        } else {
+            this.textBuffer += keyPressed;
+        }
+        if (this.textBuffer.length > 0) {
+            let textBufferRegex = new RegExp('^'+this.textBuffer+'.*$', 'i');
+            let d = new Date(this.viewManager.getSelectedDate().valueOf());
+            let num;
+            let changedDate = false;
+            let foundSomething = false;
+            switch (this.viewManager.getViewLevel()) {
+                case ViewLevel.SECOND:
+                    num = parseInt(this.textBuffer);
+                    if (isNaN(num) || num > 59) {
+                        this.backspace();
+                        break;   
+                    }
+                    d.setSeconds(num);
+                    if (this.viewManager.setSelectedDate(d) &&
+                        (this.textBuffer.length > 1 || num > 5)) {
+                        this.next();
+                    }
+                    break;
+                case ViewLevel.MINUTE:
+                    num = parseInt(this.textBuffer);
+                    if (isNaN(num) || num > 59) {
+                        this.backspace();
+                        break;   
+                    }
+                    d.setMinutes(num);
+                    if (this.viewManager.setSelectedDate(d) &&
+                        (this.textBuffer.length > 1 || num > 5)) {
+                        this.next();
+                    }
+                    break;
+                case ViewLevel.HOUR:
+                    num = parseInt(this.textBuffer);
+                    if (isNaN(num) || num > 23) {
+                        this.backspace();
+                        break;   
+                    }
+                    d.setHours(num);
+                    if (this.viewManager.setSelectedDate(d) &&
+                        (this.textBuffer.length > 1 || num > 2)) {
+                        this.next();
+                    }
+                    break;
+                case ViewLevel.MERIDIEM:
+                    if (this.textBuffer.toLowerCase() === 'p') {
+                        if (d.getHours() < 12) {
+                            d.setHours(d.getHours() + 12);
+                            if (this.viewManager.setSelectedDate(d)) {
+                                this.next();
+                            }
+                        } else {
+                            this.next();
+                        }
+                    } else if (this.textBuffer.toLowerCase() === 'a') {
+                        if (d.getHours() > 11) {
+                            d.setHours(d.getHours() - 12);
+                            if (this.viewManager.setSelectedDate(d)) {
+                                this.next();
+                            }
+                        } else {
+                            this.next();
+                        }
+                    } else {
+                        this.backspace();
+                    }
+                    break;
+                case ViewLevel.DAY:
+                    for (let i = 0; i < this.shortDayNames.length; i++) {
+                        if (textBufferRegex.test(this.shortDayNames[i])) {
+                            foundSomething = true;
+                            d.setDate(d.getDate() + (i-d.getDay()));
+                            changedDate = this.viewManager.setSelectedDate(d);
+                            break;
+                        }
+                    }
+                    if (!foundSomething) {
+                        this.backspace();
+                    }
+                    if (changedDate && this.textBuffer.length > 1) {
+                        this.next();
+                    }
+                    break;
+                case ViewLevel.DATE:
+                    num = parseInt(this.textBuffer);
+                    if (isNaN(num) || num > this.viewManager.daysInCurrentMonth()) {
+                        this.backspace();
+                        break;   
+                    }
+                    if (num === 0) break;
+                    d.setDate(num);
+                    if (this.viewManager.setSelectedDate(d) &&
+                        (this.textBuffer.length > 1 || num > Math.floor(this.viewManager.daysInCurrentMonth()/10))) {
+                        this.next();
+                    }
+                    break;
+                case ViewLevel.MONTH:
+                    num = parseInt(this.textBuffer);
+                    if (isNaN(num)) {
+                        for (let i = 0; i < this.shortMonthNames.length; i++) {
+                            if (textBufferRegex.test(this.shortMonthNames[i])) {
+                                foundSomething = true;
+                                d.setMonth(i);
+                                changedDate = this.viewManager.setSelectedDate(d);
+                                break;
+                            }
+                        }
+                        if (!foundSomething) {
+                            this.backspace();
+                        }
+                        if (changedDate && this.textBuffer.length > 2) {
+                            this.next();
+                        }
+                    } else {
+                        if (num > 12) {
+                            this.backspace();
+                            break;   
+                        }
+                        if (num === 0) break;
+                        d.setMonth(num - 1);
+                        if (this.viewManager.setSelectedDate(d) && this.textBuffer.length > 1) {
+                            this.next();
+                        }
+                    }
+                    break;
+                case ViewLevel.YEAR:
+                    num = parseInt(this.textBuffer);
+                    if (isNaN(num) || num > 9999) {
+                        this.backspace();
+                        break;   
+                    }
+                    d.setFullYear(num);
+                    if (this.viewManager.setSelectedDate(d) && this.textBuffer.length > 3) {
+                        this.next();
+                    }
+                    break;
+            }
+        }
     }
     
-    private getLevelFormat():string {
-        switch (this.viewManager.getViewLevel()) {
-            case ViewLevel.SECOND:
-            case ViewLevel.MINUTE:
-            case ViewLevel.HOUR:
-            case ViewLevel.DAY:
-            case ViewLevel.MONTH:
-            case ViewLevel.YEAR:
-        }
-        return '';
+    private backspace():void {
+        this.textBuffer = this.textBuffer.slice(0, this.textBuffer.length - 1);
+    }
+    
+    private zeroToSixty:string[] = ['0', '1', '2', '3', '4', '5', '6'];
+    
+    private paste():void {
+        let originalValue = this.opts.element.value;
+        setTimeout(() => {
+            if (this.dateRegex.test(this.opts.element.value)) {
+                let d = new Date(this.viewManager.getSelectedDate().valueOf());
+                let hour;
+                let meridiem;
+                let index;
+                for (let i = 0; i < this.regexesForLevel.length; i++) {
+                    let val = this.opts.element.value;
+                    val = val.replace(this.regexesForLevel[i].start, '').match(this.regexesForLevel[i].selection)[0];
+                    switch(this.regexesForLevel[i].level) {
+                        case ViewLevel.SECOND:
+                            d.setSeconds(parseInt(val));
+                            break;
+                        case ViewLevel.MINUTE:
+                            d.setMinutes(parseInt(val));
+                            break;
+                        case ViewLevel.HOUR:
+                            hour = parseInt(val);
+                            d.setHours(hour);
+                            break;
+                        case ViewLevel.MERIDIEM:
+                            meridiem = val.toLowerCase();
+                            break;
+                        case ViewLevel.DAY:
+                            index = this.longDayNames.indexOf(val);
+                            if (index === -1) {
+                                index = this.shortDayNames.indexOf(val);
+                            }
+                            if (index === -1) {
+                                index = parseInt(val);
+                            }
+                            d.setDate(d.getDate() + (index-d.getDay()));
+                            break;  
+                            
+                            break;
+                        case ViewLevel.DATE:
+                            d.setDate(parseInt(val));
+                            break;
+                        case ViewLevel.MONTH:
+                            index = this.longMonthNames.indexOf(val);
+                            if (index === -1) {
+                                index = this.shortMonthNames.indexOf(val);
+                            }
+                            if (index === -1) {
+                                index = parseInt(val);
+                            }
+                            d.setMonth(index);
+                            break;    
+                        case ViewLevel.YEAR:
+                            d.setFullYear(parseInt(val));
+                            break;  
+                    }
+                }
+                if (meridiem !== void 0 && hour !== void 0) {
+                    if (meridiem === 'am' && hour === 12) {
+                        d.setHours(0);
+                    } else if (meridiem === 'pm' && hour !== 12) {
+                        d.setHours(hour + 12);
+                    }
+                }
+                if (!this.viewManager.setSelectedDate(d)) {
+                    this.opts.element.value = originalValue;
+                }
+            } else if (new Date(this.opts.element.value).toString() !== "Invalid Date") {
+                if (!this.viewManager.setSelectedDate(new Date(this.opts.element.value))) {
+                    this.opts.element.value = originalValue;
+                }
+            } else {
+                this.opts.element.value = originalValue;
+            }
+        });
     }
     
     private stopUpdate:boolean = false;
@@ -177,11 +492,13 @@ export default class InputManager {
         let secondDiff = this.getDiff(this.secondSelection, select);
         let minuteDiff = this.getDiff(this.minuteSelection, select);
         let hourDiff = this.getDiff(this.hourSelection, select);
+        let meridiemDiff = this.getDiff(this.meridiemSelection, select);
+        let dateDiff = this.getDiff(this.dateSelection, select);
         let dayDiff = this.getDiff(this.daySelection, select);
         let monthDiff = this.getDiff(this.monthSelection, select);
         let yearDiff = this.getDiff(this.yearSelection, select);
         
-        let diffs = [secondDiff, minuteDiff, hourDiff, dayDiff, monthDiff, yearDiff];
+        let diffs = [secondDiff, minuteDiff, hourDiff, meridiemDiff, dateDiff, dayDiff, monthDiff, yearDiff];
         
         let lowestDiff;
         let lowestDiffIndex;
@@ -205,20 +522,28 @@ export default class InputManager {
             case 1: //minute
                 closestSelection = this.minuteSelection;
                 selectedViewLevel = ViewLevel.MINUTE;
-                break;
+                break;                
             case 2: //hour
                 closestSelection = this.hourSelection;
                 selectedViewLevel = ViewLevel.HOUR;
                 break;
-            case 3: //day
+            case 3: //meridiem
+                closestSelection = this.meridiemSelection;
+                selectedViewLevel = ViewLevel.MERIDIEM;
+                break;
+            case 4: //date
+                closestSelection = this.dateSelection;
+                selectedViewLevel = ViewLevel.DATE;
+                break;
+            case 5: //day
                 closestSelection = this.daySelection;
                 selectedViewLevel = ViewLevel.DAY;
                 break;
-            case 4: //month
+            case 6: //month
                 closestSelection = this.monthSelection;
                 selectedViewLevel = ViewLevel.MONTH;
                 break;
-            case 5: //year
+            case 7: //year
                 closestSelection = this.yearSelection;
                 selectedViewLevel = ViewLevel.YEAR;
                 break;
@@ -234,9 +559,12 @@ export default class InputManager {
     
     private getDiff(selection:Selection, select:number):number {
         if (selection !== void 0) {
-            let startDiff = Math.abs(select - selection.start);
-            let endDiff = Math.abs(select - selection.end);
-            return Math.min(startDiff, endDiff);
+            let startDiff = select - selection.start;
+            let endDiff = select - selection.end;
+            if ((startDiff > 0 && endDiff < 0) || (startDiff < 0 && endDiff > 0)) {
+                return -1;
+            }
+            return Math.min(Math.abs(startDiff), Math.abs(endDiff));
         }
         return void 0;
     }
@@ -268,6 +596,33 @@ export default class InputManager {
         return false;
     }
     
+    private getDateRegex(str:string):string {
+        switch(str) {
+            case 'YYYY': return "\\d{4,4}";
+            case 'YY': return "\\d{2,2}";
+            case 'MMMM': return "((January)|(February)|(March)|(April)|(May)|(June)|(July)|(August)|(September)|(October)|(November)|(December))";
+            case 'MMM': return "((Jan)|(Feb)|(Mar)|(Apr)|(May)|(Jun)|(Jul)|(Aug)|(Sep)|(Oct)|(Nov)|(Dec))";
+            case 'MM': return "\\d{2,2}";
+            case 'M': return "\\d{1,2}";
+            case 'dddd': return "((Sunday)|(Monday)|(Tuesday)|(Wednesday)|(Thursday)|(Friday)|(Saturday))";
+            case 'ddd': return "((Sun)|(Mon)|(Tue)|(Wed)|(Thu)|(Fri)|(Sat))";
+            case 'DD': return "\\d{2,2}";
+            case 'Do': return "\\d{1,2}((th)|(nd)|(rd)|(st))";
+            case 'D': return "\\d{2,2}";
+            case 'A': return "((AM)|(PM))";
+            case 'a': return "((am)|(pm))";
+            case 'HH': return "\\d{2,2}";
+            case 'H': return "\\d{1,2}";
+            case 'hh': return "\\d{2,2}";
+            case 'h': return "\\d{1,2}";
+            case 'mm': return "\\d{2,2}";
+            case 'm': return "\\d{1,2}";
+            case 'ss': return "\\d{2,2}";
+            case 's': return "\\d{1,2}";
+        }
+        return void 0;
+    }
+    
     private getLevel(str:string):ViewLevel {
         switch(str) {
             case 'YYYY':
@@ -278,12 +633,16 @@ export default class InputManager {
             case 'MM':
             case 'M':
                 return ViewLevel.MONTH;
+            case 'dddd':
+            case 'ddd':
+                return ViewLevel.DAY;
             case 'DD':
             case 'Do':
             case 'D':
-                return ViewLevel.DAY;
+                return ViewLevel.DATE;
             case 'A':
             case 'a':
+                return ViewLevel.MERIDIEM;
             case 'HH':
             case 'H':
             case 'hh':
@@ -327,9 +686,12 @@ export default class InputManager {
     private paddedMonthDigitRegex = new RegExp('MM', 'g');
     private monthDigitRegex = new RegExp('M', 'g');
     
-    private paddedDayOfMonthRegex = new RegExp('DD', 'g');
-    private dayOfMonthWithOrdinalRegex = new RegExp('Do', 'g');
-    private dayOfMonthRegex = new RegExp('D', 'g');
+    private paddedDateOfMonthRegex = new RegExp('DD', 'g');
+    private dateOfMonthWithOrdinalRegex = new RegExp('Do', 'g');
+    private dateOfMonthRegex = new RegExp('D', 'g');
+    
+    private longDayNameRegex = new RegExp('dddd', 'g');
+    private shortDayNameRegex = new RegExp('ddd', 'g');
     
     private unixTimeStampRegex = new RegExp('X', 'g');
     private unixMillisecondTimeStampRegex = new RegExp('x', 'g');
@@ -387,7 +749,11 @@ export default class InputManager {
         return array[0];
     }
     
-    public update(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date):void {
+    private longDayNames:string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    private shortDayNames:string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    
+    public update(date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date, transition:boolean):void {
+        if (level !== lastLevel) this.textBuffer = '';
         if (this.stopUpdate) return;
         if (this.currentDate !== void 0 && this.currentDate.valueOf() === selectedDate.valueOf() && level === lastLevel) {
             return;
@@ -403,9 +769,12 @@ export default class InputManager {
         let paddedMonthDigit = 'M'+this.pad(this.currentDate.getMonth() + 1, 2);
         let monthDigit = 'M'+(this.currentDate.getMonth() + 1).toString();
         
-        let paddedDayOfMonth = 'D'+this.pad(this.currentDate.getDate(), 2);
-        let dayOfMonthWithOrdinal = 'D'+this.appendOrdinalTo(this.currentDate.getDate());
-        let dayOfMonth = 'D'+this.currentDate.getDate().toString();
+        let longDayName = 'd'+this.longDayNames[this.currentDate.getDay()];
+        let shortDayName = 'd'+this.shortDayNames[this.currentDate.getDay()];
+        
+        let paddedDateOfMonth = 'D'+this.pad(this.currentDate.getDate(), 2);
+        let dateOfMonthWithOrdinal = 'D'+this.appendOrdinalTo(this.currentDate.getDate());
+        let dateOfMonth = 'D'+this.currentDate.getDate().toString();
         
         let unixTimeStamp = 'X'+Math.round(this.currentDate.valueOf() / 1000).toString();
         let unixMillisecondTimeStamp = 'X'+this.currentDate.valueOf().toString();
@@ -441,9 +810,13 @@ export default class InputManager {
         result = this.replace(result, this.monthDigitRegex, monthDigit);
         
         // DAY
-        result = this.replace(result, this.paddedDayOfMonthRegex, paddedDayOfMonth);
-        result = this.replace(result, this.dayOfMonthWithOrdinalRegex, dayOfMonthWithOrdinal);
-        result = this.replace(result, this.dayOfMonthRegex, dayOfMonth);
+        result = this.replace(result, this.longDayNameRegex, longDayName);
+        result = this.replace(result, this.shortDayNameRegex, shortDayName);
+        
+        // DATE
+        result = this.replace(result, this.paddedDateOfMonthRegex, paddedDateOfMonth);
+        result = this.replace(result, this.dateOfMonthWithOrdinalRegex, dateOfMonthWithOrdinal);
+        result = this.replace(result, this.dateOfMonthRegex, dateOfMonth);
         
         // MISC
         result = this.replace(result, this.unixTimeStampRegex, unixTimeStamp);
@@ -454,6 +827,8 @@ export default class InputManager {
         result = this.replace(result, this.militaryTimeRegex, militaryTime);
         result = this.replace(result, this.paddedHourRegex, paddedHour);
         result = this.replace(result, this.hourRegex, hour);
+        
+        // MERIDIEM
         result = this.replace(result, this.capitalMeridiemRegex, capitalMeridiem);
         result = this.replace(result, this.lowercaseMeridiemRegex, lowercaseMeridiem);
         
@@ -472,14 +847,18 @@ export default class InputManager {
         let secondSearches = [paddedSeconds, seconds];
         let minuteSearches = [paddedMinutes, minutes];
         let hourSearches = [paddedMilitaryTime, militaryTime, paddedHour, hour];
-        let daySearches = [paddedDayOfMonth, dayOfMonthWithOrdinal, monthDigit];
+        let meridiemSearches = [capitalMeridiem, lowercaseMeridiem];
+        let daySearches = [longDayName, shortDayName];
+        let dateSearches = [paddedDateOfMonth, dateOfMonthWithOrdinal, monthDigit];
         let monthSearches = [longMonthName, shortMonthName, paddedMonthDigit, monthDigit];
         let yearSearches = [fourDigitYear, twoDigitYear];
 
         this.secondSelection = void 0;
         this.minuteSelection = void 0;
         this.hourSelection = void 0;
+        this.meridiemSelection = void 0;
         this.daySelection = void 0;
+        this.dateSelection = void 0;
         this.monthSelection = void 0;
         this.yearSelection = void 0;
 
@@ -497,6 +876,12 @@ export default class InputManager {
                 }
                 if (this.hourSelection === void 0) {
                     this.hourSelection = this.updateSelectionGroup(hourSearches, split, i);
+                }
+                if (this.meridiemSelection === void 0) {
+                    this.meridiemSelection = this.updateSelectionGroup(meridiemSearches, split, i);
+                }
+                if (this.dateSelection === void 0) {
+                    this.dateSelection = this.updateSelectionGroup(dateSearches, split, i);
                 }
                 if (this.daySelection === void 0) {
                     this.daySelection = this.updateSelectionGroup(daySearches, split, i);
@@ -531,6 +916,16 @@ export default class InputManager {
                     if (this.hourSelection === void 0) break;
                     selectionStart = this.hourSelection.start;
                     selectionEnd = this.hourSelection.end;
+                    break;
+                case ViewLevel.MERIDIEM:
+                    if (this.meridiemSelection === void 0) break;
+                    selectionStart = this.meridiemSelection.start;
+                    selectionEnd = this.meridiemSelection.end;
+                    break;
+                case ViewLevel.DATE:
+                    if (this.dateSelection === void 0) break;
+                    selectionStart = this.dateSelection.start;
+                    selectionEnd = this.dateSelection.end;
                     break;
                 case ViewLevel.DAY:
                     if (this.daySelection === void 0) break;
@@ -569,6 +964,8 @@ export default class InputManager {
     private secondSelection:Selection;
     private minuteSelection:Selection;
     private hourSelection:Selection;
+    private meridiemSelection:Selection;
+    private dateSelection:Selection;
     private daySelection:Selection;
     private monthSelection:Selection;
     private yearSelection:Selection;
@@ -601,14 +998,5 @@ class Selection {
     public constructor(data:ISelection) {
         this.start = data.start;
         this.end = data.end;
-    }
-}
-
-
-// TODO finish this
-class Format {
-    public acceptedChars:string;
-    protected validate(currentEntry:string):boolean {
-        return false;
     }
 }

@@ -63,10 +63,12 @@ export default class Header {
             case ViewLevel.MINUTE:
                 this.dayLabel.classList.add('datium-max-view');
                 break;
+            case ViewLevel.MERIDIEM:    
             case ViewLevel.HOUR:
                 this.monthLabel.classList.add('datium-max-view');
                 break;
             case ViewLevel.DAY:
+            case ViewLevel.DATE:
                 this.yearLabel.classList.add('datium-max-view');
                 break;
             case ViewLevel.MONTH:
@@ -97,7 +99,7 @@ export default class Header {
 	private days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 	
     public updateDayLabel(date:Date) {
-        if (this.level === ViewLevel.HOUR) {
+        if (this.level === ViewLevel.HOUR || this.level === ViewLevel.MERIDIEM) {
             if (this.opts.militaryTime) {
                 this.dayLabelText.innerHTML = this.getDayText(date) + ' <datium-changing-label>' + this.getHourText(date) + '</datium-changing-label>';
             } else {
@@ -234,12 +236,12 @@ export default class Header {
 			this.mkTop(this.decadeLabel);
 			this.mkBottom(this.yearLabel);
 			this.mkHiddenBottom(this.monthLabel, this.dayLabel, this.hourLabel, this.minuteLabel);
-		} else if (level === ViewLevel.DAY) {
+		} else if (level === ViewLevel.DATE || level === ViewLevel.DAY) {
 			this.mkHiddenTop(this.decadeLabel);
 			this.mkTop(this.yearLabel);
 			this.mkBottom(this.monthLabel);
 			this.mkHiddenBottom(this.dayLabel, this.hourLabel, this.minuteLabel);			
-		} else if (level === ViewLevel.HOUR) {
+		} else if (level === ViewLevel.HOUR || level === ViewLevel.MERIDIEM) {
 			this.mkHiddenTop(this.decadeLabel, this.yearLabel);
 			this.mkTop(this.monthLabel);
 			this.mkBottom(this.dayLabel);

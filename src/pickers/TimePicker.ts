@@ -122,6 +122,7 @@ export default class TimePicker extends Picker {
     private appendTickLabel(num:number):boolean {
         let interval;
         switch (this.viewManager.getViewLevel()) {
+            case ViewLevel.MERIDIEM:
             case ViewLevel.HOUR:
                 interval = this.opts.hourSelectionInterval;
                 break;
@@ -152,6 +153,7 @@ export default class TimePicker extends Picker {
         
         let className:string = '';
         switch(this.viewManager.getViewLevel()) {
+            case ViewLevel.MERIDIEM:
             case ViewLevel.HOUR: className = 'datium-hour-view'; break;
             case ViewLevel.MINUTE: className = 'datium-minute-view'; break;
             case ViewLevel.SECOND: className = 'datium-second-view'; break;

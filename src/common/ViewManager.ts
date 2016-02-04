@@ -5,7 +5,9 @@ export enum ViewLevel {
 	SECOND,
 	MINUTE,
 	HOUR,
-	DAY,
+    MERIDIEM,
+	DATE,
+    DAY,
 	MONTH,
 	YEAR
 }
@@ -38,7 +40,7 @@ export default class ViewManager {
     }
 	
 	constructor(private opts:IDatiumOptions) {
-        this.selectedDate = new Date(); // this will be anything in the text box initially maybe
+        this.selectedDate = new Date(); // TODO this will be anything in the text box initially maybe
         if (this.opts.minDate !== void 0 && this.selectedDate.valueOf() < this.opts.minDate.valueOf()) {
             this.selectedDate = new Date(this.opts.minDate.valueOf());
         }
@@ -49,7 +51,7 @@ export default class ViewManager {
 		this.level = this.opts.startView;
 		this.lastDate = this.date;
 		this.lastLevel = this.level;
-        //somehow do an initial load here...
+        // TODO somehow do an initial load here...
 	}
     
     private previousDisabled:boolean = false;
@@ -67,12 +69,10 @@ export default class ViewManager {
         this.goToView(this.getValue(this.level), this.level);
     }
     
-	public goToView(value:number, level:ViewLevel):void {        
+	public goToView(value:number, level:ViewLevel):void {
 		this.lastDate = new Date(this.date.valueOf());
 		this.lastLevel = this.level;
 		this.level = level;
-        
-        
         
         this.previousDisabled = false;
         this.nextDisabled = false;
@@ -90,11 +90,13 @@ export default class ViewManager {
             previousEnd = new Date(value, 0, 1, 0, 0, -1);
             nextStart = new Date(value + 1, 0, 1, 0, 0, 1);
 			break;
-		case ViewLevel.DAY:
+        case ViewLevel.DAY:
+		case ViewLevel.DATE:
 			this.date.setMonth(value);
             previousEnd = new Date(this.date.getFullYear(), value, 1, 0, 0, -1);
             nextStart = new Date(this.date.getFullYear(), value + 1, 1, 0, 0, 1);
 			break;
+        case ViewLevel.MERIDIEM:            
 		case ViewLevel.HOUR:
 			this.date.setDate(value);            
             previousEnd = new Date(this.date.getFullYear(), this.date.getMonth(), value, 0, 0, -1);
@@ -140,7 +142,7 @@ export default class ViewManager {
 		this.notifyObservers();
 	}
     
-    private daysInCurrentMonth():number {
+    public daysInCurrentMonth():number {
         return new Date(this.selectedDate.getFullYear(), this.selectedDate.getMonth() + 1, 0).getDate();
     }
     
@@ -169,6 +171,16 @@ export default class ViewManager {
                 if (newVal < 0) return false;
                 newDate.setMinutes(newVal);
                 break;
+            case ViewLevel.MERIDIEM:
+                newVal = newDate.getHours() + 12 * sign;
+                if (newVal > 23) return false;
+                if (newVal < 0) return false;
+                newDate.setHours(newVal);
+                // D.L.S. time jazz is super annoying
+                if (newDate.getHours() !== newVal && this.selectedDate.getHours() > newVal) {
+                    newDate.setHours(newDate.getHours() - 2);
+                }
+                break;
             case ViewLevel.HOUR:
                 newVal = newDate.getHours() + this.opts.hourSelectionInterval * sign;
                 if (newVal > 23) return false;
@@ -180,6 +192,10 @@ export default class ViewManager {
                 }
                 break;
             case ViewLevel.DAY:
+                //TODO decide if this is even worthwhile
+                if (this.selectedDate.getDay() === 0 && sign < 0) return false;
+                if (this.selectedDate.getDay() === 6 && sign > 0) return false;
+            case ViewLevel.DATE:
                 newVal = newDate.getDate() + sign;
                 if (newVal > this.daysInCurrentMonth()) return false;
                 if (newVal < 1) return false;
@@ -211,10 +227,12 @@ export default class ViewManager {
             case ViewLevel.MINUTE:
                 if (newDate.getMinutes() === this.selectedDate.getMinutes()) return false;
                 break;
+            case ViewLevel.MERIDIEM:
             case ViewLevel.HOUR:
                 if (newDate.getHours() === this.selectedDate.getHours()) return false;
                 break;
             case ViewLevel.DAY:
+            case ViewLevel.DATE:
                 if (newDate.getDate() === this.selectedDate.getDate()) return false;
                 break;
             case ViewLevel.MONTH:
@@ -230,16 +248,18 @@ export default class ViewManager {
         return true;
     }
     
-    public levelToString(level:ViewLevel):string {
-        switch (level) {
-            case ViewLevel.YEAR: return 'YEAR';
-            case ViewLevel.MONTH: return 'MONTH';
-            case ViewLevel.DAY: return 'DAY';
-            case ViewLevel.HOUR: return 'HOUR';
-            case ViewLevel.MINUTE: return 'MINUTE';
-            case ViewLevel.SECOND: return 'SECOND';
-            default: return 'NULL';
+    public setSelectedDate(date:Date):boolean {
+        if (this.opts.minDate !== void 0 && date.valueOf() < this.opts.minDate.valueOf()) {
+            return false;
         }
+        if (this.opts.maxDate !== void 0 && date.valueOf() > this.opts.maxDate.valueOf()) {
+            return false;
+        }
+        this.date = new Date(date.valueOf());
+        this.selectedDate = new Date(date.valueOf());
+        this.lastLevel = this.level;
+        this.notifyObservers(false);
+        return true;
     }
 	
 	public next():void {
@@ -258,6 +278,7 @@ export default class ViewManager {
 	
 	public zoomOut():void {
 		let newLevel:ViewLevel = this.level === ViewLevel.YEAR ? this.level : this.level + 1;
+        if (newLevel === ViewLevel.MERIDIEM || newLevel === ViewLevel.DAY) newLevel++;
         if (newLevel > this.opts.maxView) return;
 		let value:number = this.getValue(newLevel);
 		this.goToView(value, newLevel);
@@ -270,6 +291,7 @@ export default class ViewManager {
 	
 	public zoomTo(newValue:number):void {
 		let newLevel:ViewLevel = this.level - 1;
+        if (newLevel === ViewLevel.HOUR || newLevel === ViewLevel.MERIDIEM || newLevel === ViewLevel.DAY || newLevel === ViewLevel.DATE) newLevel--;
 		this.goToView(newValue, newLevel);
 	}
 	
@@ -277,8 +299,10 @@ export default class ViewManager {
 		switch(level) {
 			case ViewLevel.SECOND: return this.date.getMinutes();
 			case ViewLevel.MINUTE: return this.date.getHours();
+            case ViewLevel.MERIDIEM:
 			case ViewLevel.HOUR: return this.date.getDate();
-			case ViewLevel.DAY: return this.date.getMonth();
+            case ViewLevel.DAY:
+			case ViewLevel.DATE: return this.date.getMonth();
 			case ViewLevel.MONTH: return this.date.getFullYear();
 			default: return this.date.getFullYear();
 		}

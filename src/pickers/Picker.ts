@@ -23,7 +23,7 @@ export class Picker {
         onTap(this.container, selectorPrefix+'-selectable', (e:Event) => {
             let el = e.srcElement || <Element>e.target;
             let zoomValue = parseInt(el.getAttribute('datium-data'));
-            if (viewManager.getViewLevel() === ViewLevel.HOUR && (<any>this).meridiem === 'PM') {
+            if ((viewManager.getViewLevel() === ViewLevel.HOUR || viewManager.getViewLevel() === ViewLevel.MERIDIEM) && (<any>this).meridiem === 'PM') {
                 if (zoomValue === 12) zoomValue = 0;
                 if (zoomValue === 24) zoomValue = 12;
                 zoomValue += 12;

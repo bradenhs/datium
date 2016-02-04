@@ -29,7 +29,9 @@
         blandit justo nulla, vitae hendrerit enim scelerisque at. Sed ipsum sem, sodales luctus pharetra ut, hendrerit nec
         dui.
     </p>
-    <input id="test-element"/>
+    <div>
+        <input id="test-element"/>
+    </div>
     <p>
         Nullam pretium rhoncus arcu vitae iaculis. Donec maximus placerat leo at rhoncus. Praesent ut elit pellentesque, ullamcorper
         eros laoreet, ullamcorper est. In metus leo, aliquet non tortor aliquam, fermentum cursus ligula. Vivamus eget pulvinar
@@ -85,7 +87,9 @@
             font-size: 16pt;
             transition: all ease .2s;
         }
-        
+        div {
+            position: absolute;
+        }
         input:focus {
             border-color: #019587;
         }
@@ -97,17 +101,19 @@
           endView: 'second',
           minDate: new Date('2016').valueOf() - 999999,
           minuteSelectionInterval: 5,
-          displayFormat: 'hh:mm:ssA MMM Do, YYYY',
-          militaryTime: false
+          displayFormat: 'hh:mmA ddd MMM Do, YYYY'
         });
+        
         new Datium({
           element: document.querySelector('#test-element1'),
           theme: 'material',
           startView: 'hour',
           endView: 'second',
           small: true,
-          transition: false
+          transition: false,
+          displayFormat: 'hh:mmA ddd MMM Do, YYYY'
         });
+        
       });      
     </script>
   </body>

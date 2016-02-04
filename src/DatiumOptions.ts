@@ -101,7 +101,7 @@ function toLevel(level:string):ViewLevel {
         case 'second': return ViewLevel.SECOND;
         case 'minute': return ViewLevel.MINUTE;
         case 'hour': return ViewLevel.HOUR;
-        case 'day': return ViewLevel.DAY;
+        case 'day': return ViewLevel.DATE;
         case 'month': return ViewLevel.MONTH;
         case 'year': return ViewLevel.YEAR;
         default: return void 0;
@@ -109,7 +109,7 @@ function toLevel(level:string):ViewLevel {
 }
 
 function sanitizeStartView(startView:string):ViewLevel {
-    if (startView === void 0) return ViewLevel.DAY; //default
+    if (startView === void 0) return ViewLevel.DATE; //default
     if (typeof startView !== 'string') throw StartViewError;
     let startLevel = toLevel(startView);
     if (startLevel === void 0) throw StartViewError;

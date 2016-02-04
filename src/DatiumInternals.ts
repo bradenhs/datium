@@ -1,5 +1,5 @@
 import headerTemplate from 'src/header/header.html!text';
-import {onDown, onUp, onMouseDown, onBlur, onFocus, onTap, onSwipeLeft, onSwipeRight, ListenerReference, removeListeners} from 'src/common/Events';
+import {onDown, onUp, onMouseDown, onBlur, onFocus, onTap, onSwipeLeft, onSwipeRight, onFocusOut, onFocusIn, ListenerReference, removeListeners} from 'src/common/Events';
 import Header from 'src/header/Header';
 import ViewManager, {ViewLevel} from 'src/common/ViewManager';
 import YearPicker from 'src/pickers/year/YearPicker';
@@ -97,22 +97,32 @@ export default class DatiumInternals {
         });
         
         let reopenOnTapListeners = [];
-        onFocus(this.opts.element, (e:Event) => {  
-            this.openPicker();        
+        
+        onFocus(this.opts.element, (e:Event) => {
+            this.opts.element.removeAttribute('readonly');
+            this.openPicker();
+            
+            // TODO if mobile?
+            //setTimeout(() => {
+            //    let oldTop = document.body.scrollTop;
+            //    document.body.scrollTop += this.opts.element.getBoundingClientRect().top - 10;
+            //    if (document.body.scrollTop === oldTop) document.body.scrollTop++;
+            //}, 50);
+            
             reopenOnTapListeners = onTap(this.opts.element, () => {
                 if (!this.isPickerOpen && document.activeElement === this.opts.element) {
                     this.openPicker();
                 }
-            });
+            }); 
         });
         
         onBlur(this.opts.element, () => {
+            this.opts.element.setAttribute('readonly', 'true');
             this.closePicker();
             removeListeners(reopenOnTapListeners);            
         });
-        
         this.opts.element.setAttribute('readonly', 'true');
-        
+        this.opts.element.setAttribute('spellcheck', 'false');        
         let header = new Header(this.datiumContainer.querySelector('datium-header'), this.viewManager, this.opts);
         
         this.yearPicker = new YearPicker(this.pickerContainer, this.viewManager, this.opts);
@@ -127,8 +137,8 @@ export default class DatiumInternals {
         });
         
         this.inputManager = new InputManager(this.opts, this.viewManager);
-        this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date) => {
-            this.inputManager.update(date, level, lastDate, lastLevel, selectedDate);
+        this.viewManager.registerObserver((date:Date, level:ViewLevel, lastDate:Date, lastLevel:ViewLevel, selectedDate:Date, transition:boolean) => {
+            this.inputManager.update(date, level, lastDate, lastLevel, selectedDate, transition);
         });
         
         if(this.opts.modal) {
@@ -178,7 +188,7 @@ export default class DatiumInternals {
         let cancelClose = true;
         
         setTimeout(() => {
-            this.inputManager.update(this.viewManager.getSelectedDate(), this.viewManager.getViewLevel(), this.viewManager.getSelectedDate(), void 0, this.viewManager.getSelectedDate());
+            this.inputManager.update(this.viewManager.getSelectedDate(), this.viewManager.getViewLevel(), this.viewManager.getSelectedDate(), void 0, this.viewManager.getSelectedDate(), true);
             this.eventListeners = this.eventListeners.concat(onDown(this.opts.element, (e) => {
                 cancelClose = true;
             }));
@@ -214,6 +224,13 @@ export default class DatiumInternals {
             this.closePicker(true);
             return;
         }
+        if ((level === ViewLevel.HOUR && lastLevel === ViewLevel.MERIDIEM) ||
+            (level === ViewLevel.MERIDIEM && lastLevel === ViewLevel.HOUR) ||
+            (level === ViewLevel.DATE && lastLevel === ViewLevel.DAY) ||
+            (level === ViewLevel.DAY && lastLevel === ViewLevel.DATE)) {
+            transition = false;
+        }
+            
         let newPicker = this.getNewPicker(level);
         if (transition === false) {
             this.currentPicker.destroy(Transition.NONE);
@@ -241,7 +258,9 @@ export default class DatiumInternals {
         switch (level) {
             case ViewLevel.YEAR: return this.yearPicker;
             case ViewLevel.MONTH: return this.monthPicker;
-            case ViewLevel.DAY: return this.dayPicker;
+            case ViewLevel.DAY:
+            case ViewLevel.DATE: return this.dayPicker;
+            case ViewLevel.MERIDIEM:
             case ViewLevel.HOUR: return this.hourPicker;
             case ViewLevel.MINUTE: return this.minutePicker;
             case ViewLevel.SECOND: return this.secondPicker;
