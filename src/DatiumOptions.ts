@@ -307,7 +307,7 @@ export interface IDatiumOptions {
      * Required 
      * Type: HTMLInputElement
      */
-	element: HTMLInputElement;
+	element: HTMLInputElement; //make it so this doesn't have to be html input element
     
     /**
      * Toggle if the picker shows when the input is focused
@@ -342,7 +342,7 @@ export interface IDatiumOptions {
      * Accepted values:
      *   'year', 'month', 'day', 'hour', 'minute', 'second'
      */
-    startView: ViewLevel;
+    startView: ViewLevel; //should this maybe be determined by the displayFormat?
     
     /**
      * The view the picker should close at
@@ -352,7 +352,7 @@ export interface IDatiumOptions {
      * Accepted values:
      *   'year', 'month', 'day', 'hour', 'minute', 'second'
      */
-    endView: ViewLevel;
+    endView: ViewLevel; //should this maybe be determined by the displayFormat?
     
     /** 
      * The view the picker shouldn't be able to zoom out beyond
@@ -362,7 +362,7 @@ export interface IDatiumOptions {
      * Accepted values:
      *   'year', 'month', 'day', 'hour', 'minute', 'second'
      */
-    maxView: ViewLevel;
+    maxView: ViewLevel; //should this maybe be determined by the displayFormat?
     
     /**
      * The first selectable date down to the day (time constraints will be ignored).
@@ -383,6 +383,21 @@ export interface IDatiumOptions {
      *   01 January, 1970 UTC | Date object
      */
     maxDate: Date;
+    
+    // add isSelectable option...
+    /**
+     * This would be a function like this
+     * function(date:Date, level:ViewLevel):boolean
+     * 
+     * And it just returns true or false if a date is selectable
+     * There would be maybe some default strings you could pass in
+     * that would just end up passing a premade function to the datepicker
+     * like "weekdays." That function might look like this
+     *  function (date:Date, level:ViewLevel):boolean {
+     *      if (level > ViewLevel.DATE) return true;
+     *      return date.getDay() !== 0 && date.getDay() !== 6;
+     *  }
+     */
     
     /**
      * The intervals on which hours can be selected (every 3rd hour means 12am,
@@ -417,7 +432,7 @@ export interface IDatiumOptions {
     /**
      * Toggle if military time should be used in the hour selection
      * 
-     * Optional (default: false)
+     * Optional (default: false) // default to hh or HH specified in displayFormat
      * Type: boolean
      */
     militaryTime: boolean;
@@ -427,7 +442,7 @@ export interface IDatiumOptions {
      * 
      * Optional (default: "YYYY-MM-DDTHH:mm:SSZZ")
      * Type: string
-     * Accepted values: follows format defined on http://momentjs.com/docs/#/parsing/string-format/
+     * Accepted values: follows format defined on http://momentjs.com/docs/#/parsing/string-format/ (pretty much at least)
      */
     dataFormat: string;
     
@@ -436,7 +451,7 @@ export interface IDatiumOptions {
      * 
      * Optional (default: "HH:mmA MMM DD, YYYY")
      * Type: string
-     * Accepted values: follows format defined on http://momentjs.com/docs/#/parsing/string-format/
+     * Accepted values: follows format defined on http://momentjs.com/docs/#/parsing/string-format/ (pretty much at least)
      */
     displayFormat: string; // Format date appears as in input
     
@@ -446,7 +461,7 @@ export interface IDatiumOptions {
      * Optional (default: 2147483647)
      * Type: number
      */
-    zIndex: number;
+    zIndex: number; // just have a css style hook instead
         
     /**
      * Toggle if the datepicker should have smooth transitions
