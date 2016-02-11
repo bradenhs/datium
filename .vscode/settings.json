@@ -3,8 +3,8 @@
 	"files.exclude": {
 		"**/.git": true,
 		"**/.DS_Store": true,
-		"config.js": true,
-		"gulpfile.js": true,
+		//"config.js": true,
+		//"gulpfile.js": true,
 		"temp": true,
 		"package.json": true,
 		"tsconfig.json": true,
