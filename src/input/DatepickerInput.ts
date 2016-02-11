@@ -1,12 +1,12 @@
-import * as DatePart from 'src/input/DateParts';
+import {dateParts, IDatePart} from 'src/input/DateParts';
 
 class DateStringPartCreator {
     
-    public static create(format:string):DatePart.DatePart[] {        
+    public static create(format:string):IDatePart[] {        
         let i = 0;
                 
         let inSquareBracket = false;
-        let dateStringParts:DatePart.DatePart[] = [];
+        let dateStringParts:IDatePart[] = [];
         let plainTextBuffer = '';
         while (i < format.length) {
             
@@ -26,27 +26,35 @@ class DateStringPartCreator {
             
             let foundMatch = false;
             
-            for (let j = 0; j < DatePart.dateParts.length; j++) {
-                let part = DatePart.dateParts[j];
+            for (let j = 0; j < dateParts.length; j++) {
+                let datePart = dateParts[j];
                 
-                if (this.doesMatch(format, i, `{${part.FormatCode}}`)) {
+                if (this.doesMatch(format, i, `{${datePart.formatCode}}`)) {
                     if (plainTextBuffer.length > 0) {
-                        dateStringParts.push(new DatePart.PlainText(plainTextBuffer));
+                        var str = plainTextBuffer;
+                        dateStringParts.push({
+                            str: () => str,
+                            selectable: false
+                        });
                         plainTextBuffer = '';
                     }
-                    dateStringParts.push(new part());
-                    dateStringParts[dateStringParts.length - 1].setSelectable(false);
+                    dateStringParts.push(datePart);
+                    dateStringParts[dateStringParts.length - 1].selectable = false;
                     foundMatch = true;
-                    i += part.FormatCode.length + 2;
+                    i += datePart.formatCode.length + 2;
                     break;
-                } else if (this.doesMatch(format, i, part.FormatCode)) {
+                } else if (this.doesMatch(format, i, datePart.formatCode)) {
                     if (plainTextBuffer.length > 0) {
-                        dateStringParts.push(new DatePart.PlainText(plainTextBuffer));
+                        var str = plainTextBuffer;
+                        dateStringParts.push({
+                            str: () => str,
+                            selectable: false
+                        });
                         plainTextBuffer = '';
                     }
-                    dateStringParts.push(new part());
+                    dateStringParts.push(datePart);
                     foundMatch = true;
-                    i += part.FormatCode.length;
+                    i += datePart.formatCode.length;
                     break;
                 }
             }
@@ -56,7 +64,11 @@ class DateStringPartCreator {
             }
         }
         if (plainTextBuffer.length > 0) {
-            dateStringParts.push(new DatePart.PlainText(plainTextBuffer));
+            var str = plainTextBuffer;
+            dateStringParts.push({
+                str: () => str,
+                selectable: false
+            });
             plainTextBuffer = '';
         }
         
@@ -89,8 +101,8 @@ export const enum KeyCodes {
 export default class DatepickerInput {
     
     private selectedIndex:number;
-    
-    private dateStringParts:DatePart.DatePart[];
+    private curDate:Date;
+    private dateStringParts:IDatePart[];
     
     constructor(private element:HTMLInputElement, displayAs:string) {
         this.dateStringParts = DateStringPartCreator.create(displayAs);
@@ -162,11 +174,11 @@ export default class DatepickerInput {
                 e.preventDefault();
             }
         } else if (e.keyCode === KeyCodes.UP) {
-            let newDate = this.dateStringParts[this.selectedIndex].increment();
+            let newDate = this.dateStringParts[this.selectedIndex].inc(this.curDate);
             this.update(newDate);
             e.preventDefault();
         } else if (e.keyCode === KeyCodes.DOWN) {
-            let newDate = this.dateStringParts[this.selectedIndex].decrement();
+            let newDate = this.dateStringParts[this.selectedIndex].dec(this.curDate);
             this.update(newDate);
             e.preventDefault();
         } else {
@@ -177,7 +189,7 @@ export default class DatepickerInput {
     private getPreviousSelectable():number {
         let index = this.selectedIndex;
         while (--index >= 0) {
-            if (this.dateStringParts[index].isSelectable()) return index;
+            if (this.dateStringParts[index].selectable) return index;
         }
         return this.selectedIndex;
     }
@@ -185,7 +197,7 @@ export default class DatepickerInput {
     private getNextSelectable():number {
         let index = this.selectedIndex;
         while (++index < this.dateStringParts.length) {
-            if (this.dateStringParts[index].isSelectable()) return index;
+            if (this.dateStringParts[index].selectable) return index;
         }
         return this.selectedIndex;
     }
@@ -203,7 +215,7 @@ export default class DatepickerInput {
         let nearestSelectableIndex;
         let nearestSelectableDistance;
         for (let i = 0; i < this.dateStringParts.length; i++) {
-            if (this.dateStringParts[i].isSelectable()) {
+            if (this.dateStringParts[i].selectable) {
                 let fromLeft = caretPosition - pos;
                 let fromRight = caretPosition - (pos + this.dateStringParts[i].toString().length);
                 if (fromLeft > 0 && fromRight < 0) return i;
@@ -235,23 +247,24 @@ export default class DatepickerInput {
     
     private getFirstSelectable():number {
         for (let i = 0; i < this.dateStringParts.length; i++) {
-            if (this.dateStringParts[i].isSelectable()) return i;
+            if (this.dateStringParts[i].selectable) return i;
         }
         return void 0;
     }
     
     private getLastSelectable():number {
         for (let i = this.dateStringParts.length - 1; i >= 0; i--) {
-            if (this.dateStringParts[i].isSelectable()) return i;
+            if (this.dateStringParts[i].selectable) return i;
         }
         return void 0;
     }
     
     public update(date:Date):void {
+        this.curDate = new Date(date.valueOf());
         let dateString = '';
         
         for (let i = 0; i < this.dateStringParts.length; i++) {
-            dateString += this.dateStringParts[i].toString(date);
+            dateString += this.dateStringParts[i].str(date);
         }
         
         this.element.value = dateString;

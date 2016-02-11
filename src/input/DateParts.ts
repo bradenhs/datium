@@ -1,258 +1,235 @@
-export class DatePart {
-    public static FormatCode:string;
-    private value:string;
-    protected date:Date;
-    protected pad(num:number, length: number):string {
-        let padded = num.toString();
-        while (padded.length < length) padded = '0' + padded;
-        return padded;
-    }
-    public toString(date?:Date):string {
-        if (date !== void 0) {
-            this.date = new Date(date.valueOf());
-            this.value = this.getValue(date);
-        }
-        return this.value;
-    }
-    protected getValue(date:Date):string {
-        throw "Override this";
-    }
-    public increment():Date {
-        throw "Override this";
-    }
-    public decrement():Date {
-        throw "Override this";
-    }
-    private selectable:boolean = true;
-    public isSelectable():boolean {
-        return this.selectable;
-    }
-    public setSelectable(selectable:boolean):void {
-        this.selectable = selectable;
-    }
-}
-
-export class PlainText extends DatePart {
-    constructor(private text:string) { 
-        super();
-        this.setSelectable(false);
+class DateChain {
+    public date:Date;
+    constructor(date:Date) {
+        this.date = new Date(date.valueOf());
     }
     
-    protected getValue():string {
-        return this.text;
+    public setSecond(seconds:number):DateChain {
+        this.date.setSeconds(seconds);
+        return this;
+    }
+    
+    public setMinute(minute:number):DateChain {
+        this.date.setMinutes(minute);
+        return this;
+    }
+    
+    public setHour(hour:number):DateChain {
+        this.date.setHours(hour);
+        return this;
+    }
+    
+    public setDate(date:number):DateChain {
+        this.date.setDate(date);
+        return this;
+    }
+    
+    public setMonth(month:number):DateChain {
+        this.date.setMonth(month);
+        return this;
+    }
+    
+    public setYear(year:number):DateChain {
+        this.date.setFullYear(year);
+        return this;
     }
 }
 
-export class FourDigitYear extends DatePart {
-    public static FormatCode:string = 'YYYY';    
-    protected getValue(date:Date):string {
-        return this.pad(date.getFullYear(), 4);
+function chain(d:Date):DateChain {
+    return new DateChain(d);
+}
+
+export interface IDatePart {
+    formatCode?:string;
+    str(d:Date):string;
+    inc?(d:Date):Date;
+    dec?(d:Date):Date;
+    selectable?:boolean;
+}
+
+let getUTCOffset = (date:Date, showColon:boolean):string => {
+    let tzo = -date.getTimezoneOffset();
+    let dif = tzo >= 0 ? '+' : '-';
+    let colon = showColon ? ':' : '';
+    return dif + this.pad(tzo / 60, 2) + colon + this.pad(tzo % 60, 2);
+}
+
+let pad = (num:number, length:number):string => {
+    let padded = num.toString();
+    while (padded.length < length) padded = '0' + padded;
+    return padded;
+}
+
+let appendOrdinal = (num:number):string => {
+    let j = num % 10;
+    let k = num % 100;
+    if (j == 1 && k != 11) {
+        return num + "st";
     }
-    public increment():Date {
-        let newDate = new Date(this.date.valueOf());
-        newDate.setFullYear(newDate.getFullYear() + 1);
-        return newDate;
+    if (j == 2 && k != 12) {
+        return num + "nd";
     }
-    public decrement():Date {
-        let newDate = new Date(this.date.valueOf());
-        newDate.setFullYear(newDate.getFullYear() - 1);
-        return newDate;
+    if (j == 3 && k != 13) {
+        return num + "rd";
+    }
+    return num + "th";
+}
+
+let mkDP = (data:IDatePart):IDatePart => {
+    // to right of || are default values
+    return {
+        formatCode: data.formatCode || void 0,
+        str: data.str || void 0,
+        inc: data.inc || void 0,
+        dec: data.dec || void 0,
+        selectable: data.selectable || true
     }
 }
 
-export class TwoDigitYear extends DatePart {
-    public static FormatCode:string = 'YY';
-    protected getValue(date:Date):string {
-        return this.pad(date.getFullYear(), 2).slice(-2);
-    }
-    public increment():Date {
-        let newDate = new Date(this.date.valueOf());
-        newDate.setFullYear(newDate.getFullYear() + 1);
-        return newDate;
-    }
-    public decrement():Date {
-        let newDate = new Date(this.date.valueOf());
-        newDate.setFullYear(newDate.getFullYear() - 1);
-        return newDate;
-    }
-}
+const longMonthNames:string[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-export class LongMonthName extends DatePart {
-    public static FormatCode:string = 'MMMM';
-    public static names:string[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    protected getValue(date:Date):string {
-        return LongMonthName.names[date.getMonth()];
-    }
-}
+const shortMonthNames:string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-export class ShortMonthName extends DatePart {
-    public static FormatCode:string = 'MMM';
-    public static names:string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    protected getValue(date:Date):string {
-        return ShortMonthName.names[date.getMonth()];
-    }
-}
+const longDayNames:string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-export class PaddedDate extends DatePart {
-    public static FormatCode:string = 'DD';
-    protected getValue(date:Date):string {
-        return this.pad(date.getDate(), 2);
-    }
-}
+const shortDayNames:string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-export class OrdinalDate extends DatePart {
-    public static FormatCode:string = 'Do';
-    public static appendOrdinalTo(i:number):string {
-        let j = i % 10;
-        let k = i % 100;
-        if (j == 1 && k != 11) {
-            return i + "st";
-        }
-        if (j == 2 && k != 12) {
-            return i + "nd";
-        }
-        if (j == 3 && k != 13) {
-            return i + "rd";
-        }
-        return i + "th";
-    }
-    protected getValue(date:Date):string {
-        return OrdinalDate.appendOrdinalTo(date.getDate());
-    }
-}
-
-export class UnpaddedDate extends DatePart {
-    public static FormatCode:string = 'D';
-    protected getValue(date:Date):string {
-        return date.getDate().toString();
-    }
-}
-
-export class LongDayName extends DatePart {
-    public static FormatCode:string = 'dddd';
-    public static names:string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    protected getValue(date:Date):string {
-        return LongDayName.names[date.getDay()];
-    }
-}
-
-export class ShortDayName extends DatePart {
-    public static FormatCode:string = 'ddd';
-    public static names:string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    protected getValue(date:Date):string {
-        return ShortDayName.names[date.getDay()];
-    }
-}
-
-export class UnixTimestamp extends DatePart {
-    public static FormatCode:string = 'X';
-    protected getValue(date:Date):string {
-        return Math.round(date.valueOf() / 1000).toString();
-    }
-}
-
-export class UnixMillisecondTimestamp extends DatePart {
-    public static FormatCode:string = 'x';
-    protected getValue(date:Date):string {
-        return date.valueOf().toString();
-    }
-}
-
-export class PaddedMilitaryHours extends DatePart {
-    public static FormatCode:string = 'HH';
-    protected getValue(date:Date):string {
-        return this.pad(date.getHours(), 2);
-    }
-}
-
-export class MilitaryHours extends DatePart {
-    public static FormatCode:string = 'H';
-    protected getValue(date:Date):string {
-        return date.getHours().toString();
-    }
-}
-
-export class PaddedHours extends DatePart {
-    public static FormatCode:string = 'hh';
-    protected getValue(date:Date):string {
-        return this.pad(date.getHours() > 12 ? date.getHours() - 12 : date.getHours(), 2);
-    }
-}
-
-export class Hours extends DatePart {
-    public static FormatCode:string = 'h';
-    protected getValue(date:Date):string {
-        return (date.getHours() > 12 ? date.getHours() - 12 : date.getHours()).toString();
-    }
-}
-export class UppercaseMeridiem extends DatePart {
-    public static FormatCode:string = 'A';
-    protected getValue(date:Date):string {
-        return date.getHours() < 12 ? 'AM' : 'PM';
-    }
-}
-
-export class LowercaseMeridiem extends DatePart {
-    public static FormatCode:string = 'a';
-    protected getValue(date:Date):string {
-        return date.getHours() < 12 ? 'am' : 'pm';
-    }
-}
-
-export class PaddedMinutes extends DatePart {
-    public static FormatCode:string = 'mm';
-    protected getValue(date:Date):string {
-        return this.pad(date.getMinutes(), 2);
-    }
-}
-
-export class Minutes extends DatePart {
-    public static FormatCode:string = 'm';
-    protected getValue(date:Date):string {
-        return date.getMinutes().toString();
-    }
-}
-
-export class PaddedSeconds extends DatePart {
-    public static FormatCode:string = 'ss';
-    protected getValue(date:Date):string {
-        return this.pad(date.getSeconds(), 2);
-    }
-}
-
-export class Seconds extends DatePart {
-    public static FormatCode:string = 's';
-    protected getValue(date:Date):string {
-        return date.getSeconds().toString();
-    }
-}
-
-export class UTCOffsetWithColon extends DatePart {
-    public static FormatCode:string = 'ZZ';
-    protected getValue(date:Date):string {
-        let tzo = -date.getTimezoneOffset();
-        let dif = tzo >= 0 ? '+' : '-';
-        return dif + this.pad(tzo / 60, 2) + ':' + this.pad(tzo % 60, 2);
-    }
-}
-
-export class UTCOffset extends DatePart {
-    public static FormatCode:string = 'Z';
-    protected getValue(date:Date):string {
-        let tzo = -date.getTimezoneOffset();
-        let dif = tzo >= 0 ? '+' : '-';
-        return dif + this.pad(tzo / 60, 2) + this.pad(tzo % 60, 2);
-    }
-}
-
-// ORDER HERE IS IMPORTANT
-export let dateParts:{new ():DatePart, FormatCode:string}[] = [
-  FourDigitYear, TwoDigitYear, LongMonthName,
-  ShortMonthName, PaddedDate, OrdinalDate,
-  PaddedDate, UnpaddedDate, LongDayName,
-  ShortDayName, UnixTimestamp, UnixMillisecondTimestamp,
-  PaddedMilitaryHours, MilitaryHours, PaddedHours,
-  Hours, UppercaseMeridiem, LowercaseMeridiem,
-  PaddedMinutes, Minutes, PaddedSeconds,
-  Seconds, UTCOffsetWithColon, UTCOffset 
+export let dateParts:IDatePart[] = [
+    mkDP({ // FOUR DIGIT YEAR
+        formatCode: 'YYYY',
+        str: (d) => d.getFullYear().toString(),
+        inc: (d) => chain(d).setYear(d.getFullYear() + 1).date,
+        dec: (d) => chain(d).setYear(d.getFullYear() - 1).date
+    }),
+    mkDP({ // TWO DIGIT YEAR
+        formatCode: 'YY',
+        str: (d) => d.getFullYear().toString().slice(-2),
+        inc: (d) => chain(d).setYear(d.getFullYear() + 1).date,
+        dec: (d) => chain(d).setYear(d.getFullYear() - 1).date
+    }),
+    mkDP({ // LONG MONTH NAME
+        formatCode: 'MMMM',
+        str: (d) => longMonthNames[d.getMonth()],
+        inc: (d) => chain(d).setMonth(d.getMonth() + 1).date,
+        dec: (d) => chain(d).setMonth(d.getMonth() - 1).date
+    }),
+    mkDP({ // SHORT MONTH NAME
+        formatCode: 'MMM',
+        str: (d) => shortMonthNames[d.getMonth()],
+        inc: (d) => chain(d).setMonth(d.getMonth() + 1).date,
+        dec: (d) => chain(d).setMonth(d.getMonth() - 1).date
+    }),
+    mkDP({ // PADDED DATE
+        formatCode: 'DD',
+        str: (d) => pad(d.getDate(), 2),
+        inc: (d) => chain(d).setDate(d.getDate() + 1).date,
+        dec: (d) => chain(d).setDate(d.getDate() - 1).date
+    }),
+    mkDP({ // ORDINAL DATE
+        formatCode: 'Do',
+        str: (d) => appendOrdinal(d.getDate()),
+        inc: (d) => chain(d).setDate(d.getDate() + 1).date,
+        dec: (d) => chain(d).setDate(d.getDate() - 1).date
+    }),
+    mkDP({ // DATE
+        formatCode: 'D',
+        str: (d) => d.getDate().toString(),
+        inc: (d) => chain(d).setDate(d.getDate() + 1).date,
+        dec: (d) => chain(d).setDate(d.getDate() - 1).date
+    }),
+    mkDP({ // LONG DAY NAME
+        formatCode: 'dddd',
+        str: (d) => longDayNames[d.getDate()],
+        inc: (d) => chain(d).setDate(d.getDate() + 1).date,
+        dec: (d) => chain(d).setDate(d.getDate() - 1).date
+    }),
+    mkDP({ // SHORT DAY NAME
+        formatCode: 'ddd',
+        str: (d) => shortDayNames[d.getDate()],
+        inc: (d) => chain(d).setDate(d.getDate() + 1).date,
+        dec: (d) => chain(d).setDate(d.getDate() - 1).date
+    }),
+    mkDP({ // UNIX TIMESTAMP
+        formatCode: 'X',
+        str: (d) => Math.round(d.valueOf() / 1000).toString(),
+        inc: (d) => new Date(d.valueOf() + 1000),
+        dec: (d) => new Date(d.valueOf() - 1000)
+    }),
+    mkDP({ // UNIX MILLISECOND TIMESTAMP
+        formatCode: 'x',
+        str: (d) => d.valueOf().toString(),
+        inc: (d) => new Date(d.valueOf() + 1),
+        dec: (d) => new Date(d.valueOf() - 1)
+    }),
+    mkDP({ // PADDED MILITARY HOURS
+        formatCode: 'HH',
+        str: (d) => pad(d.getHours(), 2),
+        inc: (d) => chain(d).setHour(d.getHours() + 1).date,
+        dec: (d) => chain(d).setHour(d.getHours() - 1).date
+    }),
+    mkDP({ // MILITARY HOURS
+        formatCode: 'H',
+        str: (d) => d.getHours().toString(),
+        inc: (d) => chain(d).setHour(d.getHours() + 1).date,
+        dec: (d) => chain(d).setHour(d.getHours() - 1).date
+    }),
+    mkDP({ // PADDED HOURS
+        formatCode: 'hh',
+        str: (d) => pad(d.getHours() < 12 ? d.getHours() + 12 : d.getHours(), 2),
+        inc: (d) => chain(d).setHour(d.getHours() + 1).date,
+        dec: (d) => chain(d).setHour(d.getHours() - 1).date
+    }),
+    mkDP({ // PADDED HOURS
+        formatCode: 'h',
+        str: (d) => (d.getHours() < 12 ? d.getHours() + 12 : d.getHours(), 2).toString(),
+        inc: (d) => chain(d).setHour(d.getHours() + 1).date,
+        dec: (d) => chain(d).setHour(d.getHours() - 1).date
+    }),
+    mkDP({ // UPPERCASE MERIDIEM
+        formatCode: 'A',
+        str: (d) => d.getHours() < 12 ? 'AM' : 'PM',
+        inc: (d) => d.getHours() < 12 ? chain(d).setHour(d.getHours() + 12).date : d,
+        dec: (d) => d.getHours() > 11 ? chain(d).setHour(d.getHours() - 12).date : d
+    }),
+    mkDP({ // UPPERCASE MERIDIEM
+        formatCode: 'a',
+        str: (d) => d.getHours() < 12 ? 'am' : 'pm',
+        inc: (d) => d.getHours() < 12 ? chain(d).setHour(d.getHours() + 12).date : d,
+        dec: (d) => d.getHours() > 11 ? chain(d).setHour(d.getHours() - 12).date : d
+    }),
+    mkDP({ // PADDED MINUTES
+        formatCode: 'mm',
+        str: (d) => pad(d.getMinutes(), 2),
+        inc: (d) => chain(d).setMinute(d.getMinutes() + 1).date,
+        dec: (d) => chain(d).setMinute(d.getMinutes() - 1).date
+    }),
+    mkDP({ // MINUTES
+        formatCode: 'm',
+        str: (d) => d.getMinutes().toString(),
+        inc: (d) => chain(d).setMinute(d.getMinutes() + 1).date,
+        dec: (d) => chain(d).setMinute(d.getMinutes() - 1).date
+    }),
+    mkDP({ // PADDED SECONDS
+        formatCode: 'ss',
+        str: (d) => pad(d.getSeconds(), 2),
+        inc: (d) => chain(d).setSecond(d.getSeconds() + 1).date,
+        dec: (d) => chain(d).setSecond(d.getSeconds() - 1).date
+    }),
+    mkDP({ // SECONDS
+        formatCode: 's',
+        str: (d) => d.getSeconds().toString(),
+        inc: (d) => chain(d).setSecond(d.getSeconds() + 1).date,
+        dec: (d) => chain(d).setSecond(d.getSeconds() - 1).date
+    }),
+    mkDP({ // UTC Offset with Colon
+        formatCode: 'ZZ',
+        str: (d) => getUTCOffset(d, true),
+        selectable: false
+    }),
+    mkDP({ // UTC Offset
+        formatCode: 'Z',
+        str: (d) => getUTCOffset(d, false),
+        selectable: false
+    })
 ];
+
