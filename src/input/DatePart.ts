@@ -65,6 +65,7 @@ export default class DatePart {
     }
     
     public getMaxBufferSize(date:Date):number {
+        if (this.maxBuffer === void 0) return void 0;
         return this.maxBuffer(date);
     }
 }

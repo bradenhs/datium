@@ -46,7 +46,37 @@ class DateChain {
         return this;
     }
     
-    public setHours(hours:string|number):DateChain { // TODO Think about meridiem stuff here
+    public setHours(hours:string|number):DateChain {
+        let num:number;
+        let meridiem = this.date.getHours() > 11 ? 'PM' : 'AM';
+        
+        if (hours === 'ZERO_OUT') {
+            this.date.setHours(meridiem === 'AM' ? 0 : 12);
+            return this;
+        } else if (typeof hours === 'string' && /^\d+$/.test(hours)) {
+            num = parseInt(<string>hours);
+        } else if (typeof hours === 'number') {
+            num = hours;
+        } else {
+            this.date = void 0;
+            return this;
+        }
+        if (num < 1 || num > 12) {
+            this.date = void 0;
+            return this;
+        }
+        
+        if (num === 12 && meridiem === 'AM') {
+            num = 0;
+        }
+        if (num !== 12 && meridiem === 'PM') {
+            num += 12;
+        }
+        this.date.setHours(num);
+        return this;
+    }
+    
+    public setMilitaryHours(hours:string|number):DateChain {
         let num:number;
         if (hours === 'ZERO_OUT') {
             this.date.setHours(0);
@@ -68,59 +98,150 @@ class DateChain {
     }
     
     public setDate(date:string|number):DateChain {
-        if (typeof date === 'string') {
-            
-        } else if (typeof date === 'number') {
-            if (date < 1 || date > this.daysInMonth()) return this;
-            this.date.setDate(date);
+        let num:number;
+        if (date === 'ZERO_OUT') {
+            this.date.setDate(1);
+            return this;
+        } else if (typeof date === 'string' && /\d{1,2}.*$/.test(date)) {
+            num = parseInt(<string>date);
+        } else if  (typeof date === 'number') {
+            num = date;
+        } else {
+            this.date = void 0;
+            return this;
         }
+        if (num < 1 || num > this.daysInMonth()) {
+            this.date = void 0;
+            return this;
+        }
+        this.date.setDate(num);
         return this;
     }
     
     public setDay(day:string|number):DateChain {
-        if (typeof day === 'string') {
+        let num:number;
+        if (day === 'ZERO_OUT') {
+            return this.setDay(0);
         } else if (typeof day === 'number') {
-            if (day < 0 || day > 6) return this;
-            let offset = this.date.getDay() - day;
-            this.date.setDate(this.date.getDate() - offset);
+            num = day;
+        } else if (typeof day === 'string' && shortDayNames.some((dayName) => {
+            if (new RegExp(`^${day}.*$`, 'i').test(dayName)) {
+                num = shortDayNames.indexOf(dayName);
+                return true;
+            }
+        })) {
+        } else {
+            this.date = void 0;
+            return this;
         }
+        
+        if (num < 0 || num > 6) {
+            this.date = void 0;
+            return this;
+        }
+        
+        let offset = this.date.getDay() - num;
+        this.date.setDate(this.date.getDate() - offset);
         return this;
     }
     
     public setMonth(month:string|number):DateChain {
-        if (typeof month === 'string') {
+        let num:number;
+        if (month === 'ZERO_OUT') {
+            this.date.setMonth(0);
+            return this;
+        } else if (typeof month === 'string' && /^\d+$/.test(month)) {
+            num = parseInt(month);
         } else if (typeof month === 'number') {
-            if (month < 0 || month > 11) return this;
-            this.date.setMonth(month);
-            if (this.date.getMonth() !== month) this.date.setDate(0);
+            num = month;
+        } else {
+            this.date = void 0;
+            return this;
         }
-        return this;            
+        
+        if (num < 1 || num > 12) {
+            this.date = void 0;
+            return this;
+        }
+        
+        this.date.setMonth(num - 1);
+        return this;
+    }
+    
+    public setMonthString(month:string|number):DateChain {
+        let num:number;
+        
+        if (month === 'ZERO_OUT') {
+            this.date.setMonth(0);
+            return this;
+        } else if (typeof month === 'string' && shortMonthNames.some((monthName) => {
+            if (new RegExp(`^${month}.*$`, 'i').test(monthName)) {
+                num = shortMonthNames.indexOf(monthName) + 1;
+                return true;
+            }
+        })) {
+        } else {
+            this.date = void 0;
+            return this;
+        }
+        
+        if (num < 1 || num > 12) {
+            this.date = void 0;
+            return this;
+        }
+        
+        this.date.setMonth(num - 1);
+        return this;
     }
     
     public setYear(year:string|number):DateChain {
-        if (typeof year === 'string') {
-            
+        let num:number;
+        if (year === 'ZERO_OUT') {
+            this.date.setFullYear(0);
+            return this;
+        } else if (typeof year === 'string' && /^\d+$/.test(year)) {
+            num = parseInt(year);
         } else if (typeof year === 'number') {
-            this.date.setFullYear(year);
-        }
+            num = year;
+        } else {
+            this.date = void 0;
+            return this;
+        }        
+        this.date.setFullYear(num);
         return this;
     }
     
     public setUnixSecondTimestamp(seconds:string|number):DateChain {
-        if (typeof seconds === 'string') {
-            
+        let num:number;
+        if (seconds === 'ZERO_OUT') {
+            this.date = new Date(0);
+            return this;
+        } else if (typeof seconds === 'string' && /^\d+$/.test(seconds)) {
+            num = parseInt(seconds);
         } else if (typeof seconds === 'number') {
-            
-        }
+            num = seconds;
+        } else {
+            this.date = void 0;
+            return this;
+        }        
+        this.date = new Date(num / 1000);
         return this;
     }
     
     public setUnixMillisecondTimestamp(milliseconds:string|number):DateChain {
-        if (typeof milliseconds === 'string') {
-            
+        let num:number;
+        if (milliseconds === 'ZERO_OUT') {
+            this.date = new Date(0);
+            return this;
+        } else if (typeof milliseconds === 'string' && /^\d+$/.test(milliseconds)) {
+            num = parseInt(milliseconds);
         } else if (typeof milliseconds === 'number') {
-            
-        }
+            num = milliseconds;
+        } else {
+            this.date = void 0;
+            return this;
+        }        
+        this.date = new Date(num);
         return this;
     }
     
@@ -147,31 +268,47 @@ class DateChain {
     }
     
     public maxMonthStringBuffer():number {
-        return 3;
+        let m = this.date.getMonth();
+        if (m === 0) return 2; // Jan
+        if (m === 1) return 1; // Feb
+        if (m === 2) return 3; // Mar
+        if (m === 3) return 2; // Apr
+        if (m === 4) return 3; // May
+        if (m === 5) return 3; // Jun
+        if (m === 6) return 3; // Jul
+        if (m === 7) return 2; // Aug
+        if (m === 8) return 1; // Sep
+        if (m === 9) return 1; // Oct
+        if (m === 10) return 1; // Nov
+        return 1; // Dec
     }
     
     public maxMonthBuffer():number {
-        return 2;
+        return this.date.getMonth() > 0 ? 1 : 2;
     }
     
     public maxDateBuffer():number {
-        return 2;
+        return this.date.getDate() * 10 > this.daysInMonth() ? 1 : 2;
     }
     
     public maxDayStringBuffer():number {
-        return 2;
+        return this.date.getDay() % 2 == 0 ? 2 : 1;
     }
     
     public maxMilitaryHoursBuffer():number {
-        return 2;
+        return this.date.getHours() > 2 ? 1 : 2;
     }
     
     public maxHoursBuffer():number {
-        return 2;
+        if (this.date.getHours() > 11) { // PM
+            return this.date.getHours() > 13 ? 1 : 2;
+        } else { // AM
+            return this.date.getHours() > 1 ? 1 : 2;   
+        }        
     }
     
     public maxMinutesBuffer():number {
-        return 2;
+        return this.date.getMinutes() > 5 ? 1 : 2;
     }
     
     public maxSecondsBuffer():number {
@@ -249,35 +386,35 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'MMMM',
         regExp: '((January)|(February)|(March)|(April)|(May)|(June)|(July)|(August)|(September)|(October)|(November)|(December))',
         str: (d) => longMonthNames[d.getMonth()],
-        inc: (d) => chain(d).setMonth(d.getMonth() + 1).date,
-        dec: (d) => chain(d).setMonth(d.getMonth() - 1).date,
-        set: (d, v) => chain(d).setMonth(v).date,
+        inc: (d) => chain(d).setMonthString(d.getMonth() + 1).date,
+        dec: (d) => chain(d).setMonthString(d.getMonth() - 1).date,
+        set: (d, v) => chain(d).setMonthString(v).date,
         maxBuffer: (d) => chain(d).maxMonthStringBuffer()
     },
     { // SHORT MONTH NAME
         code: 'MMM',
         regExp: '((Jan)|(Feb)|(Mar)|(Apr)|(May)|(Jun)|(Jul)|(Aug)|(Sep)|(Oct)|(Nov)|(Dec))',
         str: (d) => shortMonthNames[d.getMonth()],
-        inc: (d) => chain(d).setMonth(d.getMonth() + 1).date,
-        dec: (d) => chain(d).setMonth(d.getMonth() - 1).date,
-        set: (d, v) => chain(d).setMonth(v).date,
+        inc: (d) => chain(d).setMonthString(d.getMonth() + 1).date,
+        dec: (d) => chain(d).setMonthString(d.getMonth() - 1).date,
+        set: (d, v) => chain(d).setMonthString(v).date,
         maxBuffer: (d) => chain(d).maxMonthStringBuffer()
     },
     { // PADDED MONTH
         code: 'MM',
         regExp: '\\d{2,2}',
-        str: (d) => pad(d.getMonth(), 2),
-        inc: (d) => chain(d).setMonth(d.getMonth() + 1).date,
-        dec: (d) => chain(d).setMonth(d.getMonth() - 1).date,
+        str: (d) => pad(d.getMonth() + 1, 2),
+        inc: (d) => chain(d).setMonthString(d.getMonth() + 1).date,
+        dec: (d) => chain(d).setMonthString(d.getMonth() - 1).date,
         set: (d, v) => chain(d).setMonth(v).date,
         maxBuffer: (d) => chain(d).maxMonthBuffer()
     },
     { // MONTH
         code: 'M',
         regExp: '\\d{1,2}',
-        str: (d) => d.getMonth().toString(),
-        inc: (d) => chain(d).setMonth(d.getMonth() + 1).date,
-        dec: (d) => chain(d).setMonth(d.getMonth() - 1).date,
+        str: (d) => (d.getMonth() + 1).toString(),
+        inc: (d) => chain(d).setMonthString(d.getMonth() + 1).date,
+        dec: (d) => chain(d).setMonthString(d.getMonth() - 1).date,
         set: (d, v) => chain(d).setMonth(v).date,
         maxBuffer: (d) => chain(d).maxMonthBuffer()
     },
@@ -346,18 +483,18 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'HH',
         regExp: '\\d{2,2}',
         str: (d) => pad(d.getHours(), 2),
-        inc: (d) => chain(d).setHours(d.getHours() + 1).date,
-        dec: (d) => chain(d).setHours(d.getHours() - 1).date,
-        set: (d, v) => chain(d).setHours(v).date,
+        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 1).date,
+        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 1).date,
+        set: (d, v) => chain(d).setMilitaryHours(v).date,
         maxBuffer: (d) => chain(d).maxMilitaryHoursBuffer()
     },
     { // MILITARY HOURS
         code: 'H',
         regExp: '\\d{1,2}',
         str: (d) => d.getHours().toString(),
-        inc: (d) => chain(d).setHours(d.getHours() + 1).date,
-        dec: (d) => chain(d).setHours(d.getHours() - 1).date,
-        set: (d, v) => chain(d).setHours(v).date,
+        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 1).date,
+        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 1).date,
+        set: (d, v) => chain(d).setMilitaryHours(v).date,
         maxBuffer: (d) => chain(d).maxMilitaryHoursBuffer()
     },
     { // PADDED HOURS
@@ -382,8 +519,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'A',
         regExp: '((AM)|(PM))',
         str: (d) => d.getHours() < 12 ? 'AM' : 'PM',
-        inc: (d) => chain(d).setHours(d.getHours() + 12).date,
-        dec: (d) => chain(d).setHours(d.getHours() - 12).date,
+        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 12).date,
+        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 12).date,
         set: (d, v) => chain(d).setMeridiem(v).date,
         maxBuffer: (d) => 1
     },
@@ -391,8 +528,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'a',
         regExp: '((am)|(pm))',
         str: (d) => d.getHours() < 12 ? 'am' : 'pm',
-        inc: (d) => chain(d).setHours(d.getHours() + 12).date,
-        dec: (d) => chain(d).setHours(d.getHours() - 12).date,
+        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 12).date,
+        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 12).date,
         set: (d, v) => chain(d).setMeridiem(v).date,
         maxBuffer: (d) => 1
     },

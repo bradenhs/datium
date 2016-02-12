@@ -88,6 +88,7 @@ export default class DatepickerInput {
                 this.element.value = originalValue;
                 return;
             }
+            
             throw 'Need to implement paste functionality';
         });
     }
@@ -156,11 +157,11 @@ export default class DatepickerInput {
         if (this.textBuffer.length > 0) {
             let orig = this.curDate.valueOf();
             let result = this.dateParts[this.selectedIndex].getDateFromPartial(this.curDate, this.textBuffer);
-            if (this.dateParts[this.selectedIndex].getMaxBufferSize(this.curDate) !== void 0 && this.textBuffer.length >= this.dateParts[this.selectedIndex].getMaxBufferSize(this.curDate) && result !== void 0) {
+            if (result !== void 0 && this.dateParts[this.selectedIndex].getMaxBufferSize(result) !== void 0 && this.textBuffer.length >= this.dateParts[this.selectedIndex].getMaxBufferSize(result)) {
                 this.selectedIndex = this.getNextSelectable();
             }
             if (result === void 0) {
-                this.backspace();
+                this.textBuffer = this.textBuffer.slice(0, this.textBuffer.length - 1);
             } else {
                 this.update(result);
             }
