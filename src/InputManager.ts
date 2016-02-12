@@ -387,8 +387,6 @@ export default class InputManager {
         this.textBuffer = this.textBuffer.slice(0, this.textBuffer.length - 1);
     }
     
-    private zeroToSixty:string[] = ['0', '1', '2', '3', '4', '5', '6'];
-    
     private paste():void {
         let originalValue = this.opts.element.value;
         setTimeout(() => {

@@ -81,7 +81,7 @@
     <style>
         input {
             padding: 10px;
-            width: 300px;
+            width: 700px;
             border: 1px solid #aaa;
             border-radius: 2px;
             font-size: 16pt;
@@ -101,18 +101,16 @@
           endView: 'second',
           minDate: new Date('2016').valueOf() - 999999,
           minuteSelectionInterval: 5,
-          displayFormat: 'MMM Do, YYYY'
+          displayFormat: 'hh:mm:ssA ddd MMMM'
         });
-        /*
         new Datium({
           element: document.querySelector('#test-element1'),
           theme: 'material',
           startView: 'hour',
           maxView: 'hour',
           endView: 'hour',
-          displayFormat: 'hh:mmA ddd MMM Do, YYYY'
+          displayFormat: 'x HH hh H h A a mm m ss s ZZ Z'
         });
-        */
       });      
     </script>
   </body>
