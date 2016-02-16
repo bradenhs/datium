@@ -3,17 +3,9 @@ import DatePart from 'src/input/DatePart';
 import DisplayParser from 'src/input/DisplayParser';
 
 export const enum KeyCodes {
-    RIGHT = 39,
-    LEFT = 37,
-    TAB = 9,
-    UP = 38,
-    DOWN = 40,
-    V = 86,
-    C = 67,
-    A = 65,
-    HOME = 36,
-    END = 35,
-    BACKSPACE = 8
+    RIGHT = 39, LEFT = 37, TAB = 9, UP = 38,
+    DOWN = 40, V = 86, C = 67, A = 65, HOME = 36,
+    END = 35, BACKSPACE = 8
 }
 
 export default class DatepickerInput {
@@ -29,6 +21,9 @@ export default class DatepickerInput {
         this.bindEvents();
         this.element.setAttribute('spellcheck', 'false');
         this.update(new Date());
+        
+        
+        
     }
     
     private concatRegExp(dateParts:DatePart[]):RegExp {
@@ -41,11 +36,10 @@ export default class DatepickerInput {
     
     private bindEvents():void {
         this.element.addEventListener('focus', () => this.focus());
-        this.element.addEventListener('blur', () => this.blur());
-        this.element.addEventListener('mousedown', (e) => this.mousedown(e));
+                
         this.element.addEventListener('keydown', (e) => this.keydown(e));
         this.element.addEventListener('paste', () => this.paste());
-        document.addEventListener('mouseup', () => this.mouseup());
+        
         document.addEventListener('keydown', (e:KeyboardEvent) => {
             if (e.shiftKey && e.keyCode === KeyCodes.TAB) {
                 this.shiftTabDown = true;
@@ -63,6 +57,16 @@ export default class DatepickerInput {
         this.element.addEventListener('dragover', (e) => e.preventDefault());
         this.element.addEventListener('drop', (e) => e.preventDefault());
         this.element.addEventListener('cut', (e) => e.preventDefault());
+        
+        let lastStart;
+        let lastEnd;
+        setInterval(() => {
+            if (this.element.selectionStart !== lastStart || this.element.selectionEnd !== lastEnd) {
+                this.selectionChange(this.element.selectionStart, this.element.selectionEnd);
+            }
+            lastStart = this.element.selectionStart;
+            lastEnd = this.element.selectionEnd;  
+        });
     }
     
     private shiftTabDown = false;
@@ -70,13 +74,9 @@ export default class DatepickerInput {
     
     private downSelectionStart:number;
     
-    private mouseup():void {
-        let selectionEnd = this.element.selectionStart;
-        if (selectionEnd === this.downSelectionStart) selectionEnd = this.element.selectionEnd;
-        
-        this.selectedIndex = this.getNearestSelectableIndex(selectionEnd);
-        
-        if (this.element.selectionStart !== 0 || this.element.selectionEnd !== this.element.value.length) {
+    private selectionChange(start:number, end:number):void {
+        this.selectedIndex = this.getNearestSelectableIndex(start);
+        if (start !== 0 || end !== this.element.value.length) {
             this.update();
         }
     }
@@ -88,8 +88,15 @@ export default class DatepickerInput {
                 this.element.value = originalValue;
                 return;
             }
-            
-            throw 'Need to implement paste functionality';
+            let newDate = new Date(this.curDate.valueOf());
+            let strPrefix = '';
+            this.dateParts.forEach((datePart) => {
+                let val = this.element.value.replace(strPrefix, '').match(datePart.getRegExpString())[0];
+                strPrefix += val;
+                if (!datePart.isSelectable()) return;
+                newDate = datePart.getDateFromString(newDate, val);
+            });
+            this.update(newDate);
         });
     }
     
@@ -156,7 +163,7 @@ export default class DatepickerInput {
         
         if (this.textBuffer.length > 0) {
             let orig = this.curDate.valueOf();
-            let result = this.dateParts[this.selectedIndex].getDateFromPartial(this.curDate, this.textBuffer);
+            let result = this.dateParts[this.selectedIndex].getDateFromString(this.curDate, this.textBuffer);
             if (result !== void 0 && this.dateParts[this.selectedIndex].getMaxBufferSize(result) !== void 0 && this.textBuffer.length >= this.dateParts[this.selectedIndex].getMaxBufferSize(result)) {
                 this.selectedIndex = this.getNextSelectable();
             }
@@ -171,7 +178,7 @@ export default class DatepickerInput {
     private backspace():void {
         if (this.textBuffer.length < 2) {
             let orig = this.curDate.valueOf();
-            let result = this.dateParts[this.selectedIndex].getDateFromPartial(this.curDate, 'ZERO_OUT');
+            let result = this.dateParts[this.selectedIndex].getDateFromString(this.curDate, 'ZERO_OUT');
             if (result.valueOf() !== orig) {
                 this.update(result);
             }
@@ -210,13 +217,7 @@ export default class DatepickerInput {
         return this.selectedIndex;
     }
     
-    private mousedown(e:MouseEvent):void {
-        if (e.button === 2) return;
-        this.element.setSelectionRange(void 0, void 0);
-        setTimeout(() => {
-            this.downSelectionStart = this.element.selectionStart;
-        });
-    }
+    private selecting:boolean = false;
     
     private getNearestSelectableIndex(caretPosition:number):number {
         let pos = 0;
@@ -250,10 +251,6 @@ export default class DatepickerInput {
                this.update(); 
             });
         }
-    }
-    
-    private blur():void {
-        this.element.setSelectionRange(void 0, void 0);
     }
     
     private getFirstSelectable():number {

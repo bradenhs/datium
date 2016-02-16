@@ -60,8 +60,8 @@ export default class DatePart {
         return this.regExpString;
     }
     
-    public getDateFromPartial(date:Date, partial:string):Date {
-        return this.set(date, partial);;
+    public getDateFromString(date:Date, partial:string):Date {
+        return this.set(date, partial);
     }
     
     public getMaxBufferSize(date:Date):number {

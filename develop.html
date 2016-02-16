@@ -81,7 +81,7 @@
     <style>
         input {
             padding: 10px;
-            width: 1000px;
+            width: 500px;
             border: 1px solid #aaa;
             border-radius: 2px;
             font-size: 14pt;
@@ -96,13 +96,6 @@
     </style>
     <script>      
       System.import('src/Datium').then(function() {
-        new Datium({
-          element: document.querySelector('#test-element'),
-          endView: 'second',
-          minDate: new Date('2016').valueOf() - 999999,
-          minuteSelectionInterval: 5,
-          displayFormat: 'hh:mma {dddd} MMMM Do, YYYY'
-        });
         new Datium({
           element: document.querySelector('#test-element1'),
           theme: 'material',

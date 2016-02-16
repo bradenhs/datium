@@ -76,7 +76,6 @@ class DateChain {
         if (num !== 12 && meridiem === 'PM') {
             num += 12;
         }
-        //DLS TODO
         this.date.setHours(num);
         return this;
     }
@@ -98,7 +97,14 @@ class DateChain {
             this.date = void 0;
             return this;
         }
-        this.date.setHours(num);
+        if (this.date.getHours() === num + 1) {
+            this.date.setHours(num);
+            if (this.date.getHours() !== num) {
+                this.date.setHours(num - 1);
+            }
+        } else {
+            this.date.setHours(num);
+        }
         return this;
     }
     
@@ -273,9 +279,9 @@ class DateChain {
     public setMeridiem(meridiem:string|number):DateChain {
         let hours = this.date.getHours();
         if (meridiem === 'ZERO_OUT') return this;
-        if (typeof meridiem === 'string' && (<string>meridiem).toLowerCase() === 'a') {
+        if (typeof meridiem === 'string' && /^am?$/i.test(<string>meridiem)) {
             hours -= 12;
-        } else if (typeof meridiem === 'string' && (<string>meridiem).toLowerCase() === 'p') {
+        } else if (typeof meridiem === 'string' && /^pm?$/i.test(<string>meridiem)) {
             hours += 12;
         } else {
             this.date = void 0;
@@ -413,7 +419,7 @@ export let formatBlocks:IFormatBlock[] = [
     },
     { // SHORT MONTH NAME
         code: 'MMM',
-        regExp: '((Jan)|(Feb)|(Mar)|(Apr)|(May)|(Jun)|(Jul)|(Aug)|(Sep)|(Oct)|(Nov)|(Dec))',
+        regExp: `((${monthNames.map((v) => v.slice(0,3)).join(')|(')}))`,
         str: (d) => monthNames[d.getMonth()].slice(0,3),
         inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
         dec: (d) => chain(d).setMonth(d.getMonth()).date,
@@ -467,7 +473,7 @@ export let formatBlocks:IFormatBlock[] = [
     },
     { // LONG DAY NAME
         code: 'dddd',
-        regExp: '((Sunday)|(Monday)|(Tuesday)|(Wednesday)|(Thursday)|(Friday)|(Saturday))',
+        regExp: `((${dayNames.join(')|(')}))`,
         str: (d) => dayNames[d.getDay()],
         inc: (d) => chain(d).setDay(d.getDay() + 1).date,
         dec: (d) => chain(d).setDay(d.getDay() - 1).date,
@@ -476,7 +482,7 @@ export let formatBlocks:IFormatBlock[] = [
     },
     { // SHORT DAY NAME
         code: 'ddd',
-        regExp: '((Sun)|(Mon)|(Tue)|(Wed)|(Thu)|(Fri)|(Sat))',
+        regExp: `((${dayNames.map((v) => v.slice(0,3)).join(')|(')}))`,
         str: (d) => dayNames[d.getDay()].slice(0,3),
         inc: (d) => chain(d).setDay(d.getDay() + 1).date,
         dec: (d) => chain(d).setDay(d.getDay() - 1).date,
@@ -521,17 +527,17 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'hh',
         regExp: '\\d{2,2}',
         str: (d) => pad(toStandardTime(d.getHours()), 2),
-        inc: (d) => chain(d).setHours(d.getHours() + 1).date,
-        dec: (d) => chain(d).setHours(d.getHours() - 1).date,
+        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 1).date,
+        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 1).date,
         set: (d, v) => chain(d).setHours(v).date,
         maxBuffer: (d) => chain(d).maxHoursBuffer()
     },
-    { // PADDED HOURS
+    { // HOURS
         code: 'h',
         regExp: '\\d{1,2}',
         str: (d) => toStandardTime(d.getHours()).toString(),
-        inc: (d) => chain(d).setHours(d.getHours() + 1).date,
-        dec: (d) => chain(d).setHours(d.getHours() - 1).date,
+        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 1).date,
+        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 1).date,
         set: (d, v) => chain(d).setHours(v).date,
         maxBuffer: (d) => chain(d).maxHoursBuffer()
     },

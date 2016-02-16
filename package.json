@@ -16,6 +16,7 @@
     "system-text": "^0.1.0",
     "systemjs": "0.19.2",
     "systemjs-builder": "0.14.11",
+    "tsproject": "^1.0.5",
     "typescript": "1.6.2"
   }
 }
