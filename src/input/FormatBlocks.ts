@@ -1,3 +1,6 @@
+const monthNames:string[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const dayNames:string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 class DateChain {
     public date:Date;
     constructor(date:Date) {
@@ -61,6 +64,7 @@ class DateChain {
             this.date = void 0;
             return this;
         }
+        if (num === 0) num = 1;
         if (num < 1 || num > 12) {
             this.date = void 0;
             return this;
@@ -72,6 +76,7 @@ class DateChain {
         if (num !== 12 && meridiem === 'PM') {
             num += 12;
         }
+        //DLS TODO
         this.date.setHours(num);
         return this;
     }
@@ -110,6 +115,7 @@ class DateChain {
             this.date = void 0;
             return this;
         }
+        if (num === 0) num = 1;
         if (num < 1 || num > this.daysInMonth()) {
             this.date = void 0;
             return this;
@@ -124,9 +130,9 @@ class DateChain {
             return this.setDay(0);
         } else if (typeof day === 'number') {
             num = day;
-        } else if (typeof day === 'string' && shortDayNames.some((dayName) => {
+        } else if (typeof day === 'string' && dayNames.some((dayName) => {
             if (new RegExp(`^${day}.*$`, 'i').test(dayName)) {
-                num = shortDayNames.indexOf(dayName);
+                num = dayNames.indexOf(dayName);
                 return true;
             }
         })) {
@@ -159,6 +165,7 @@ class DateChain {
             return this;
         }
         
+        if (num === 0) num = 1;
         if (num < 1 || num > 12) {
             this.date = void 0;
             return this;
@@ -174,9 +181,9 @@ class DateChain {
         if (month === 'ZERO_OUT') {
             this.date.setMonth(0);
             return this;
-        } else if (typeof month === 'string' && shortMonthNames.some((monthName) => {
+        } else if (typeof month === 'string' && monthNames.some((monthName) => {
             if (new RegExp(`^${month}.*$`, 'i').test(monthName)) {
-                num = shortMonthNames.indexOf(monthName) + 1;
+                num = monthNames.indexOf(monthName) + 1;
                 return true;
             }
         })) {
@@ -211,6 +218,24 @@ class DateChain {
         return this;
     }
     
+    public setTwoDigitYear(year:string|number):DateChain {
+        let base = Math.floor(this.date.getFullYear()/100)*100;
+        let num:number;
+        if (year === 'ZERO_OUT') {
+            this.date.setFullYear(base);
+            return this;
+        } else if (typeof year === 'string' && /^\d+$/.test(year)) {
+            num = parseInt(year);
+        } else if (typeof year === 'number') {
+            num = year;
+        } else {
+            this.date = void 0;
+            return this;
+        }        
+        this.date.setFullYear(base + num);
+        return this;
+    }
+    
     public setUnixSecondTimestamp(seconds:string|number):DateChain {
         let num:number;
         if (seconds === 'ZERO_OUT') {
@@ -224,7 +249,7 @@ class DateChain {
             this.date = void 0;
             return this;
         }        
-        this.date = new Date(num / 1000);
+        this.date = new Date(num * 1000);
         return this;
     }
     
@@ -347,11 +372,6 @@ function toStandardTime(hours:number):number {
     return hours > 12 ? hours - 12 : hours;
 }
 
-const longMonthNames:string[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const shortMonthNames:string[] = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const longDayNames:string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const shortDayNames:string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
 export interface IFormatBlock {
     code:string;
     str(d:Date):string;
@@ -379,24 +399,24 @@ export let formatBlocks:IFormatBlock[] = [
         str: (d) => d.getFullYear().toString().slice(-2),
         inc: (d) => chain(d).setYear(d.getFullYear() + 1).date,
         dec: (d) => chain(d).setYear(d.getFullYear() - 1).date,
-        set: (d, v) => chain(d).setYear(v).date,
+        set: (d, v) => chain(d).setTwoDigitYear(v).date,
         maxBuffer: (d) => 2
     },
     { // LONG MONTH NAME
         code: 'MMMM',
-        regExp: '((January)|(February)|(March)|(April)|(May)|(June)|(July)|(August)|(September)|(October)|(November)|(December))',
-        str: (d) => longMonthNames[d.getMonth()],
-        inc: (d) => chain(d).setMonthString(d.getMonth() + 1).date,
-        dec: (d) => chain(d).setMonthString(d.getMonth() - 1).date,
+        regExp: `((${monthNames.join(')|(')}))`,
+        str: (d) => monthNames[d.getMonth()],
+        inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
+        dec: (d) => chain(d).setMonth(d.getMonth()).date,
         set: (d, v) => chain(d).setMonthString(v).date,
         maxBuffer: (d) => chain(d).maxMonthStringBuffer()
     },
     { // SHORT MONTH NAME
         code: 'MMM',
         regExp: '((Jan)|(Feb)|(Mar)|(Apr)|(May)|(Jun)|(Jul)|(Aug)|(Sep)|(Oct)|(Nov)|(Dec))',
-        str: (d) => shortMonthNames[d.getMonth()],
-        inc: (d) => chain(d).setMonthString(d.getMonth() + 1).date,
-        dec: (d) => chain(d).setMonthString(d.getMonth() - 1).date,
+        str: (d) => monthNames[d.getMonth()].slice(0,3),
+        inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
+        dec: (d) => chain(d).setMonth(d.getMonth()).date,
         set: (d, v) => chain(d).setMonthString(v).date,
         maxBuffer: (d) => chain(d).maxMonthStringBuffer()
     },
@@ -404,8 +424,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'MM',
         regExp: '\\d{2,2}',
         str: (d) => pad(d.getMonth() + 1, 2),
-        inc: (d) => chain(d).setMonthString(d.getMonth() + 1).date,
-        dec: (d) => chain(d).setMonthString(d.getMonth() - 1).date,
+        inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
+        dec: (d) => chain(d).setMonth(d.getMonth()).date,
         set: (d, v) => chain(d).setMonth(v).date,
         maxBuffer: (d) => chain(d).maxMonthBuffer()
     },
@@ -413,8 +433,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'M',
         regExp: '\\d{1,2}',
         str: (d) => (d.getMonth() + 1).toString(),
-        inc: (d) => chain(d).setMonthString(d.getMonth() + 1).date,
-        dec: (d) => chain(d).setMonthString(d.getMonth() - 1).date,
+        inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
+        dec: (d) => chain(d).setMonth(d.getMonth()).date,
         set: (d, v) => chain(d).setMonth(v).date,
         maxBuffer: (d) => chain(d).maxMonthBuffer()
     },
@@ -448,7 +468,7 @@ export let formatBlocks:IFormatBlock[] = [
     { // LONG DAY NAME
         code: 'dddd',
         regExp: '((Sunday)|(Monday)|(Tuesday)|(Wednesday)|(Thursday)|(Friday)|(Saturday))',
-        str: (d) => longDayNames[d.getDay()],
+        str: (d) => dayNames[d.getDay()],
         inc: (d) => chain(d).setDay(d.getDay() + 1).date,
         dec: (d) => chain(d).setDay(d.getDay() - 1).date,
         set: (d, v) => chain(d).setDay(v).date,
@@ -457,7 +477,7 @@ export let formatBlocks:IFormatBlock[] = [
     { // SHORT DAY NAME
         code: 'ddd',
         regExp: '((Sun)|(Mon)|(Tue)|(Wed)|(Thu)|(Fri)|(Sat))',
-        str: (d) => shortDayNames[d.getDay()],
+        str: (d) => dayNames[d.getDay()].slice(0,3),
         inc: (d) => chain(d).setDay(d.getDay() + 1).date,
         dec: (d) => chain(d).setDay(d.getDay() - 1).date,
         set: (d, v) => chain(d).setDay(v).date,
@@ -466,7 +486,7 @@ export let formatBlocks:IFormatBlock[] = [
     { // UNIX TIMESTAMP
         code: 'X',
         regExp: '\\d{1,}',
-        str: (d) => Math.round(d.valueOf() / 1000).toString(),
+        str: (d) => Math.floor(d.valueOf() / 1000).toString(),
         inc: (d) => new Date(d.valueOf() + 1000),
         dec: (d) => new Date(d.valueOf() - 1000),
         set: (d, v) => chain(d).setUnixSecondTimestamp(v).date
