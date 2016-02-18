@@ -28,6 +28,16 @@ class DateChain {
         return this;
     }
     
+    public incSeconds():DateChain {
+        let n = this.date.getSeconds() + 1;
+        return this.setSeconds(n > 59 ? 0 : n);
+    }
+    
+    public decSeconds():DateChain {
+        let n = this.date.getSeconds() - 1;
+        return this.setSeconds(n < 0 ? 59 : n);
+    }
+    
     public setMinutes(minutes:string|number):DateChain {
         let num:number;
         if (minutes === 'ZERO_OUT') {
@@ -47,6 +57,16 @@ class DateChain {
         }
         this.date.setMinutes(num);
         return this;
+    }
+    
+    public incMinutes():DateChain {
+        let n = this.date.getMinutes() + 1;
+        return this.setMinutes(n > 59 ? 0 : n);
+    }
+    
+    public decMinutes():DateChain {
+        let n = this.date.getMinutes() - 1;
+        return this.setMinutes(n < 0 ? 59 : n);
     }
     
     public setHours(hours:string|number):DateChain {
@@ -78,6 +98,16 @@ class DateChain {
         }
         this.date.setHours(num);
         return this;
+    }
+    
+    public incHours():DateChain {
+        let n = this.date.getHours() + 1;
+        return this.setHours(n > 23 ? 0 : n);
+    }
+    
+    public decHours():DateChain {
+        let n = this.date.getHours() - 1;
+        return this.setHours(n < 0 ? 23 : n);
     }
     
     public setMilitaryHours(hours:string|number):DateChain {
@@ -130,6 +160,16 @@ class DateChain {
         return this;
     }
     
+    public incDate():DateChain {
+        let n = this.date.getDate() + 1;
+        return this.setDate(n > this.daysInMonth() ? 1 : n);
+    }
+    
+    public decDate():DateChain {
+        let n = this.date.getDate() - 1;
+        return this.setDate(n < 0 ? this.daysInMonth() : n);
+    }
+    
     public setDay(day:string|number):DateChain {
         let num:number;
         if (day === 'ZERO_OUT') {
@@ -157,6 +197,16 @@ class DateChain {
         return this;
     }
     
+    public incDay():DateChain {
+        let n = this.date.getDay() + 1;
+        return this.setDay(n > 6 ? 0 : n);
+    }
+    
+    public decDay():DateChain {
+        let n = this.date.getDay() - 1;
+        return this.setDay(n < 0 ? 6 : n);
+    }
+    
     public setMonth(month:string|number):DateChain {
         let num:number;
         if (month === 'ZERO_OUT') {
@@ -179,6 +229,16 @@ class DateChain {
         
         this.date.setMonth(num - 1);
         return this;
+    }
+    
+    public incMonth():DateChain {
+        let n = this.date.getMonth() + 2;
+        return this.setDay(n > 12 ? 1 : n);
+    }
+    
+    public decMonth():DateChain {
+        let n = this.date.getMonth();
+        return this.setDay(n < 1 ? 12 : n);
     }
     
     public setMonthString(month:string|number):DateChain {
@@ -292,6 +352,16 @@ class DateChain {
         }
         this.date.setHours(hours);
         return this;
+    }
+    
+    public incMeridiem():DateChain {
+        let n = this.date.getHours() + 12;
+        return this.setHours(n > 23 ? n - 24 : n);
+    }
+    
+    public decMeridiem():DateChain {
+        let n = this.date.getHours() - 12;
+        return this.setHours(n < 0 ? n + 24 : n);
     }
     
     private daysInMonth():number {
@@ -412,8 +482,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'MMMM',
         regExp: `((${monthNames.join(')|(')}))`,
         str: (d) => monthNames[d.getMonth()],
-        inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
-        dec: (d) => chain(d).setMonth(d.getMonth()).date,
+        inc: (d) => chain(d).incMonth().date,
+        dec: (d) => chain(d).decMonth().date,
         set: (d, v) => chain(d).setMonthString(v).date,
         maxBuffer: (d) => chain(d).maxMonthStringBuffer()
     },
@@ -421,8 +491,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'MMM',
         regExp: `((${monthNames.map((v) => v.slice(0,3)).join(')|(')}))`,
         str: (d) => monthNames[d.getMonth()].slice(0,3),
-        inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
-        dec: (d) => chain(d).setMonth(d.getMonth()).date,
+        inc: (d) => chain(d).incMonth().date,
+        dec: (d) => chain(d).decMonth().date,
         set: (d, v) => chain(d).setMonthString(v).date,
         maxBuffer: (d) => chain(d).maxMonthStringBuffer()
     },
@@ -430,8 +500,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'MM',
         regExp: '\\d{2,2}',
         str: (d) => pad(d.getMonth() + 1, 2),
-        inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
-        dec: (d) => chain(d).setMonth(d.getMonth()).date,
+        inc: (d) => chain(d).incMonth().date,
+        dec: (d) => chain(d).decMonth().date,
         set: (d, v) => chain(d).setMonth(v).date,
         maxBuffer: (d) => chain(d).maxMonthBuffer()
     },
@@ -439,8 +509,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'M',
         regExp: '\\d{1,2}',
         str: (d) => (d.getMonth() + 1).toString(),
-        inc: (d) => chain(d).setMonth(d.getMonth() + 2).date,
-        dec: (d) => chain(d).setMonth(d.getMonth()).date,
+        inc: (d) => chain(d).incMonth().date,
+        dec: (d) => chain(d).decMonth().date,
         set: (d, v) => chain(d).setMonth(v).date,
         maxBuffer: (d) => chain(d).maxMonthBuffer()
     },
@@ -448,8 +518,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'DD',
         regExp: '\\d{2,2}',
         str: (d) => pad(d.getDate(), 2),
-        inc: (d) => chain(d).setDate(d.getDate() + 1).date,
-        dec: (d) => chain(d).setDate(d.getDate() - 1).date,
+        inc: (d) => chain(d).incDate().date,
+        dec: (d) => chain(d).decDate().date,
         set: (d, v) => chain(d).setDate(v).date,
         maxBuffer: (d) => chain(d).maxDateBuffer()
     },
@@ -457,8 +527,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'Do',
         regExp: '\\d{1,2}((th)|(nd)|(rd)|(st))',
         str: (d) => appendOrdinal(d.getDate()),
-        inc: (d) => chain(d).setDate(d.getDate() + 1).date,
-        dec: (d) => chain(d).setDate(d.getDate() - 1).date,
+        inc: (d) => chain(d).incDate().date,
+        dec: (d) => chain(d).decDate().date,
         set: (d, v) => chain(d).setDate(v).date,
         maxBuffer: (d) => chain(d).maxDateBuffer()
     },
@@ -466,8 +536,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'D',
         regExp: '\\d{1,2}',
         str: (d) => d.getDate().toString(),
-        inc: (d) => chain(d).setDate(d.getDate() + 1).date,
-        dec: (d) => chain(d).setDate(d.getDate() - 1).date,
+        inc: (d) => chain(d).incDate().date,
+        dec: (d) => chain(d).decDate().date,
         set: (d, v) => chain(d).setDate(v).date,
         maxBuffer: (d) => chain(d).maxDateBuffer()
     },
@@ -475,8 +545,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'dddd',
         regExp: `((${dayNames.join(')|(')}))`,
         str: (d) => dayNames[d.getDay()],
-        inc: (d) => chain(d).setDay(d.getDay() + 1).date,
-        dec: (d) => chain(d).setDay(d.getDay() - 1).date,
+        inc: (d) => chain(d).incDay().date,
+        dec: (d) => chain(d).decDay().date,
         set: (d, v) => chain(d).setDay(v).date,
         maxBuffer: (d) => chain(d).maxDayStringBuffer()
     },
@@ -484,8 +554,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'ddd',
         regExp: `((${dayNames.map((v) => v.slice(0,3)).join(')|(')}))`,
         str: (d) => dayNames[d.getDay()].slice(0,3),
-        inc: (d) => chain(d).setDay(d.getDay() + 1).date,
-        dec: (d) => chain(d).setDay(d.getDay() - 1).date,
+        inc: (d) => chain(d).incDay().date,
+        dec: (d) => chain(d).decDay().date,
         set: (d, v) => chain(d).setDay(v).date,
         maxBuffer: (d) => chain(d).maxDayStringBuffer()
     },
@@ -509,8 +579,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'HH',
         regExp: '\\d{2,2}',
         str: (d) => pad(d.getHours(), 2),
-        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 1).date,
-        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 1).date,
+        inc: (d) => chain(d).incHours().date,
+        dec: (d) => chain(d).decHours().date,
         set: (d, v) => chain(d).setMilitaryHours(v).date,
         maxBuffer: (d) => chain(d).maxMilitaryHoursBuffer()
     },
@@ -518,8 +588,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'H',
         regExp: '\\d{1,2}',
         str: (d) => d.getHours().toString(),
-        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 1).date,
-        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 1).date,
+        inc: (d) => chain(d).incHours().date,
+        dec: (d) => chain(d).decHours().date,
         set: (d, v) => chain(d).setMilitaryHours(v).date,
         maxBuffer: (d) => chain(d).maxMilitaryHoursBuffer()
     },
@@ -527,8 +597,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'hh',
         regExp: '\\d{2,2}',
         str: (d) => pad(toStandardTime(d.getHours()), 2),
-        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 1).date,
-        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 1).date,
+        inc: (d) => chain(d).incHours().date,
+        dec: (d) => chain(d).decHours().date,
         set: (d, v) => chain(d).setHours(v).date,
         maxBuffer: (d) => chain(d).maxHoursBuffer()
     },
@@ -536,8 +606,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'h',
         regExp: '\\d{1,2}',
         str: (d) => toStandardTime(d.getHours()).toString(),
-        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 1).date,
-        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 1).date,
+        inc: (d) => chain(d).incHours().date,
+        dec: (d) => chain(d).decHours().date,
         set: (d, v) => chain(d).setHours(v).date,
         maxBuffer: (d) => chain(d).maxHoursBuffer()
     },
@@ -545,8 +615,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'A',
         regExp: '((AM)|(PM))',
         str: (d) => d.getHours() < 12 ? 'AM' : 'PM',
-        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 12).date,
-        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 12).date,
+        inc: (d) => chain(d).incMeridiem().date,
+        dec: (d) => chain(d).decMeridiem().date,
         set: (d, v) => chain(d).setMeridiem(v).date,
         maxBuffer: (d) => 1
     },
@@ -554,8 +624,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'a',
         regExp: '((am)|(pm))',
         str: (d) => d.getHours() < 12 ? 'am' : 'pm',
-        inc: (d) => chain(d).setMilitaryHours(d.getHours() + 12).date,
-        dec: (d) => chain(d).setMilitaryHours(d.getHours() - 12).date,
+        inc: (d) => chain(d).incMeridiem().date,
+        dec: (d) => chain(d).decMeridiem().date,
         set: (d, v) => chain(d).setMeridiem(v).date,
         maxBuffer: (d) => 1
     },
@@ -563,8 +633,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'mm',
         regExp: '\\d{2,2}',
         str: (d) => pad(d.getMinutes(), 2),
-        inc: (d) => chain(d).setMinutes(d.getMinutes() + 1).date,
-        dec: (d) => chain(d).setMinutes(d.getMinutes() - 1).date,
+        inc: (d) => chain(d).incMinutes().date,
+        dec: (d) => chain(d).decMinutes().date,
         set: (d, v) => chain(d).setMinutes(v).date,
         maxBuffer: (d) => chain(d).maxMinutesBuffer()
     },
@@ -572,8 +642,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'm',
         regExp: '\\d{1,2}',
         str: (d) => d.getMinutes().toString(),
-        inc: (d) => chain(d).setMinutes(d.getMinutes() + 1).date,
-        dec: (d) => chain(d).setMinutes(d.getMinutes() - 1).date,
+        inc: (d) => chain(d).incMinutes().date,
+        dec: (d) => chain(d).decMinutes().date,
         set: (d, v) => chain(d).setMinutes(v).date,
         maxBuffer: (d) => chain(d).maxMinutesBuffer()
     },
@@ -581,8 +651,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 'ss',
         regExp: '\\d{2,2}',
         str: (d) => pad(d.getSeconds(), 2),
-        inc: (d) => chain(d).setSeconds(d.getSeconds() + 1).date,
-        dec: (d) => chain(d).setSeconds(d.getSeconds() - 1).date,
+        inc: (d) => chain(d).incSeconds().date,
+        dec: (d) => chain(d).decSeconds().date,
         set: (d, v) => chain(d).setSeconds(v).date,
         maxBuffer: (d) => chain(d).maxSecondsBuffer()
     },
@@ -590,8 +660,8 @@ export let formatBlocks:IFormatBlock[] = [
         code: 's',
         regExp: '\\d{1,2}',
         str: (d) => d.getSeconds().toString(),
-        inc: (d) => chain(d).setSeconds(d.getSeconds() + 1).date,
-        dec: (d) => chain(d).setSeconds(d.getSeconds() - 1).date,
+        inc: (d) => chain(d).incSeconds().date,
+        dec: (d) => chain(d).decSeconds().date,
         set: (d, v) => chain(d).setSeconds(v).date,
         maxBuffer: (d) => chain(d).maxSecondsBuffer()
     },

@@ -8,38 +8,39 @@ export const enum KeyCodes {
     END = 35, BACKSPACE = 8
 }
 
+class Selection {
+    constructor(public start:number, public end:number) {}
+}
+
 export default class DatepickerInput {
-    
+
     private selectedIndex:number;
     private curDate:Date;
     private dateParts:DatePart[];
     private dateStringRegExp:RegExp;
-    
-    constructor(private element:HTMLInputElement, displayAs:string) {
+
+    constructor(private element:HTMLInputElement, displayAs:string, private minDate?:Date, private maxDate?:Date) {
         this.dateParts = DisplayParser.parse(displayAs);
         this.dateStringRegExp = this.concatRegExp(this.dateParts);
         this.bindEvents();
         this.element.setAttribute('spellcheck', 'false');
         this.update(new Date());
-        
-        
-        
     }
-    
+
     private concatRegExp(dateParts:DatePart[]):RegExp {
         let regExp = '';
         dateParts.forEach((datePart) => {
-           regExp += datePart.getRegExpString(); 
+           regExp += datePart.getRegExpString();
         });
         return new RegExp(`^${regExp}$`, 'i');
     }
-    
+
     private bindEvents():void {
         this.element.addEventListener('focus', () => this.focus());
-                
+
         this.element.addEventListener('keydown', (e) => this.keydown(e));
         this.element.addEventListener('paste', () => this.paste());
-        
+
         document.addEventListener('keydown', (e:KeyboardEvent) => {
             if (e.shiftKey && e.keyCode === KeyCodes.TAB) {
                 this.shiftTabDown = true;
@@ -48,7 +49,7 @@ export default class DatepickerInput {
             }
             setTimeout(() => {
                this.shiftTabDown = false;
-               this.tabDown = false; 
+               this.tabDown = false;
             });
         });
         
@@ -57,35 +58,66 @@ export default class DatepickerInput {
         this.element.addEventListener('dragover', (e) => e.preventDefault());
         this.element.addEventListener('drop', (e) => e.preventDefault());
         this.element.addEventListener('cut', (e) => e.preventDefault());
+
+        let caretStart;
+        let down = false;
         
+        let mousedown = () => {
+            clearInterval(interval);
+            down = true;
+            this.element.setSelectionRange(void 0, void 0);
+            setTimeout(() => {
+                caretStart = this.element.selectionStart;
+            });
+        };
+        
+        let mouseup = () => {
+            if (!down) return;
+            down = false;
+            let pos = this.element.selectionStart === caretStart ? this.element.selectionEnd : this.element.selectionStart;
+            this.selectedIndex = this.getNearestSelectableIndex(pos);
+            if (this.element.selectionStart > 0 || this.element.selectionEnd < this.element.value.length) {
+                this.update();
+            }
+        };
+        
+        let touchstart = () => {
+            this.element.removeEventListener('mousedown', mousedown);
+            document.removeEventListener('mouseup', mouseup);
+            document.removeEventListener('touchstart', touchstart);
+        }
+        
+        this.element.addEventListener('mousedown', mousedown);
+        document.addEventListener('mouseup', mouseup);
+        document.addEventListener('touchstart', touchstart);
+
         let lastStart;
         let lastEnd;
-        setInterval(() => {
-            if (this.element.selectionStart !== lastStart || this.element.selectionEnd !== lastEnd) {
-                this.selectionChange(this.element.selectionStart, this.element.selectionEnd);
+        let interval = setInterval(() => {
+            if (!this.pasting &&
+                (this.element.selectionStart !== 0 ||
+                 this.element.selectionEnd !== this.element.value.length) &&
+                (this.element.selectionStart !== lastStart ||
+                 this.element.selectionEnd !== lastEnd)) {
+                this.selectedIndex = this.getNearestSelectableIndex(this.element.selectionStart + (this.element.selectionEnd - this.element.selectionStart) / 2);
+                this.update()
             }
             lastStart = this.element.selectionStart;
-            lastEnd = this.element.selectionEnd;  
+            lastEnd = this.element.selectionEnd;
         });
     }
     
     private shiftTabDown = false;
     private tabDown = false;
-    
-    private downSelectionStart:number;
-    
-    private selectionChange(start:number, end:number):void {
-        this.selectedIndex = this.getNearestSelectableIndex(start);
-        if (start !== 0 || end !== this.element.value.length) {
-            this.update();
-        }
-    }
+    private pasting:boolean = false;
     
     private paste():void {
+        this.pasting = true;
         let originalValue = this.element.value;
         setTimeout(() => {
             if (!this.dateStringRegExp.test(this.element.value)) {
                 this.element.value = originalValue;
+                this.pasting = false;
                 return;
             }
             let newDate = new Date(this.curDate.valueOf());
@@ -97,26 +129,27 @@ export default class DatepickerInput {
                 newDate = datePart.getDateFromString(newDate, val);
             });
             this.update(newDate);
+            this.pasting = false;
         });
     }
-    
+
     private textBuffer:string = '';
-    
+
     private keydown(e:KeyboardEvent):void {
         if ((e.keyCode === KeyCodes.HOME || e.keyCode === KeyCodes.END) && e.shiftKey) return;
         if (e.keyCode === KeyCodes.C && e.ctrlKey) return;
         if (e.keyCode === KeyCodes.A && e.ctrlKey) return;
         if (e.keyCode === KeyCodes.V && e.ctrlKey) return;
         if ((e.keyCode === KeyCodes.LEFT || e.keyCode === KeyCodes.RIGHT) && e.shiftKey) return;
-        
+
         if (e.keyCode === KeyCodes.HOME) {
             this.selectedIndex = this.getFirstSelectable();
             this.update();
-            e.preventDefault();    
+            e.preventDefault();
         } else if (e.keyCode === KeyCodes.END) {
             this.selectedIndex = this.getLastSelectable();
             this.update();
-            e.preventDefault();    
+            e.preventDefault();
         } else if (e.keyCode === KeyCodes.LEFT) {
             this.selectedIndex = this.getPreviousSelectable();
             this.update();
@@ -150,9 +183,9 @@ export default class DatepickerInput {
         } else {
             e.preventDefault();
         }
-        
+
         let keyPressed = this.keyMap[e.keyCode];
-        
+
         if (e.keyCode === KeyCodes.BACKSPACE) {
             this.backspace();
         } else if (keyPressed !== void 0) {
@@ -160,7 +193,7 @@ export default class DatepickerInput {
         } else if (!e.shiftKey) {
             this.textBuffer = '';
         }
-        
+
         if (this.textBuffer.length > 0) {
             let orig = this.curDate.valueOf();
             let result = this.dateParts[this.selectedIndex].getDateFromString(this.curDate, this.textBuffer);
@@ -174,7 +207,7 @@ export default class DatepickerInput {
             }
         }
     }
-    
+
     private backspace():void {
         if (this.textBuffer.length < 2) {
             let orig = this.curDate.valueOf();
@@ -185,7 +218,7 @@ export default class DatepickerInput {
         }
         this.textBuffer = this.textBuffer.slice(0, this.textBuffer.length - 1);
     }
-    
+
     private keyMap:{} = {
         '48': '0', '96': '0', '49': '1', '97': '1',
         '50': '2', '98': '2', '51': '3', '99': '3',
@@ -200,7 +233,7 @@ export default class DatepickerInput {
         '85': 'u', '86': 'v', '87': 'w', '88': 'x',
         '89': 'y', '90': 'z'
     }
-    
+
     private getPreviousSelectable():number {
         let index = this.selectedIndex;
         while (--index >= 0) {
@@ -208,7 +241,7 @@ export default class DatepickerInput {
         }
         return this.selectedIndex;
     }
-    
+
     private getNextSelectable():number {
         let index = this.selectedIndex;
         while (++index < this.dateParts.length) {
@@ -216,9 +249,9 @@ export default class DatepickerInput {
         }
         return this.selectedIndex;
     }
-    
+
     private selecting:boolean = false;
-    
+
     private getNearestSelectableIndex(caretPosition:number):number {
         let pos = 0;
         let nearestSelectableIndex;
@@ -238,56 +271,58 @@ export default class DatepickerInput {
         }
         return nearestSelectableIndex;
     }
-    
+
     private focus():void {
         if (this.tabDown) {
             this.selectedIndex = this.getFirstSelectable();
             setTimeout(() => {
-               this.update(); 
-            }); 
+               this.update();
+            });
         } else if (this.shiftTabDown) {
             this.selectedIndex = this.getLastSelectable();
             setTimeout(() => {
-               this.update(); 
+               this.update();
             });
         }
     }
-    
+
     private getFirstSelectable():number {
         for (let i = 0; i < this.dateParts.length; i++) {
             if (this.dateParts[i].isSelectable()) return i;
         }
         return void 0;
     }
-    
+
     private getLastSelectable():number {
         for (let i = this.dateParts.length - 1; i >= 0; i--) {
             if (this.dateParts[i].isSelectable()) return i;
         }
         return void 0;
     }
-    
-    
+
+
     private lastSelectedIndex:number;
-    
+
     public update(date?:Date):void {
         if (date === void 0) date = this.curDate;
+        if (this.minDate !== void 0 && date.valueOf() < this.minDate.valueOf()) date = new Date(this.minDate.valueOf());
+        if (this.maxDate !== void 0 && date.valueOf() < this.maxDate.valueOf()) date = new Date(this.maxDate.valueOf());
         if (this.selectedIndex !== this.lastSelectedIndex) {
             this.textBuffer = '';
         }
         this.lastSelectedIndex = this.selectedIndex;
-        
+
         this.curDate = new Date(date.valueOf());
         let dateString = '';
-        
+
         this.dateParts.forEach((datePart) => {
             dateString += datePart.setValue(date).toString();
         });
-        
+
         this.element.value = dateString;
         this.updateSelection();
     }
-    
+
     private updateSelection():void {
         if (this.selectedIndex === void 0 || document.activeElement !== this.element) return;
         let start = 0;
