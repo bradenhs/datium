@@ -1,0 +1,28 @@
+{
+  "name": "datium",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhsnll/datium.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bhsnll/datium/issues"
+  },
+  "homepage": "https://github.com/bhsnll/datium#readme",
+  "devDependencies": {
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "live-server": "0.9.2",
+    "shelljs": "^0.6.0",
+    "systemjs": "^0.19.22",
+    "systemjs-builder": "^0.15.9",
+    "typescript": "1.7.5"
+  }
+}

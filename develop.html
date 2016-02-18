@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Datium Develop</title>
+
+        <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+
+        <!-- Start Production Code -->
+        <script src="node_modules/systemjs/dist/system.js"></script>
+        <script src="node_modules/typescript/lib/typescript.js"></script>
+        <script src="config.js"></script>    
+        <!-- End Production Code -->
+    </head>
+    <body>
+        <h4>Develop</h4>
+        <script>      
+            System.import('src/Datium').then(function() {
+            });      
+        </script>
+    </body>
+</html>

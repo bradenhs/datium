@@ -1,0 +1,12 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "files.exclude": {
+		".gitignore": true,
+        "package.json": true,
+        "node_modules": true,
+        ".vscode": true,
+        "gulpfile.js": true,
+        "config.js": true,
+        "deploy": true
+	}
+}
