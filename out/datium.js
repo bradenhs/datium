@@ -1,1 +1,0 @@
-(function(){var b=function(){return function(){function a(){}a.a=function(a){if(void 0===a.element)throw'DATIUM: "element" option is required';console.log("oh yeah aha")};return a}()}();window.Datium=function(){return function(){function a(a){this.b(a)}a.prototype.b=function(a){b.a(a)};return a}()}()})();

@@ -19,7 +19,7 @@ gulp.task('watch', function () {
 
 gulp.task('serve', function() {
    liveServer.start({
-       root: './out',
+       root: './public',
        port: 3000
    }); 
 });
@@ -29,10 +29,10 @@ gulp.task('build', function() {
 });
 
 gulp.task('deploy', function() {
-    return del(['out/datium.js']).then(function(err) {
+    return del(['public/datium.js']).then(function(err) {
         return build(true).then(function() {
-            shell.cp('-rf', 'out/datium.js', 'deploy');
-            shell.cp('-rf', 'out/index.html', 'deploy');
+            shell.cp('-rf', 'public/datium.js', 'deploy');
+            shell.cp('-rf', 'public/index.html', 'deploy');
 
             shell.cd('deploy');
 
@@ -54,11 +54,11 @@ function closure() {
                 warning_level: 'VERBOSE'
             }
         }))
-        .pipe(gulp.dest('out'));
+        .pipe(gulp.dest('public'));
 }
 
 function build(runClosure) {
-    var outDir = runClosure ? 'temp' : 'out';
+    var outDir = runClosure ? 'temp' : 'public';
     return gulp.src('src/**/*.ts')
         .pipe(sourcemaps.init())
         .pipe(ts({
