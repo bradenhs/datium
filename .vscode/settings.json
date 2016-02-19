@@ -4,9 +4,11 @@
 		".gitignore": true,
         "package.json": true,
         "node_modules": true,
+        "temp": true,
         ".vscode": true,
         "gulpfile.js": true,
-        "config.js": true,
-        "deploy": true
+        "deploy": true,
+        "tsconfig.json": true,
+        "compiler.jar": true
 	}
 }

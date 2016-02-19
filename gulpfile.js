@@ -1,30 +1,40 @@
 var gulp = require('gulp');
+var sourcemaps = require('gulp-sourcemaps');
 var liveServer = require('live-server');
-var Builder = require('systemjs-builder');
 var del = require('del');
 var shell = require('shelljs');
+var ts = require('gulp-typescript');
+var closureCompiler = require('gulp-closure-compiler');
+var insert = require('gulp-insert');
+var watch = require('gulp-watch');
 
-gulp.task('default', ['serve']);
+gulp.task('default', ['serve', 'watch']);
+
+gulp.task('watch', function () {
+    build(false);
+    watch('src/**/*', function() {
+       build(false); 
+    });
+})
 
 gulp.task('serve', function() {
-   liveServer.start({port: 3000}); 
+   liveServer.start({
+       root: './out',
+       port: 3000
+   }); 
 });
 
-var src = 'src/Datium';
-var out = 'out/datium.js';
-var deployDir = 'deploy';
-var config = 'config.js';
-var opts = { minify: true };
-
-gulp.task('build', build);
+gulp.task('build', function() {
+    return build(true);
+});
 
 gulp.task('deploy', function() {
-    return del([out]).then(function(err) {
-        return build().then(function() {
-            shell.cp('-rf', out, deployDir);
-            shell.cp('-rf', 'out/index.html', deployDir);
+    return del(['out/datium.js']).then(function(err) {
+        return build(true).then(function() {
+            shell.cp('-rf', 'out/datium.js', 'deploy');
+            shell.cp('-rf', 'out/index.html', 'deploy');
 
-            shell.cd(deployDir);
+            shell.cd('deploy');
 
             shell.exec('git add -A');
             shell.exec('git commit -m "latest deploy"');
@@ -34,6 +44,30 @@ gulp.task('deploy', function() {
     });
 });
 
-function build() {
-    return new Builder('./', config).buildStatic(src, out, opts);
+function closure() {
+    gulp.src('temp/datium.js')
+        .pipe(closureCompiler({
+            compilerPath: 'compiler.jar',
+            fileName: 'datium.js',
+            compilerFlags: {
+                compilation_level: 'ADVANCED_OPTIMIZATIONS',
+                warning_level: 'VERBOSE'
+            }
+        }))
+        .pipe(gulp.dest('out'));
+}
+
+function build(runClosure) {
+    var outDir = runClosure ? 'temp' : 'out';
+    return gulp.src('src/**/*.ts')
+        .pipe(sourcemaps.init())
+        .pipe(ts({
+            out: 'datium.js'
+        }))
+        .pipe(insert.wrap('(function(){\n', '})();'))
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest(outDir))
+        .on('end', function() {
+            if (runClosure) closure();
+        });
 }
