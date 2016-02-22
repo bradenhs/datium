@@ -19,12 +19,13 @@
   "dependencies": {
     "del": "^2.2.0",
     "gulp": "^3.9.1",
-    "live-server": "0.9.2",
-    "shelljs": "^0.6.0",
     "gulp-closure-compiler": "^0.4.0",
     "gulp-insert": "^0.5.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.11.0",
-    "gulp-watch": "^4.3.5"
+    "gulp-watch": "^4.3.5",
+    "live-server": "0.9.2",
+    "run-gulp-task": "^0.1.1",
+    "shelljs": "^0.6.0"
   }
 }

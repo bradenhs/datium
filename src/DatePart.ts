@@ -1,71 +1,80 @@
 /// <reference path="FormatBlocks.ts" />
 
 class DatePart {
-    private str:(d:Date) => string;
-    private regExpString:string;
-    private inc:(d:Date) => Date;
-    private dec:(d:Date) => Date;
-    private set:(d:Date, v:string|number) => Date;
     
-    private value:string;
-    private selectable:boolean;
-    private maxBuffer:(d:Date) => number;
+    increment:(d:Date) => Date;
+    decrement:(d:Date) => Date;        
+    setValue:(d:Date) => DatePart;
+    toString:() => string;        
+    isSelectable:() => boolean;        
+    getRegExpString:() => string;        
+    getDateFromString:(date:Date, partial:string) => Date;        
+    getMaxBufferSize:(date:Date) => number;
     
     constructor(arg:IFormatBlock|String, selectableOverride?:boolean) {
+        
+        // PRIVATE
+        
+        let str:(d:Date) => string;
+        let regExpString:string;
+        let inc:(d:Date) => Date;
+        let dec:(d:Date) => Date;
+        let set:(d:Date, v:string|number) => Date;
+        
+        let value:string;
+        let selectable:boolean;
+        let maxBuffer:(d:Date) => number;
+
+        function regExpEscape(str:string):string {
+            return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+        }
+        
+        function clone(d:Date):Date {
+            return new Date(d.valueOf());
+        }
+        
+        // CONSTRUCTOR
+        
         if (typeof arg === 'object') {
-            this.str = (<IFormatBlock>arg).str;
-            this.inc = (<IFormatBlock>arg).inc;
-            this.dec = (<IFormatBlock>arg).dec;
-            this.set = (<IFormatBlock>arg).set;
-            this.maxBuffer = (<IFormatBlock>arg).maxBuffer;
-            this.regExpString = (<IFormatBlock>arg).regExp;
-            this.selectable = this.inc !== void 0 && this.dec !== void 0;
+            str = (<IFormatBlock>arg).str;
+            inc = (<IFormatBlock>arg).inc;
+            dec = (<IFormatBlock>arg).dec;
+            set = (<IFormatBlock>arg).set;
+            maxBuffer = (<IFormatBlock>arg).maxBuffer;
+            regExpString = (<IFormatBlock>arg).regExp;
+            selectable = inc !== void 0 && dec !== void 0;
         } else {
-            this.value = <string>arg;
-            this.regExpString = this.regExpEscape(this.value);
-            this.selectable = false;
+            value = <string>arg;
+            regExpString = regExpEscape(value);
+            selectable = false;
         }
         if (typeof selectableOverride === 'boolean') {
-            this.selectable = selectableOverride;
+            selectable = selectableOverride;
         }
-    }
+        
+        // PUBLIC
+        
+        this.increment = (d:Date) => inc(clone(d));
+        
+        this.decrement = (d:Date) => dec(clone(d));            
+        
+        this.setValue = (d:Date) => {
+            if (str === void 0) return this;
+            value = str(clone(d));
+            return this;
+        }
+        
+        this.toString = () => value;
+                    
+        this.isSelectable = () => selectable;
+                    
+        this.getRegExpString = () => regExpString;
     
-    private regExpEscape(str:string):string {
-        return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-    }
-    
-    public increment(d:Date):Date {
-        return this.inc(d);
-    }
-    
-    public decrement(d:Date):Date {
-        return this.dec(d);
-    }
-    
-    public setValue(d:Date):DatePart {
-        if (this.str === void 0) return this;
-        this.value = this.str(d);
-        return this;
-    }
-    
-    public toString():string {
-        return this.value;
-    }
-    
-    public isSelectable():boolean {
-        return this.selectable;
-    }
-    
-    public getRegExpString():string {
-        return this.regExpString;
-    }
-    
-    public getDateFromString(date:Date, partial:string):Date {
-        return this.set(date, partial);
-    }
-    
-    public getMaxBufferSize(date:Date):number {
-        if (this.maxBuffer === void 0) return void 0;
-        return this.maxBuffer(date);
+        this.getDateFromString = (date:Date, partial:string) => set(clone(date), partial);
+        
+        this.getMaxBufferSize = (date:Date) => {
+            if (maxBuffer === void 0) return void 0;
+            return maxBuffer(clone(date));                
+        }
     }
 }
