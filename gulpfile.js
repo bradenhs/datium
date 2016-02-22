@@ -12,7 +12,7 @@ gulp.task('default', ['serve', 'watch']);
 
 gulp.task('watch', function () {
     build(false);
-    watch('src/**/*', function() {
+    watch('./src/**/*', function() {
        build(false); 
     });
 })
@@ -29,8 +29,8 @@ gulp.task('build', function() {
 });
 
 gulp.task('deploy', function() {
-    return del(['public/datium.js']).then(function(err) {
-        return build(true).then(function() {
+    return del(['deploy/datium.js']).then(function(err) {
+        return build(true, function() {
             shell.cp('-rf', 'public/datium.js', 'deploy');
             shell.cp('-rf', 'public/index.html', 'deploy');
 
@@ -44,8 +44,10 @@ gulp.task('deploy', function() {
     });
 });
 
-function closure() {
-    gulp.src('temp/datium.js')
+gulp.task('closure', closure);
+
+function closure(cb) {
+    gulp.src('./temp/datium.js')
         .pipe(closureCompiler({
             compilerPath: 'compiler.jar',
             fileName: 'datium.js',
@@ -54,12 +56,15 @@ function closure() {
                 warning_level: 'VERBOSE'
             }
         }))
-        .pipe(gulp.dest('public'));
+        .pipe(gulp.dest('public'))
+        .on('end', function() {
+            if (cb !== void 0) cb();
+        });
 }
 
-function build(runClosure) {
+function build(runClosure, cb) {
     var outDir = runClosure ? 'temp' : 'public';
-    return gulp.src('src/**/*.ts')
+    return gulp.src('./src/**/*.ts')
         .pipe(sourcemaps.init())
         .pipe(ts({
             out: 'datium.js'
@@ -68,6 +73,7 @@ function build(runClosure) {
         .pipe(sourcemaps.write())
         .pipe(gulp.dest(outDir))
         .on('end', function() {
-            if (runClosure) closure();
+            if (runClosure) closure(cb);
+            if (cb !== void 0) cb();
         });
 }

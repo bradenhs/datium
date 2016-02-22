@@ -8,6 +8,7 @@
     
     return class {
         constructor(opts:IOptions) {
+            new DatepickerInput(opts.element, 'h:mma {ddd} MMM Do, YYYY');
             this.updateOptions(opts);
         }
         
@@ -17,17 +18,13 @@
     }
 })();
 
-export const enum KeyCodes {
+const enum KeyCodes {
     RIGHT = 39, LEFT = 37, TAB = 9, UP = 38,
     DOWN = 40, V = 86, C = 67, A = 65, HOME = 36,
     END = 35, BACKSPACE = 8
 }
 
-class Selection {
-    constructor(public start:number, public end:number) {}
-}
-
-export default class DatepickerInput {
+class DatepickerInput {
 
     private selectedIndex:number;
     private curDate:Date;
@@ -100,7 +97,7 @@ export default class DatepickerInput {
             this.element.removeEventListener('mousedown', mousedown);
             document.removeEventListener('mouseup', mouseup);
             document.removeEventListener('touchstart', touchstart);
-        }
+        };
         
         this.element.addEventListener('mousedown', mousedown);
         document.addEventListener('mouseup', mouseup);
@@ -108,7 +105,7 @@ export default class DatepickerInput {
 
         let lastStart:number;
         let lastEnd:number;
-        let interval = setInterval(() => {
+        var interval = setInterval(() => {
             if (!this.pasting &&
                 (this.element.selectionStart !== 0 ||
                  this.element.selectionEnd !== this.element.value.length) &&
@@ -199,7 +196,20 @@ export default class DatepickerInput {
             e.preventDefault();
         }
 
-        let keyPressed = <any>this.keyMap[e.keyCode];
+        let keyPressed = (<any>{
+            '48': '0', '96': '0', '49': '1', '97': '1',
+            '50': '2', '98': '2', '51': '3', '99': '3',
+            '52': '4', '100': '4', '53': '5', '101': '5',
+            '54': '6', '102': '6', '55': '7', '103': '7',
+            '56': '8', '104': '8', '57': '9', '105': '9',
+            '65': 'a', '66': 'b', '67': 'c', '68': 'd',
+            '69': 'e', '70': 'f', '71': 'g', '72': 'h',
+            '73': 'i', '74': 'j', '75': 'k', '76': 'l',
+            '77': 'm', '78': 'n', '79': 'o', '80': 'p',
+            '81': 'q', '82': 'r', '83': 's', '84': 't',
+            '85': 'u', '86': 'v', '87': 'w', '88': 'x',
+            '89': 'y', '90': 'z'
+        })[e.keyCode];
 
         if (e.keyCode === KeyCodes.BACKSPACE) {
             this.backspace();
@@ -234,21 +244,6 @@ export default class DatepickerInput {
         this.textBuffer = this.textBuffer.slice(0, this.textBuffer.length - 1);
     }
 
-    private keyMap:{} = <[key:string]>{
-        '48': '0', '96': '0', '49': '1', '97': '1',
-        '50': '2', '98': '2', '51': '3', '99': '3',
-        '52': '4', '100': '4', '53': '5', '101': '5',
-        '54': '6', '102': '6', '55': '7', '103': '7',
-        '56': '8', '104': '8', '57': '9', '105': '9',
-        '65': 'a', '66': 'b', '67': 'c', '68': 'd',
-        '69': 'e', '70': 'f', '71': 'g', '72': 'h',
-        '73': 'i', '74': 'j', '75': 'k', '76': 'l',
-        '77': 'm', '78': 'n', '79': 'o', '80': 'p',
-        '81': 'q', '82': 'r', '83': 's', '84': 't',
-        '85': 'u', '86': 'v', '87': 'w', '88': 'x',
-        '89': 'y', '90': 'z'
-    }
-
     private getPreviousSelectable():number {
         let index = this.selectedIndex;
         while (--index >= 0) {
@@ -269,8 +264,8 @@ export default class DatepickerInput {
 
     private getNearestSelectableIndex(caretPosition:number):number {
         let pos = 0;
-        let nearestSelectableIndex;
-        let nearestSelectableDistance;
+        let nearestSelectableIndex:number;
+        let nearestSelectableDistance:number;
         for (let i = 0; i < this.dateParts.length; i++) {
             if (this.dateParts[i].isSelectable()) {
                 let fromLeft = caretPosition - pos;
