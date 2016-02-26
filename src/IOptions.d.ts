@@ -1,3 +1,4 @@
 interface IOptions {
-    element:HTMLInputElement
+    element:HTMLInputElement;
+    displayAs:string;
 }

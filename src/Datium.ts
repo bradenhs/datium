@@ -1,22 +1,12 @@
-/// <reference path="OptionSanitizer.ts" />
 /// <reference path="FormatBlocks.ts" />
 /// <reference path="DatePart.ts" />
 /// <reference path="DisplayParser.ts" />
 
-(<any>window)['Datium'] = (function() {
-    let options:IOptions;
-    
-    return class {
-        constructor(opts:IOptions) {
-            new DatepickerInput(opts.element, 'h:mma {ddd} MMM Do, YYYY');
-            this.updateOptions(opts);
-        }
-        
-        updateOptions(opts:IOptions):void {
-            options = OptionSanitizer.sanitize(opts);
-        }
+(<any>window)["Datium"] = class Datium {
+    constructor(opts:IOptions) {
+        new DatepickerInput(opts['element'], opts['displayAs']);
     }
-})();
+}
 
 const enum KeyCodes {
     RIGHT = 39, LEFT = 37, TAB = 9, UP = 38,
@@ -24,53 +14,63 @@ const enum KeyCodes {
     END = 35, BACKSPACE = 8
 }
 
-let DatepickerInput = (() => {
-    let selectedIndex:number;
-    let curDate:Date;
-    let dateParts:DatePart[];
-    let dateStringRegExp:RegExp;
-    let element:HTMLInputElement;
-    let displayAs:String;
-    let minDate:Date;
-    let maxDate:Date;
+class DatepickerInput {
     
-    let shiftTabDown = false;
-    let tabDown = false;
-    let pasting:boolean = false;
+    private selectedIndex:number;
+    private curDate:Date;
+    private dateParts:DatePart[];
     
-    let textBuffer:string = '';
+    private dateStringRegExp:RegExp;
     
-    function concatRegExp(dateParts:DatePart[]):RegExp {
-        let regExp = '';
+    private selecting:boolean = false;
+    
+    private shiftTabDown = false;
+    private tabDown = false;
+    private pasting:boolean = false;
+    
+    private textBuffer:string = "";
+    constructor(private element:HTMLInputElement, private displayAs:string, private minDate?:Date, private maxDate?:Date) {
+        this.dateParts = DisplayParser.parse(displayAs);
+        console.log('\nregstuff')
+        this.dateStringRegExp = this.concatRegExp(this.dateParts);
+        
+        this.bindEvents();
+        element.setAttribute("spellcheck", "false");
+        this.update(new Date());
+    }
+    
+    private concatRegExp = (dateParts:DatePart[]):RegExp => {
+        let regExp = "";
         dateParts.forEach((datePart) => {
            regExp += datePart.getRegExpString();
         });
-        return new RegExp(`^${regExp}$`, 'i');
+        console.log(regExp);
+        return new RegExp(`^${regExp}$`, "i");        
     }
     
-    function bindEvents():void {
-        element.addEventListener('focus', () => focus());
+    private bindEvents = ():void => {
+        this.element.addEventListener("focus", () => this.focus());
 
-        element.addEventListener('keydown', (e) => keydown(e));
-        element.addEventListener('paste', () => paste());
+        this.element.addEventListener("keydown", (e) => this.keydown(e));
+        this.element.addEventListener("paste", () => this.paste());
 
-        document.addEventListener('keydown', (e:KeyboardEvent) => {
+        document.addEventListener("keydown", (e:KeyboardEvent) => {
             if (e.shiftKey && e.keyCode === KeyCodes.TAB) {
-                shiftTabDown = true;
+                this.shiftTabDown = true;
             } else if (e.keyCode === KeyCodes.TAB) {
-                tabDown = true;
+                this.tabDown = true;
             }
             setTimeout(() => {
-               shiftTabDown = false;
-               tabDown = false;
+               this.shiftTabDown = false;
+               this.tabDown = false;
             });
         });
         
         // Prevent Default
-        element.addEventListener('dragenter', (e) => e.preventDefault());
-        element.addEventListener('dragover', (e) => e.preventDefault());
-        element.addEventListener('drop', (e) => e.preventDefault());
-        element.addEventListener('cut', (e) => e.preventDefault());
+        this.element.addEventListener("dragenter", (e) => e.preventDefault());
+        this.element.addEventListener("dragover", (e) => e.preventDefault());
+        this.element.addEventListener("drop", (e) => e.preventDefault());
+        this.element.addEventListener("cut", (e) => e.preventDefault());
 
         let caretStart:number;
         let down = false;
@@ -78,71 +78,72 @@ let DatepickerInput = (() => {
         let mousedown = () => {
             clearInterval(interval);
             down = true;
-            element.setSelectionRange(void 0, void 0);
+            this.element.setSelectionRange(void 0, void 0);
             setTimeout(() => {
-                caretStart = element.selectionStart;
+                caretStart = this.element.selectionStart;
             });
         };
         
         let mouseup = () => {
             if (!down) return;
             down = false;
-            let pos = element.selectionStart === caretStart ? element.selectionEnd : element.selectionStart;
-            selectedIndex = getNearestSelectableIndex(pos);
-            if (element.selectionStart > 0 || element.selectionEnd < element.value.length) {
-                update();
+            let pos = this.element.selectionStart === caretStart ? this.element.selectionEnd : this.element.selectionStart;
+            this.selectedIndex = this.getNearestSelectableIndex(pos);
+            if (this.element.selectionStart > 0 || this.element.selectionEnd < this.element.value.length) {
+                this.update();
             }
         };
         
         let touchstart = () => {
-            element.removeEventListener('mousedown', mousedown);
-            document.removeEventListener('mouseup', mouseup);
-            document.removeEventListener('touchstart', touchstart);
+            this.element.removeEventListener("mousedown", mousedown);
+            document.removeEventListener("mouseup", mouseup);
+            document.removeEventListener("touchstart", touchstart);
         };
         
-        element.addEventListener('mousedown', mousedown);
-        document.addEventListener('mouseup', mouseup);
-        document.addEventListener('touchstart', touchstart);
+        this.element.addEventListener("mousedown", mousedown);
+        document.addEventListener("mouseup", mouseup);
+        document.addEventListener("touchstart", touchstart);
 
         let lastStart:number;
         let lastEnd:number;
         var interval = setInterval(() => {
-            if (!pasting &&
-                (element.selectionStart !== 0 ||
-                 element.selectionEnd !== element.value.length) &&
-                (element.selectionStart !== lastStart ||
-                 element.selectionEnd !== lastEnd)) {
-                selectedIndex = getNearestSelectableIndex(element.selectionStart + (element.selectionEnd - element.selectionStart) / 2);
-                update()
+            
+            if (!this.pasting &&
+                (this.element.selectionStart !== 0 ||
+                 this.element.selectionEnd !== this.element.value.length) &&
+                (this.element.selectionStart !== lastStart ||
+                 this.element.selectionEnd !== lastEnd)) {
+                this.selectedIndex = this.getNearestSelectableIndex(this.element.selectionStart + (this.element.selectionEnd - this.element.selectionStart) / 2);
+                this.update()
             }
-            lastStart = element.selectionStart;
-            lastEnd = element.selectionEnd;
+            lastStart = this.element.selectionStart;
+            lastEnd = this.element.selectionEnd;
         });
     }
     
-    function paste():void {
-        pasting = true;
-        let originalValue = element.value;
+    private paste = ():void => {
+        this.pasting = true;
+        let originalValue = this.element.value;
         setTimeout(() => {
-            if (!dateStringRegExp.test(element.value)) {
-                element.value = originalValue;
-                pasting = false;
+            if (!this.dateStringRegExp.test(this.element.value)) {
+                this.element.value = originalValue;
+                this.pasting = false;
                 return;
             }
-            let newDate = new Date(curDate.valueOf());
-            let strPrefix = '';
-            dateParts.forEach((datePart) => {
-                let val = element.value.replace(strPrefix, '').match(datePart.getRegExpString())[0];
+            let newDate = new Date(this.curDate.valueOf());
+            let strPrefix = "";
+            this.dateParts.forEach((datePart) => {
+                let val = this.element.value.replace(strPrefix, "").match(datePart.getRegExpString())[0];
                 strPrefix += val;
                 if (!datePart.isSelectable()) return;
                 newDate = datePart.getDateFromString(newDate, val);
             });
-            update(newDate);
-            pasting = false;
+            this.update(newDate);
+            this.pasting = false;
         });
     }
     
-    function keydown(e:KeyboardEvent):void {
+    private keydown = (e:KeyboardEvent):void => {
         if ((e.keyCode === KeyCodes.HOME || e.keyCode === KeyCodes.END) && e.shiftKey) return;
         if (e.keyCode === KeyCodes.C && e.ctrlKey) return;
         if (e.keyCode === KeyCodes.A && e.ctrlKey) return;
@@ -150,122 +151,121 @@ let DatepickerInput = (() => {
         if ((e.keyCode === KeyCodes.LEFT || e.keyCode === KeyCodes.RIGHT) && e.shiftKey) return;
 
         if (e.keyCode === KeyCodes.HOME) {
-            selectedIndex = getFirstSelectable();
-            update();
+            this.selectedIndex = this.getFirstSelectable();
+            this.update();
             e.preventDefault();
         } else if (e.keyCode === KeyCodes.END) {
-            selectedIndex = getLastSelectable();
-            update();
+            this.selectedIndex = this.getLastSelectable();
+            this.update();
             e.preventDefault();
         } else if (e.keyCode === KeyCodes.LEFT) {
-            selectedIndex = getPreviousSelectable();
-            update();
+            this.selectedIndex = this.getPreviousSelectable();
+            this.update();
             e.preventDefault();
         } else if (e.shiftKey && e.keyCode === KeyCodes.TAB) {
-            let previousSelectable = getPreviousSelectable();
-            if (previousSelectable !== selectedIndex) {
-                selectedIndex = previousSelectable;
-                update();
+            let previousSelectable = this.getPreviousSelectable();
+            if (previousSelectable !== this.selectedIndex) {
+                this.selectedIndex = previousSelectable;
+                this.update();
                 e.preventDefault();
             }
         } else if (e.keyCode === KeyCodes.RIGHT) {
-            selectedIndex = getNextSelectable();
-            update();
+            this.selectedIndex = this.getNextSelectable();
+            this.update();
             e.preventDefault();
         } else if (e.keyCode === KeyCodes.TAB) {
-            let nextSelectable = getNextSelectable();
-            if (nextSelectable !== selectedIndex) {
-                selectedIndex = nextSelectable;
-                update();
+            let nextSelectable = this.getNextSelectable();
+            if (nextSelectable !== this.selectedIndex) {
+                this.selectedIndex = nextSelectable;
+                this.update();
                 e.preventDefault();
             }
         } else if (e.keyCode === KeyCodes.UP) {
-            let newDate = dateParts[selectedIndex].increment(curDate);
-            update(newDate);
+            let newDate = this.dateParts[this.selectedIndex].increment(this.curDate);
+            this.update(newDate);
             e.preventDefault();
         } else if (e.keyCode === KeyCodes.DOWN) {
-            let newDate = dateParts[selectedIndex].decrement(curDate);
-            update(newDate);
+            let newDate = this.dateParts[this.selectedIndex].decrement(this.curDate);
+            this.update(newDate);
             e.preventDefault();
         } else {
             e.preventDefault();
         }
 
         let keyPressed = (<any>{
-            '48': '0', '96': '0', '49': '1', '97': '1',
-            '50': '2', '98': '2', '51': '3', '99': '3',
-            '52': '4', '100': '4', '53': '5', '101': '5',
-            '54': '6', '102': '6', '55': '7', '103': '7',
-            '56': '8', '104': '8', '57': '9', '105': '9',
-            '65': 'a', '66': 'b', '67': 'c', '68': 'd',
-            '69': 'e', '70': 'f', '71': 'g', '72': 'h',
-            '73': 'i', '74': 'j', '75': 'k', '76': 'l',
-            '77': 'm', '78': 'n', '79': 'o', '80': 'p',
-            '81': 'q', '82': 'r', '83': 's', '84': 't',
-            '85': 'u', '86': 'v', '87': 'w', '88': 'x',
-            '89': 'y', '90': 'z'
+            "48": "0", "96": "0", "49": "1", "97": "1",
+            "50": "2", "98": "2", "51": "3", "99": "3",
+            "52": "4", "100": "4", "53": "5", "101": "5",
+            "54": "6", "102": "6", "55": "7", "103": "7",
+            "56": "8", "104": "8", "57": "9", "105": "9",
+            "65": "a", "66": "b", "67": "c", "68": "d",
+            "69": "e", "70": "f", "71": "g", "72": "h",
+            "73": "i", "74": "j", "75": "k", "76": "l",
+            "77": "m", "78": "n", "79": "o", "80": "p",
+            "81": "q", "82": "r", "83": "s", "84": "t",
+            "85": "u", "86": "v", "87": "w", "88": "x",
+            "89": "y", "90": "z"
         })[e.keyCode];
 
         if (e.keyCode === KeyCodes.BACKSPACE) {
-            backspace();
+            this.backspace();
         } else if (keyPressed !== void 0) {
-            textBuffer += keyPressed;
+            this.textBuffer += keyPressed;
         } else if (!e.shiftKey) {
-            textBuffer = '';
+            this.textBuffer = "";
         }
 
-        if (textBuffer.length > 0) {
-            let orig = curDate.valueOf();
-            let result = dateParts[selectedIndex].getDateFromString(curDate, textBuffer);
-            if (result !== void 0 && dateParts[selectedIndex].getMaxBufferSize(result) !== void 0 && textBuffer.length >= dateParts[selectedIndex].getMaxBufferSize(result)) {
-                selectedIndex = getNextSelectable();
+        if (this.textBuffer.length > 0) {
+            let orig = this.curDate.valueOf();
+            let result = this.dateParts[this.selectedIndex].getDateFromString(this.curDate, this.textBuffer);
+            if (result !== void 0 && this.dateParts[this.selectedIndex].getMaxBufferSize(result) !== void 0 && this.textBuffer.length >= this.dateParts[this.selectedIndex].getMaxBufferSize(result)) {
+                this.selectedIndex = this.getNextSelectable();
             }
             if (result === void 0) {
-                textBuffer = textBuffer.slice(0, textBuffer.length - 1);
+                this.textBuffer = this.textBuffer.slice(0, this.textBuffer.length - 1);
             } else {
-                update(result);
+                this.update(result);
             }
         }
     }
     
     
-    function backspace():void {
-        if (textBuffer.length < 2) {
-            let orig = curDate.valueOf();
-            let result = dateParts[selectedIndex].getDateFromString(curDate, 'ZERO_OUT');
+    private backspace = () => {
+        if (this.textBuffer.length < 2) {
+            let orig = this.curDate.valueOf();
+            let result = this.dateParts[this.selectedIndex].getDateFromString(this.curDate, "ZERO_OUT");
             if (result.valueOf() !== orig) {
-                update(result);
+                this.update(result);
             }
         }
-        textBuffer = textBuffer.slice(0, textBuffer.length - 1);
+        this.textBuffer = this.textBuffer.slice(0, this.textBuffer.length - 1);
     }
 
-    function getPreviousSelectable():number {
-        let index = selectedIndex;
+    private getPreviousSelectable = ():number => {
+        let index = this.selectedIndex;
         while (--index >= 0) {
-            if (dateParts[index].isSelectable()) return index;
+            if (this.dateParts[index].isSelectable()) return index;
         }
-        return selectedIndex;
+        return this.selectedIndex;
     }
 
-    function getNextSelectable():number {
-        let index = selectedIndex;
-        while (++index < dateParts.length) {
-            if (dateParts[index].isSelectable()) return index;
+    private getNextSelectable = ():number => {
+        let index = this.selectedIndex;
+        while (++index < this.dateParts.length) {
+            if (this.dateParts[index].isSelectable()) return index;
         }
-        return selectedIndex;
+        return this.selectedIndex;
     }
 
-    let selecting:boolean = false;
 
-    function getNearestSelectableIndex(caretPosition:number):number {
+    private getNearestSelectableIndex = (caretPosition:number):number => {
         let pos = 0;
         let nearestSelectableIndex:number;
         let nearestSelectableDistance:number;
-        for (let i = 0; i < dateParts.length; i++) {
-            if (dateParts[i].isSelectable()) {
+        for (let i = 0; i < this.dateParts.length; i++) {
+            if (this.dateParts[i].isSelectable()) {
                 let fromLeft = caretPosition - pos;
-                let fromRight = caretPosition - (pos + dateParts[i].toString().length);
+                let fromRight = caretPosition - (pos + this.dateParts[i].toString().length);
                 if (fromLeft > 0 && fromRight < 0) return i;
                 let dist = Math.min(Math.abs(fromLeft), Math.abs(fromRight));
                 if (nearestSelectableIndex == void 0 || dist <= nearestSelectableDistance) {
@@ -273,86 +273,72 @@ let DatepickerInput = (() => {
                     nearestSelectableDistance = dist;
                 }
             }
-            pos += dateParts[i].toString().length;
+            pos += this.dateParts[i].toString().length;
         }
         return nearestSelectableIndex;
     }
 
-    function focus():void {
-        if (tabDown) {
-            selectedIndex = getFirstSelectable();
+    private focus = ():void => {
+        if (this.tabDown) {
+            this.selectedIndex = this.getFirstSelectable();
             setTimeout(() => {
-               update();
+               this.update();
             });
-        } else if (shiftTabDown) {
-            selectedIndex = getLastSelectable();
+        } else if (this.shiftTabDown) {
+            this.selectedIndex = this.getLastSelectable();
             setTimeout(() => {
-               update();
+               this.update();
             });
         }
     }
 
-    function getFirstSelectable():number {
-        for (let i = 0; i < dateParts.length; i++) {
-            if (dateParts[i].isSelectable()) return i;
+    private getFirstSelectable = ():number => {
+        for (let i = 0; i < this.dateParts.length; i++) {
+            if (this.dateParts[i].isSelectable()) return i;
         }
         return void 0;
     }
 
-    function getLastSelectable():number {
-        for (let i = dateParts.length - 1; i >= 0; i--) {
-            if (dateParts[i].isSelectable()) return i;
+    private getLastSelectable= ():number => {
+        for (let i = this.dateParts.length - 1; i >= 0; i--) {
+            if (this.dateParts[i].isSelectable()) return i;
         }
         return void 0;
     }
 
 
-    let lastSelectedIndex:number;
+    private lastSelectedIndex:number;
 
     /**
      * @param {Date=} date (optional).
      */
-    function update(date?:Date):void {
-        if (date === void 0) date = curDate;
-        if (minDate !== void 0 && date.valueOf() < minDate.valueOf()) date = new Date(minDate.valueOf());
-        if (maxDate !== void 0 && date.valueOf() < maxDate.valueOf()) date = new Date(maxDate.valueOf());
-        if (selectedIndex !== lastSelectedIndex) {
-            textBuffer = '';
+    private update = (date?:Date):void => {
+        if (date === void 0) date = this.curDate;
+        if (this.minDate !== void 0 && date.valueOf() < this.minDate.valueOf()) date = new Date(this.minDate.valueOf());
+        if (this.maxDate !== void 0 && date.valueOf() < this.maxDate.valueOf()) date = new Date(this.maxDate.valueOf());
+        if (this.selectedIndex !== this.lastSelectedIndex) {
+            this.textBuffer = "";
         }
-        lastSelectedIndex = selectedIndex;
+        this.lastSelectedIndex = this.selectedIndex;
 
-        curDate = new Date(date.valueOf());
-        let dateString = '';
+        this.curDate = new Date(date.valueOf());
+        let dateString = "";
 
-        dateParts.forEach((datePart) => {
+        this.dateParts.forEach((datePart) => {
             dateString += datePart.setValue(date).toString();
         });
 
-        element.value = dateString;
-        updateSelection();
+        this.element.value = dateString;
+        this.updateSelection();
     }
 
-    function updateSelection():void {
-        if (selectedIndex === void 0 || document.activeElement !== element) return;
+    private updateSelection = ():void => {
+        if (this.selectedIndex === void 0 || document.activeElement !== this.element) return;
         let start = 0;
-        for (let i = 0; i < selectedIndex; i++) {
-            start += dateParts[i].toString().length;
+        for (let i = 0; i < this.selectedIndex; i++) {
+            start += this.dateParts[i].toString().length;
         }
-        let end = start + dateParts[selectedIndex].toString().length;
-        element.setSelectionRange(start, end);
+        let end = start + this.dateParts[this.selectedIndex].toString().length;
+        this.element.setSelectionRange(start, end);
     }
-    
-    return class {
-        constructor(el:HTMLInputElement, dispAs:string, private min?:Date, private max?:Date) {
-            element = el;
-            displayAs = dispAs;
-            minDate = min;
-            maxDate = max;
-            dateParts = DisplayParser.parse(dispAs);
-            dateStringRegExp = concatRegExp(dateParts);
-            bindEvents();
-            element.setAttribute('spellcheck', 'false');
-            update(new Date());
-        }
-    }
-})();
+}

@@ -3,15 +3,34 @@
         <title>Datium Production</title>
         <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
-        <!-- Start Production Code -->
+        
         <script src="datium.js"></script>
-        <!-- End Production Code -->
+        
+        <style>
+            input {
+                display: block;
+                margin-bottom: 5px;
+                width: 600px;
+                padding: 10px;
+            }
+        </style>
     </head>
     <body>
-        <input id="test-input"/>
+        <input id="test1"/>
+        <input id="test2"/>
+        <input id="test3"/>
         <script>
             new Datium({
-                element: document.querySelector('#test-input') 
+                element: document.querySelector('#test1'),
+                displayAs: '[YYYY] YYYY, [YY] YY, [MMMM] MMMM, [MMM] MMM, [MM] MM, [M] M, [DD] DD, [Do] Do'
+            });
+            new Datium({
+                element: document.querySelector('#test2'),
+                displayAs: '[D] D, [dddd] dddd, [ddd] ddd, [X] X, [x] x, [HH] HH, [H] H'
+            });
+            new Datium({
+                element: document.querySelector('#test3'),
+                displayAs: '[hh] hh, [h] h, [A] A, [a] a, [mm] mm, [m] m, [ss] ss, [s] s, [ZZ] Z, [Z] Z'
             });
         </script>
     </body>

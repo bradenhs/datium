@@ -11,17 +11,17 @@ interface IFormatBlock {
 
 let formatBlocks:IFormatBlock[] = (function() {
     
-    const monthNames:string[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    const dayNames:string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const monthNames:string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const dayNames:string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     function setSeconds(d:Date, seconds:string|number):Date {
         let num:number;
-        if (seconds === 'ZERO_OUT') {
+        if (seconds === "ZERO_OUT") {
             d.setSeconds(0);
             return d;
-        } else if (typeof seconds === 'string' && /^\d+$/.test(seconds)) {
+        } else if (typeof seconds === "string" && /^\d+$/.test(seconds)) {
             num = parseInt(<string>seconds, 10);
-        } else if (typeof seconds === 'number') {
+        } else if (typeof seconds === "number") {
             num = seconds;
         } else {
             d = void 0;
@@ -47,12 +47,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setMinutes(d:Date, minutes:string|number):Date {
         let num:number;
-        if (minutes === 'ZERO_OUT') {
+        if (minutes === "ZERO_OUT") {
             d.setMinutes(0);
             return d;
-        } else if (typeof minutes === 'string' && /^\d+$/.test(minutes)) {
+        } else if (typeof minutes === "string" && /^\d+$/.test(minutes)) {
             num = parseInt(<string>minutes, 10);
-        } else if (typeof minutes === 'number') {
+        } else if (typeof minutes === "number") {
             num = minutes;
         } else {
             d = void 0;
@@ -78,14 +78,14 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setHours(d:Date, hours:string|number):Date {
         let num:number;
-        let meridiem = d.getHours() > 11 ? 'PM' : 'AM';
+        let meridiem = d.getHours() > 11 ? "PM" : "AM";
         
-        if (hours === 'ZERO_OUT') {
-            d.setHours(meridiem === 'AM' ? 0 : 12);
+        if (hours === "ZERO_OUT") {
+            d.setHours(meridiem === "AM" ? 0 : 12);
             return d;
-        } else if (typeof hours === 'string' && /^\d+$/.test(hours)) {
+        } else if (typeof hours === "string" && /^\d+$/.test(hours)) {
             num = parseInt(<string>hours, 10);
-        } else if (typeof hours === 'number') {
+        } else if (typeof hours === "number") {
             num = hours;
         } else {
             d = void 0;
@@ -97,10 +97,10 @@ let formatBlocks:IFormatBlock[] = (function() {
             return d;
         }
         
-        if (num === 12 && meridiem === 'AM') {
+        if (num === 12 && meridiem === "AM") {
             num = 0;
         }
-        if (num !== 12 && meridiem === 'PM') {
+        if (num !== 12 && meridiem === "PM") {
             num += 12;
         }
         d.setHours(num);
@@ -119,12 +119,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setMilitaryHours(d:Date, hours:string|number):Date {
         let num:number;
-        if (hours === 'ZERO_OUT') {
+        if (hours === "ZERO_OUT") {
             d.setHours(0);
             return d;
-        } else if (typeof hours === 'string' && /^\d+$/.test(hours)) {
+        } else if (typeof hours === "string" && /^\d+$/.test(hours)) {
             num = parseInt(<string>hours, 10);
-        } else if (typeof hours === 'number') {
+        } else if (typeof hours === "number") {
             num = hours;
         } else {
             d = void 0;
@@ -147,12 +147,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setDate(d:Date, date:string|number):Date {
         let num:number;
-        if (date === 'ZERO_OUT') {
+        if (date === "ZERO_OUT") {
             d.setDate(1);
             return d;
-        } else if (typeof date === 'string' && /\d{1,2}.*$/.test(date)) {
+        } else if (typeof date === "string" && /\d{1,2}.*$/.test(date)) {
             num = parseInt(<string>date, 10);
-        } else if  (typeof date === 'number') {
+        } else if  (typeof date === "number") {
             num = date;
         } else {
             d = void 0;
@@ -179,12 +179,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setDay(d:Date, day:string|number):Date {
         let num:number;
-        if (day === 'ZERO_OUT') {
+        if (day === "ZERO_OUT") {
             return setDay(d, 0);
-        } else if (typeof day === 'number') {
+        } else if (typeof day === "number") {
             num = day;
-        } else if (typeof day === 'string' && dayNames.some((dayName) => {
-            if (new RegExp(`^${day}.*$`, 'i').test(dayName)) {
+        } else if (typeof day === "string" && dayNames.some((dayName) => {
+            if (new RegExp(`^${day}.*$`, "i").test(dayName)) {
                 num = dayNames.indexOf(dayName);
                 return true;
             }
@@ -216,12 +216,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setMonth(d:Date, month:string|number):Date {
         let num:number;
-        if (month === 'ZERO_OUT') {
+        if (month === "ZERO_OUT") {
             d.setMonth(0);
             return d;
-        } else if (typeof month === 'string' && /^\d+$/.test(month)) {
+        } else if (typeof month === "string" && /^\d+$/.test(month)) {
             num = parseInt(month, 10);
-        } else if (typeof month === 'number') {
+        } else if (typeof month === "number") {
             num = month;
         } else {
             d = void 0;
@@ -240,22 +240,22 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function incMonth(d:Date):Date {
         let n = d.getMonth() + 2;
-        return setDay(d, n > 12 ? 1 : n);
+        return setMonth(d, n > 12 ? 1 : n);
     }
     
     function decMonth(d:Date):Date {
         let n = d.getMonth();
-        return setDay(d, n < 1 ? 12 : n);
+        return setMonth(d, n < 1 ? 12 : n);
     }
     
     function setMonthString(d:Date, month:string|number):Date {
         let num:number;
         
-        if (month === 'ZERO_OUT') {
+        if (month === "ZERO_OUT") {
             d.setMonth(0);
             return d;
-        } else if (typeof month === 'string' && monthNames.some((monthName) => {
-            if (new RegExp(`^${month}.*$`, 'i').test(monthName)) {
+        } else if (typeof month === "string" && monthNames.some((monthName) => {
+            if (new RegExp(`^${month}.*$`, "i").test(monthName)) {
                 num = monthNames.indexOf(monthName) + 1;
                 return true;
             }
@@ -276,12 +276,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setYear(d:Date, year:string|number):Date {
         let num:number;
-        if (year === 'ZERO_OUT') {
+        if (year === "ZERO_OUT") {
             d.setFullYear(0);
             return d;
-        } else if (typeof year === 'string' && /^\d+$/.test(year)) {
+        } else if (typeof year === "string" && /^\d+$/.test(year)) {
             num = parseInt(year, 10);
-        } else if (typeof year === 'number') {
+        } else if (typeof year === "number") {
             num = year;
         } else {
             d = void 0;
@@ -294,12 +294,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     function setTwoDigitYear(d:Date, year:string|number):Date {
         let base = Math.floor(d.getFullYear()/100)*100;
         let num:number;
-        if (year === 'ZERO_OUT') {
+        if (year === "ZERO_OUT") {
             d.setFullYear(base);
             return d;
-        } else if (typeof year === 'string' && /^\d+$/.test(year)) {
+        } else if (typeof year === "string" && /^\d+$/.test(year)) {
             num = parseInt(year, 10);
-        } else if (typeof year === 'number') {
+        } else if (typeof year === "number") {
             num = year;
         } else {
             d = void 0;
@@ -311,12 +311,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setUnixSecondTimestamp(d:Date, seconds:string|number):Date {
         let num:number;
-        if (seconds === 'ZERO_OUT') {
+        if (seconds === "ZERO_OUT") {
             d = new Date(0);
             return d;
-        } else if (typeof seconds === 'string' && /^\d+$/.test(seconds)) {
+        } else if (typeof seconds === "string" && /^\d+$/.test(seconds)) {
             num = parseInt(seconds, 10);
-        } else if (typeof seconds === 'number') {
+        } else if (typeof seconds === "number") {
             num = seconds;
         } else {
             d = void 0;
@@ -328,12 +328,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setUnixMillisecondTimestamp(d:Date, milliseconds:string|number):Date {
         let num:number;
-        if (milliseconds === 'ZERO_OUT') {
+        if (milliseconds === "ZERO_OUT") {
             d = new Date(0);
             return d;
-        } else if (typeof milliseconds === 'string' && /^\d+$/.test(milliseconds)) {
+        } else if (typeof milliseconds === "string" && /^\d+$/.test(milliseconds)) {
             num = parseInt(milliseconds, 10);
-        } else if (typeof milliseconds === 'number') {
+        } else if (typeof milliseconds === "number") {
             num = milliseconds;
         } else {
             d = void 0;
@@ -345,10 +345,10 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function setMeridiem(d:Date, meridiem:string|number):Date {
         let hours = d.getHours();
-        if (meridiem === 'ZERO_OUT') return d;
-        if (typeof meridiem === 'string' && /^am?$/i.test(<string>meridiem)) {
+        if (meridiem === "ZERO_OUT") return d;
+        if (typeof meridiem === "string" && /^am?$/i.test(<string>meridiem)) {
             hours -= 12;
-        } else if (typeof meridiem === 'string' && /^pm?$/i.test(<string>meridiem)) {
+        } else if (typeof meridiem === "string" && /^pm?$/i.test(<string>meridiem)) {
             hours += 12;
         } else {
             d = void 0;
@@ -425,14 +425,14 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function getUTCOffset(date:Date, showColon:boolean):string {
         let tzo = -date.getTimezoneOffset();
-        let dif = tzo >= 0 ? '+' : '-';
-        let colon = showColon ? ':' : '';
+        let dif = tzo >= 0 ? "+" : "-";
+        let colon = showColon ? ":" : "";
         return dif + pad(tzo / 60, 2) + colon + pad(tzo % 60, 2);
     }
 
     function pad(num:number, length:number):string {
         let padded = Math.abs(num).toString();
-        while (padded.length < length) padded = '0' + padded;
+        while (padded.length < length) padded = "0" + padded;
         return padded;
     }
 
@@ -452,8 +452,8 @@ let formatBlocks:IFormatBlock[] = (function() {
         
     return <IFormatBlock[]> [
         { // FOUR DIGIT YEAR
-            code: 'YYYY',
-            regExp: '\\d{4,4}',
+            code: "YYYY",
+            regExp: "\\d{4,4}",
             str: (d) => d.getFullYear().toString(),
             inc: (d) => setYear(d, d.getFullYear() + 1),
             dec: (d) => setYear(d, d.getFullYear() - 1),
@@ -461,8 +461,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => 4
         },
         { // TWO DIGIT YEAR
-            code: 'YY',
-            regExp: '\\d{2,2}',
+            code: "YY",
+            regExp: "\\d{2,2}",
             str: (d) => d.getFullYear().toString().slice(-2),
             inc: (d) => setYear(d, d.getFullYear() + 1),
             dec: (d) => setYear(d, d.getFullYear() - 1),
@@ -470,8 +470,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => 2
         },
         { // LONG MONTH NAME
-            code: 'MMMM',
-            regExp: `((${monthNames.join(')|(')}))`,
+            code: "MMMM",
+            regExp: `((${monthNames.join(")|(")}))`,
             str: (d) => monthNames[d.getMonth()],
             inc: (d) => incMonth(d),
             dec: (d) => decMonth(d),
@@ -479,8 +479,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxMonthStringBuffer(d)
         },
         { // SHORT MONTH NAME
-            code: 'MMM',
-            regExp: `((${monthNames.map((v) => v.slice(0,3)).join(')|(')}))`,
+            code: "MMM",
+            regExp: `((${monthNames.map((v) => v.slice(0,3)).join(")|(")}))`,
             str: (d) => monthNames[d.getMonth()].slice(0,3),
             inc: (d) => incMonth(d),
             dec: (d) => decMonth(d),
@@ -488,8 +488,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxMonthStringBuffer(d)
         },
         { // PADDED MONTH
-            code: 'MM',
-            regExp: '\\d{2,2}',
+            code: "MM",
+            regExp: "\\d{2,2}",
             str: (d) => pad(d.getMonth() + 1, 2),
             inc: (d) => incMonth(d),
             dec: (d) => decMonth(d),
@@ -497,8 +497,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxMonthBuffer(d)
         },
         { // MONTH
-            code: 'M',
-            regExp: '\\d{1,2}',
+            code: "M",
+            regExp: "\\d{1,2}",
             str: (d) => (d.getMonth() + 1).toString(),
             inc: (d) => incMonth(d),
             dec: (d) => decMonth(d),
@@ -506,8 +506,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxMonthBuffer(d)
         },
         { // PADDED DATE
-            code: 'DD',
-            regExp: '\\d{2,2}',
+            code: "DD",
+            regExp: "\\d{2,2}",
             str: (d) => pad(d.getDate(), 2),
             inc: (d) => incDate(d),
             dec: (d) => decDate(d),
@@ -515,8 +515,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxDateBuffer(d)
         },
         { // ORDINAL DATE
-            code: 'Do',
-            regExp: '\\d{1,2}((th)|(nd)|(rd)|(st))',
+            code: "Do",
+            regExp: "\\d{1,2}((th)|(nd)|(rd)|(st))",
             str: (d) => appendOrdinal(d.getDate()),
             inc: (d) => incDate(d),
             dec: (d) => decDate(d),
@@ -524,8 +524,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxDateBuffer(d)
         },
         { // DATE
-            code: 'D',
-            regExp: '\\d{1,2}',
+            code: "D",
+            regExp: "\\d{1,2}",
             str: (d) => d.getDate().toString(),
             inc: (d) => incDate(d),
             dec: (d) => decDate(d),
@@ -533,8 +533,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxDateBuffer(d)
         },
         { // LONG DAY NAME
-            code: 'dddd',
-            regExp: `((${dayNames.join(')|(')}))`,
+            code: "dddd",
+            regExp: `((${dayNames.join(")|(")}))`,
             str: (d) => dayNames[d.getDay()],
             inc: (d) => incDay(d),
             dec: (d) => decDay(d),
@@ -542,8 +542,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxDayStringBuffer(d)
         },
         { // SHORT DAY NAME
-            code: 'ddd',
-            regExp: `((${dayNames.map((v) => v.slice(0,3)).join(')|(')}))`,
+            code: "ddd",
+            regExp: `((${dayNames.map((v) => v.slice(0,3)).join(")|(")}))`,
             str: (d) => dayNames[d.getDay()].slice(0,3),
             inc: (d) => incDay(d),
             dec: (d) => decDay(d),
@@ -551,24 +551,24 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxDayStringBuffer(d)
         },
         { // UNIX TIMESTAMP
-            code: 'X',
-            regExp: '\\d{1,}',
+            code: "X",
+            regExp: "\\d{1,}",
             str: (d) => Math.floor(d.valueOf() / 1000).toString(),
             inc: (d) => new Date(d.valueOf() + 1000),
             dec: (d) => new Date(d.valueOf() - 1000),
             set: (d, v) => setUnixSecondTimestamp(d, v)
         },
         { // UNIX MILLISECOND TIMESTAMP
-            code: 'x',
-            regExp: '\\d{1,}',
+            code: "x",
+            regExp: "\\d{1,}",
             str: (d) => d.valueOf().toString(),
             inc: (d) => new Date(d.valueOf() + 1),
             dec: (d) => new Date(d.valueOf() - 1),
             set: (d, v) => setUnixMillisecondTimestamp(d, v)
         },
         { // PADDED MILITARY HOURS
-            code: 'HH',
-            regExp: '\\d{2,2}',
+            code: "HH",
+            regExp: "\\d{2,2}",
             str: (d) => pad(d.getHours(), 2),
             inc: (d) => incHours(d),
             dec: (d) => decHours(d),
@@ -576,8 +576,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxMilitaryHoursBuffer(d)
         },
         { // MILITARY HOURS
-            code: 'H',
-            regExp: '\\d{1,2}',
+            code: "H",
+            regExp: "\\d{1,2}",
             str: (d) => d.getHours().toString(),
             inc: (d) => incHours(d),
             dec: (d) => decHours(d),
@@ -585,8 +585,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxMilitaryHoursBuffer(d)
         },
         { // PADDED HOURS
-            code: 'hh',
-            regExp: '\\d{2,2}',
+            code: "hh",
+            regExp: "\\d{2,2}",
             str: (d) => pad(toStandardTime(d.getHours()), 2),
             inc: (d) => incHours(d),
             dec: (d) => decHours(d),
@@ -594,8 +594,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxHoursBuffer(d)
         },
         { // HOURS
-            code: 'h',
-            regExp: '\\d{1,2}',
+            code: "h",
+            regExp: "\\d{1,2}",
             str: (d) => toStandardTime(d.getHours()).toString(),
             inc: (d) => incHours(d),
             dec: (d) => decHours(d),
@@ -603,26 +603,26 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxHoursBuffer(d)
         },
         { // UPPERCASE MERIDIEM
-            code: 'A',
-            regExp: '((AM)|(PM))',
-            str: (d) => d.getHours() < 12 ? 'AM' : 'PM',
+            code: "A",
+            regExp: "((AM)|(PM))",
+            str: (d) => d.getHours() < 12 ? "AM" : "PM",
             inc: (d) => incMeridiem(d),
             dec: (d) => decMeridiem(d),
             set: (d, v) => setMeridiem(d, v),
             maxBuffer: (d) => 1
         },
         { // UPPERCASE MERIDIEM
-            code: 'a',
-            regExp: '((am)|(pm))',
-            str: (d) => d.getHours() < 12 ? 'am' : 'pm',
+            code: "a",
+            regExp: "((am)|(pm))",
+            str: (d) => d.getHours() < 12 ? "am" : "pm",
             inc: (d) => incMeridiem(d),
             dec: (d) => decMeridiem(d),
             set: (d, v) => setMeridiem(d, v),
             maxBuffer: (d) => 1
         },
         { // PADDED MINUTES
-            code: 'mm',
-            regExp: '\\d{2,2}',
+            code: "mm",
+            regExp: "\\d{2,2}",
             str: (d) => pad(d.getMinutes(), 2),
             inc: (d) => incMinutes(d),
             dec: (d) => decMinutes(d),
@@ -630,8 +630,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxMinutesBuffer(d)
         },
         { // MINUTES
-            code: 'm',
-            regExp: '\\d{1,2}',
+            code: "m",
+            regExp: "\\d{1,2}",
             str: (d) => d.getMinutes().toString(),
             inc: (d) => incMinutes(d),
             dec: (d) => decMinutes(d),
@@ -639,8 +639,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxMinutesBuffer(d)
         },
         { // PADDED SECONDS
-            code: 'ss',
-            regExp: '\\d{2,2}',
+            code: "ss",
+            regExp: "\\d{2,2}",
             str: (d) => pad(d.getSeconds(), 2),
             inc: (d) => incSeconds(d),
             dec: (d) => decSeconds(d),
@@ -648,8 +648,8 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxSecondsBuffer(d)
         },
         { // SECONDS
-            code: 's',
-            regExp: '\\d{1,2}',
+            code: "s",
+            regExp: "\\d{1,2}",
             str: (d) => d.getSeconds().toString(),
             inc: (d) => incSeconds(d),
             dec: (d) => decSeconds(d),
@@ -657,13 +657,13 @@ let formatBlocks:IFormatBlock[] = (function() {
             maxBuffer: (d) => maxSecondsBuffer(d)
         },
         { // UTC OFFSET WITH COLON
-            code: 'ZZ',
-            regExp: '(\\+|\\-)\\d{2,2}:\\d{2,2}',
+            code: "ZZ",
+            regExp: "(\\+|\\-)\\d{2,2}:\\d{2,2}",
             str: (d) => getUTCOffset(d, true) //TODO add ability to inc and dec this
         },
         { // UTC OFFSET
-            code: 'Z',
-            regExp: '(\\+|\\-)\\d{4,4}',
+            code: "Z",
+            regExp: "(\\+|\\-)\\d{4,4}",
             str: (d) => getUTCOffset(d, false)
         }
     ];
