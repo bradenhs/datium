@@ -5,6 +5,7 @@
 (<any>window)["Datium"] = class Datium {
     constructor(opts:IOptions) {
         new DatepickerInput(opts['element'], opts['displayAs']);
+        
     }
 }
 
