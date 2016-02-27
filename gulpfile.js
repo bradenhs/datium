@@ -58,23 +58,49 @@ function findAt(str, index, search) {
     return str.slice(index, index + search.length) === search;
 }
 
-var OPTIMIZE = true;
+var OBFUSCATE = true;
 
-function optimize(fileContents) {
+function obfuscate(fileContents) {
     fileContents = fileContents.replace(/\n/g, '');
-    fileContents = fileContents.replace(/\\/g, '\\\\');
-    if (!OPTIMIZE) return fileContents;
-    var map = [];
-    map['}},{code:"'] = '@';
-    map['function'] = '`';
-    map['return'] = '~';
     
-    var reverseOps = '';
+    if (!OBFUSCATE) return fileContents;
+    
+    fileContents = fileContents.replace(/\\/g, '\\\\');
+    
+    var strs = ['function', 'return', '.valueOf()', '.preventDefault()',
+        'b.selectedIndex=', 'b.element.', '.getHours()', 'addEventListener("',
+        '}},{code:"', ',10);else if("number"===typeof ', ';document.',
+        '),a;if("string"===typeof ', 'new Date(', 'if("ZERO_OUT"===b',
+        '.getFullYear()', '=parseInt(', 'a.getMonth()', 'a.getDay()',
+        'b.selectedIndex', 'if("string"', 'a.getSeconds()', '===typeof ',
+        '.getDate()', 'this.', '==c.keyCode', 'selectionStart', 
+        '.toString()', '.slice(', 'value', 'update(', 'selectionEnd',
+        '.getMinutes()', '.test(', 'Math.', '.setFullYear(', '.setHours(',
+        'var ', '"ZERO_OUT"', ';else', 'removeEventListener("',
+        '.setMonth(', '.length', 'set', 'void 0', 'Date(', 'new ',
+        '.join(")|(")+"))",a:', 'code', '===', '(a){', '(h.clone(f)',
+        'Timeout(', 'd{2,2}",a:', 'if(', 'day ', '))', '".split(" ")',
+        ')}}', ',f:"', '",a:', '},c:', '(a)},b:', ')},', 'element',
+        '"AM"', 'ember', '(a,b)},g:', 'for(', '(){', 'c.shiftKey',
+        '(a,', '(b)', '(c)', ';break a}', '||', 'b)', 'd{1,2}',
+        '((', 'b&&', 'c.push', ')};', '<a', ':"', '",'];
+    
+    var map = [];
+    var code = 162;
+    strs.forEach(function(str) {
+       map[str] = String.fromCharCode(code++); 
+    });
+    var keys = '';
+    var values = '';
+    var l = 0;
     for (var key in map) {
         fileContents = fileContents.replace(new RegExp(escapeRegExp(key), "g"), map[key]);
-        reverseOps += '.r(/'+map[key]+'/g,"'+escapeString(key)+'")';
+        keys += map[key];
+        values += escapeString(key)+'¡';
+        l++;
     }
-    return "String.prototype.r=String.prototype.replace;eval('"+fileContents+"'"+ reverseOps +");";
+    values = values.slice(0, -1);
+    return "(function(s,i){while(i<"+l+")s=s.replace(new RegExp('"+keys+"'[i],'g'),'"+values+"'.split('¡')[i++]);eval(s)})('"+fileContents+"',0)";
 }
 
 function escapeString(str) {
@@ -96,7 +122,7 @@ function closure() {
             }
         }))
         .pipe(through.obj(function (file, enc, cb) { // weird optimization
-            var result = optimize(file.contents.toString());
+            var result = obfuscate(file.contents.toString());
             file.contents = new Buffer(result);
             console.log('Compressed size: ', gzipSize.sync(file.contents)/1000+'kb');
             cb(null, file);

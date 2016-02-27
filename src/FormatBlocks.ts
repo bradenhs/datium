@@ -109,12 +109,12 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function incHours(d:Date):Date {
         let n = d.getHours() + 1;
-        return setHours(d, n > 23 ? 0 : n);
+        return setMilitaryHours(d, n > 23 ? 0 : n);
     }
     
     function decHours(d:Date):Date {
         let n = d.getHours() - 1;
-        return setHours(d, n < 0 ? 23 : n);
+        return setMilitaryHours(d, n < 0 ? 23 : n);
     }
     
     function setMilitaryHours(d:Date, hours:string|number):Date {
@@ -174,7 +174,7 @@ let formatBlocks:IFormatBlock[] = (function() {
     
     function decDate(d:Date):Date {
         let n = d.getDate() - 1;
-        return setDate(d, n < 0 ? daysInMonth(d) : n);
+        return setDate(d, n < 1 ? daysInMonth(d) : n);
     }
     
     function setDay(d:Date, day:string|number):Date {
@@ -357,18 +357,17 @@ let formatBlocks:IFormatBlock[] = (function() {
         if (hours < 0 || hours > 23) {
             return d;
         }
-        d.setHours(hours);
-        return d;
+        return setMilitaryHours(d, hours);
     }
     
     function incMeridiem(d:Date):Date {
         let n = d.getHours() + 12;
-        return setHours(d, n > 23 ? n - 24 : n);
+        return setMilitaryHours(d, n > 23 ? n - 24 : n);
     }
     
     function decMeridiem(d:Date):Date {
         let n = d.getHours() - 12;
-        return setHours(d, n < 0 ? n + 24 : n);
+        return setMilitaryHours(d, n < 0 ? n + 24 : n);
     }
     
     function daysInMonth(d:Date):number {

@@ -1,6 +1,7 @@
 /// <reference path="FormatBlocks.ts" />
 /// <reference path="DatePart.ts" />
 /// <reference path="DisplayParser.ts" />
+/// <reference path="MouseEvents.ts" />
 
 (<any>window)["Datium"] = class Datium {
     constructor(opts:IOptions) {
@@ -17,7 +18,7 @@ const enum KeyCodes {
 
 class DatepickerInput {
     
-    private selectedIndex:number;
+    public selectedIndex:number;
     private curDate:Date;
     private dateParts:DatePart[];
     
@@ -27,12 +28,12 @@ class DatepickerInput {
     
     private shiftTabDown = false;
     private tabDown = false;
-    private pasting:boolean = false;
+    public pasting:boolean = false;
     
     private textBuffer:string = "";
-    constructor(private element:HTMLInputElement, private displayAs:string, private minDate?:Date, private maxDate?:Date) {
+    
+    constructor(public element:HTMLInputElement, private displayAs:string, private minDate?:Date, private maxDate?:Date) {
         this.dateParts = DisplayParser.parse(displayAs);
-        console.log('\nregstuff')
         this.dateStringRegExp = this.concatRegExp(this.dateParts);
         
         this.bindEvents();
@@ -45,7 +46,6 @@ class DatepickerInput {
         dateParts.forEach((datePart) => {
            regExp += datePart.getRegExpString();
         });
-        console.log(regExp);
         return new RegExp(`^${regExp}$`, "i");        
     }
     
@@ -67,59 +67,7 @@ class DatepickerInput {
             });
         });
         
-        // Prevent Default
-        this.element.addEventListener("dragenter", (e) => e.preventDefault());
-        this.element.addEventListener("dragover", (e) => e.preventDefault());
-        this.element.addEventListener("drop", (e) => e.preventDefault());
-        this.element.addEventListener("cut", (e) => e.preventDefault());
-
-        let caretStart:number;
-        let down = false;
-        
-        let mousedown = () => {
-            clearInterval(interval);
-            down = true;
-            this.element.setSelectionRange(void 0, void 0);
-            setTimeout(() => {
-                caretStart = this.element.selectionStart;
-            });
-        };
-        
-        let mouseup = () => {
-            if (!down) return;
-            down = false;
-            let pos = this.element.selectionStart === caretStart ? this.element.selectionEnd : this.element.selectionStart;
-            this.selectedIndex = this.getNearestSelectableIndex(pos);
-            if (this.element.selectionStart > 0 || this.element.selectionEnd < this.element.value.length) {
-                this.update();
-            }
-        };
-        
-        let touchstart = () => {
-            this.element.removeEventListener("mousedown", mousedown);
-            document.removeEventListener("mouseup", mouseup);
-            document.removeEventListener("touchstart", touchstart);
-        };
-        
-        this.element.addEventListener("mousedown", mousedown);
-        document.addEventListener("mouseup", mouseup);
-        document.addEventListener("touchstart", touchstart);
-
-        let lastStart:number;
-        let lastEnd:number;
-        var interval = setInterval(() => {
-            
-            if (!this.pasting &&
-                (this.element.selectionStart !== 0 ||
-                 this.element.selectionEnd !== this.element.value.length) &&
-                (this.element.selectionStart !== lastStart ||
-                 this.element.selectionEnd !== lastEnd)) {
-                this.selectedIndex = this.getNearestSelectableIndex(this.element.selectionStart + (this.element.selectionEnd - this.element.selectionStart) / 2);
-                this.update()
-            }
-            lastStart = this.element.selectionStart;
-            lastEnd = this.element.selectionEnd;
-        });
+        new MouseEvents(this);
     }
     
     private paste = ():void => {
@@ -220,7 +168,9 @@ class DatepickerInput {
             let orig = this.curDate.valueOf();
             let result = this.dateParts[this.selectedIndex].getDateFromString(this.curDate, this.textBuffer);
             if (result !== void 0 && this.dateParts[this.selectedIndex].getMaxBufferSize(result) !== void 0 && this.textBuffer.length >= this.dateParts[this.selectedIndex].getMaxBufferSize(result)) {
-                this.selectedIndex = this.getNextSelectable();
+                var next = this.getNextSelectable();
+                if (next === this.selectedIndex) this.textBuffer = '';
+                this.selectedIndex = next;
             }
             if (result === void 0) {
                 this.textBuffer = this.textBuffer.slice(0, this.textBuffer.length - 1);
@@ -259,7 +209,7 @@ class DatepickerInput {
     }
 
 
-    private getNearestSelectableIndex = (caretPosition:number):number => {
+    public getNearestSelectableIndex = (caretPosition:number):number => {
         let pos = 0;
         let nearestSelectableIndex:number;
         let nearestSelectableDistance:number;
@@ -313,7 +263,7 @@ class DatepickerInput {
     /**
      * @param {Date=} date (optional).
      */
-    private update = (date?:Date):void => {
+    public update = (date?:Date):void => {
         if (date === void 0) date = this.curDate;
         if (this.minDate !== void 0 && date.valueOf() < this.minDate.valueOf()) date = new Date(this.minDate.valueOf());
         if (this.maxDate !== void 0 && date.valueOf() < this.maxDate.valueOf()) date = new Date(this.maxDate.valueOf());
