@@ -1,4 +1,21 @@
 interface IOptions {
+    /**
+     * Required
+     */
     element:HTMLInputElement;
-    displayAs:string;
+    
+    /**
+     * Optional
+     */
+    displayAs?:string;
+    
+    /**
+     * Optional
+     */
+    minDate?:Date;
+    
+    /**
+     * Optional
+     */
+    maxDate?:Date;
 }

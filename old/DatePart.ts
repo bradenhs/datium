@@ -1,6 +1,6 @@
 /// <reference path="FormatBlocks.ts" />
 
-class DatePart {    
+class ADatePart {    
         
     private str:(d:Date) => string;
     private regExpString:string;

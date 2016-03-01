@@ -58,7 +58,7 @@ function findAt(str, index, search) {
     return str.slice(index, index + search.length) === search;
 }
 
-var OBFUSCATE = true;
+var OBFUSCATE = false;
 
 function obfuscate(fileContents) {
     fileContents = fileContents.replace(/\n/g, '');

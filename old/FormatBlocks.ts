@@ -9,7 +9,7 @@ interface IFormatBlock {
     maxBuffer?(d:Date):number;
 }
 
-let formatBlocks:IFormatBlock[] = (function() {
+let formadtBlocks:IFormatBlock[] = (function() {
     
     const monthNames:string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const dayNames:string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
