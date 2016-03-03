@@ -10,7 +10,7 @@ class DatiumInternals {
         this.dateManager = new DateManager();
         
         this.input = new Input(element, this.dateManager);
-                
+        
         this.update(options);
     }
     
