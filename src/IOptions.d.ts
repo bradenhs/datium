@@ -1,9 +1,4 @@
-interface IOptions {
-    /**
-     * Required
-     */
-    element:HTMLInputElement;
-    
+interface IOptions {    
     /**
      * Optional
      */

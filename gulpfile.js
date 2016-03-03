@@ -112,6 +112,11 @@ function escapeRegExp(str) {
 }
 
 function closure() {
+    // Needed so that closure works properly
+    var str = fs.readFileSync('public/datium.js').toString();
+    str = str.replace('function __() { this.constructor = d; }', '/** @constructor */\nfunction __() { this.constructor = d; }');
+    fs.writeFileSync('public/datium.js', str);
+    
     return gulp.src('./public/datium.js')
         .pipe(closureCompiler({
             compilerPath: 'compiler.jar',

@@ -1,7 +1,7 @@
 (<any>window)['Datium'] = class Datium {
     public update:(options:IOptions) => void;
-    constructor(options:IOptions) {
-        let internals = new DatiumInternals(options);
-        this.update = internals.update;
+    constructor(element:HTMLInputElement, options:IOptions) {
+        let internals = new DatiumInternals(element, options);
+        this.update = (options:IOptions) => internals.update(options);
     }
 }

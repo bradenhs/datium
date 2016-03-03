@@ -1,6 +1,5 @@
 class Parser {
-    
-    public static parse = (format:string):IDatePart[] => {
+    public static parse(format:string):IDatePart[] {
         let textBuffer = '';
         let dateParts:IDatePart[] = [];
     
@@ -9,7 +8,7 @@ class Parser {
         
         let pushPlainText = () => {
             if (textBuffer.length > 0) {
-                dateParts.push(new PlainText(textBuffer));
+                dateParts.push(new PlainText(textBuffer).setSelectable(false));
                 textBuffer = '';
             }
         }
@@ -38,7 +37,7 @@ class Parser {
             for (let code in formatBlocks) {
                 if (Parser.findAt(format, index, `{${code}}`)) {
                     pushPlainText();
-                    dateParts.push(new formatBlocks[code]());
+                    dateParts.push(new formatBlocks[code]().setSelectable(false));
                     index += code.length + 2;
                     found = true;
                     break;
@@ -63,7 +62,7 @@ class Parser {
         return dateParts;
     }
     
-    private static findAt = (str:string, index:number, search:string) => {
+    private static findAt (str:string, index:number, search:string) {
         return str.slice(index, index + search.length) === search;
     }
 }
