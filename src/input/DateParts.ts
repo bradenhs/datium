@@ -10,7 +10,6 @@ interface IDatePart {
     getLevel():Level;
     isSelectable():boolean;
     toString():string;
-    date:Date;
 }
 
 class PlainText implements IDatePart {
@@ -26,25 +25,11 @@ class PlainText implements IDatePart {
     public getLevel():Level { return Level.NONE }
     public isSelectable():boolean { return false }
     public toString():string { return this.text }
-    public date:Date;
 }
     
-let formatBlocks = (function() {
-    let formatBlocks:{ [key:string]: new () => IDatePart; } = {};
-        
-    let monthNames:string[] = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    let shortMonthNames:string[] = monthNames.map((v) => v.slice(0, 3));
-    let dayNames:string[] = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    let shortDayNames:string[] = dayNames.map((v) => v.slice(0, 3));
-    
-    function pad(num:number, size:number = 2):string {
-        let str = num.toString();
-        while(str.length < size) str = '0' + str;
-        return str;
-    }
-    
+let formatBlocks = (function() {    
     class DatePart {
-        public date:Date;
+        protected date:Date;
         protected selectable:boolean = true;
         
         public getValue():Date {
@@ -58,10 +43,16 @@ let formatBlocks = (function() {
         
         public isSelectable() {
             return this.selectable;
-        }        
+        }   
+        
+        protected pad(num:number, size:number = 2) {
+            let str = num.toString();
+            while(str.length < size) str = '0' + str;
+            return str;
+        }
     }
     
-    formatBlocks['YYYY'] = class extends DatePart {
+    class FourDigitYear extends DatePart {
         public increment() {
             this.date.setFullYear(this.date.getFullYear() + 1);
         }
@@ -106,7 +97,7 @@ let formatBlocks = (function() {
         }
     }
     
-    formatBlocks['YY'] = class extends formatBlocks['YYYY'] {
+    class TwoDigitYear extends FourDigitYear {
         public getMaxBuffer() {
             return 2;
         }
@@ -132,7 +123,7 @@ let formatBlocks = (function() {
         }
     }
     
-    formatBlocks['MMMM'] = class extends DatePart {
+    class LongMonthName extends DatePart {
         protected getMonths() {
             return ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         } 
@@ -191,13 +182,13 @@ let formatBlocks = (function() {
         }
     }
     
-    formatBlocks['MMM'] = class extends formatBlocks['MMMM'] {
+    class ShortMonthName extends LongMonthName {
         protected getMonths() {
             return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         }
     }
     
-    formatBlocks['D'] = class extends DatePart {
+    class DateNumeral extends DatePart {
         private daysInMonth() {
             return new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0).getDate();
         }
@@ -249,7 +240,8 @@ let formatBlocks = (function() {
         }
     }
     
-    formatBlocks['h'] = class extends DatePart {        
+    
+    class Hour extends DatePart {        
         public increment() {
             let num = this.date.getHours() + 1;
             if (num > 23) num = 0;
@@ -301,7 +293,7 @@ let formatBlocks = (function() {
         }
     }
     
-    formatBlocks['mm'] = class extends DatePart {        
+    class PaddedMinute extends DatePart {        
         public increment() {
             let num = this.date.getMinutes() + 1;
             if (num > 59) num = 0;
@@ -317,7 +309,7 @@ let formatBlocks = (function() {
         public setValueFromPartial(partial:string) {
             let num = parseInt(partial, 10);
             if (/^\d{1,2}$/.test(partial) && num < 60 && num >= 0) {
-                return this.setValue(pad(num));
+                return this.setValue(this.pad(num));
             }
             return false;
         }
@@ -346,11 +338,11 @@ let formatBlocks = (function() {
         }
         
         public toString() {
-            return pad(this.date.getMinutes());
+            return this.pad(this.date.getMinutes());
         }
     }
     
-    formatBlocks['A'] = class extends DatePart {        
+    class UppercaseMeridiem extends DatePart {        
         public increment() {
             let num = this.date.getHours() + 12;
             if (num > 23) num -= 24;
@@ -402,11 +394,23 @@ let formatBlocks = (function() {
         }
     }
     
-    formatBlocks['a'] = class extends formatBlocks['A'] {        
+    class LowercaseMeridiem extends UppercaseMeridiem {        
         public toString() {
             return super.toString().toLowerCase();
         }
     }
+    
+    let formatBlocks:{ [key:string]: new () => IDatePart; } = {};
+    
+    formatBlocks['YYYY'] = FourDigitYear;
+    formatBlocks['YY'] = TwoDigitYear;
+    formatBlocks['MMMM'] = LongMonthName;
+    formatBlocks['MMM'] = ShortMonthName;
+    formatBlocks['D'] = DateNumeral;
+    formatBlocks['h'] = Hour;
+    formatBlocks['mm'] = PaddedMinute;
+    formatBlocks['A'] = UppercaseMeridiem;
+    formatBlocks['a'] = LowercaseMeridiem;
     
     return formatBlocks;
 })();
