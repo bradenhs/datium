@@ -15,7 +15,7 @@ class OptionSanitizer {
     
     static sanitizeMaxDate(maxDate:any, dflt:Date = void 0) {
         if (maxDate === void 0) return dflt;
-        return new Date(maxDate); //TODO figure this out
+        return new Date(maxDate); //TODO figure this out 
     }
     
     static sanitizeDefaultDate(defaultDate:any, dflt:Date = this.dfltDate) {
