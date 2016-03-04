@@ -1,16 +1,6 @@
-interface IOptions {    
-    /**
-     * Optional
-     */
+interface IOptions {
     displayAs?:string;
-    
-    /**
-     * Optional
-     */
     minDate?:Date;
-    
-    /**
-     * Optional
-     */
     maxDate?:Date;
+    defaultDate?:Date;
 }

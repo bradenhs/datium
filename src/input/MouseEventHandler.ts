@@ -1,7 +1,7 @@
 class MouseEventHandler {
     constructor(private input:Input) {
-        input.element.addEventListener('mousedown', () => this.mousedown());
-        document.addEventListener("mouseup", () => this.mouseup());
+        listen.mousedown(input.element, () => this.mousedown());
+        listen.mouseup(document, () => this.mouseup());
         
         // Stop default
         input.element.addEventListener("dragenter", (e) => e.preventDefault());

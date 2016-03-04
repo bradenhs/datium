@@ -17,8 +17,12 @@
     </head>
     <body>
         <input id="test1"/>
-        <script>
-            var d = new Datium(document.querySelector('#test1'));
+        <input id="test2"/>
+        <script>            
+            new Datium(document.querySelector('#test1'), {
+                displayAs: 'MMM [YYYY] YYYY [YY] YY D'
+            });
+            new Datium(document.querySelector('#test2'));
         </script>
     </body>
 </html>

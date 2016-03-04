@@ -8,7 +8,7 @@ class KeyboardEventHandler {
     private shiftTabDown = false;
     private tabDown = false;
     
-    constructor(private input:Input, private dateManager:DateManager) {
+    constructor(private input:Input) {
         input.element.addEventListener("keydown", (e) => this.keydown(e));
         input.element.addEventListener("focus", () => this.focus());
         document.addEventListener("keydown", (e) => this.documentKeydown(e));
@@ -44,6 +44,10 @@ class KeyboardEventHandler {
     
     private keydown(e:KeyboardEvent) {
         let code = e.keyCode;
+        if (code >= 96 && code <= 105) {
+            code -= 48;
+        }
+        
         
         if ((code === KEY.HOME || code === KEY.END) && e.shiftKey) return;
         if ((code === KEY.LEFT || code === KEY.RIGHT) && e.shiftKey) return;
@@ -73,32 +77,48 @@ class KeyboardEventHandler {
             e.preventDefault();
         }
         
+        let keyPressed = String.fromCharCode(code);
+        if (/^[0-9]|[A-z]$/.test(keyPressed)) {
+            let textBuffer = this.input.getTextBuffer();
+            this.input.setTextBuffer(textBuffer + keyPressed);
+        } else if (code === KEY.BACKSPACE) {
+            let textBuffer = this.input.getTextBuffer();
+            this.input.setTextBuffer(textBuffer.slice(0, -1));
+        } else if (!e.shiftKey) {
+            this.input.setTextBuffer('');
+        }
+        
     }
     
     private home() {
         let first = this.input.getFirstSelectableDatePart();
         this.input.setSelectedDatePart(first);
+        this.input.updateView();
     }
     
     private end() {
         let last = this.input.getLastSelectableDatePart();
-        this.input.setSelectedDatePart(last);        
+        this.input.setSelectedDatePart(last);     
+        this.input.updateView();   
     }
     
     private left() {
         let previous = this.input.getPreviousSelectableDatePart();
         this.input.setSelectedDatePart(previous);
+        this.input.updateView();
     }
     
     private right() {
         let next = this.input.getNextSelectableDatePart();
         this.input.setSelectedDatePart(next);
+        this.input.updateView();
     }
     
     private shiftTab() {
         let previous = this.input.getPreviousSelectableDatePart();
         if (previous !== this.input.getSelectedDatePart()) {
             this.input.setSelectedDatePart(previous);
+            this.input.updateView();
             return true;
         }
         return false;
@@ -108,6 +128,7 @@ class KeyboardEventHandler {
         let next = this.input.getNextSelectableDatePart();
         if (next !== this.input.getSelectedDatePart()) {
             this.input.setSelectedDatePart(next);
+            this.input.updateView();
             return true;
         }
         return false;
@@ -115,19 +136,26 @@ class KeyboardEventHandler {
     }
     
     private up() {
-        try {
-            this.input.getSelectedDatePart().increment();
-        } catch (e) {
-            this.input.getSelectedDatePart().setValue(this.dateManager.getDefaultDate());
-        }
+        this.input.getSelectedDatePart().increment();
         
         let level = this.input.getSelectedDatePart().getLevel();
         let date = this.input.getSelectedDatePart().getValue();
         
-        this.dateManager.goTo(date, level);
+        trigger.goto(this.input.element, {
+            date: date,
+            level: level
+        });
     }
     
     private down() {
+        this.input.getSelectedDatePart().decrement();
         
+        let level = this.input.getSelectedDatePart().getLevel();
+        let date = this.input.getSelectedDatePart().getValue();
+        
+        trigger.goto(this.input.element, {
+            date: date,
+            level: level
+        });
     }
 }

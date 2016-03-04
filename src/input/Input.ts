@@ -1,11 +1,47 @@
 class Input {
     private options:IOptions;
-    private dateParts:IDatePart[];
     private selectedDatePart:IDatePart;
+    private textBuffer:string = '';
     
-    constructor(public element:HTMLInputElement, private dateManager:DateManager) {
-        new KeyboardEventHandler(this, dateManager);
+    public dateParts:IDatePart[];
+    public format:RegExp;
+    
+    constructor(public element:HTMLInputElement) {
+        new KeyboardEventHandler(this);
         new MouseEventHandler(this);
+        new PasteEventHander(this);
+        
+        listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level));
+    }
+    
+    public getTextBuffer() {
+        return this.textBuffer;
+    }
+    
+    public setTextBuffer(newBuffer:string) {
+        this.textBuffer = newBuffer;
+        
+        if (this.textBuffer.length > 0) {
+            this.updateDateFromBuffer();
+        }
+    }
+    
+    public updateDateFromBuffer() {
+        if (this.selectedDatePart.setValueFromPartial(this.textBuffer)) {
+            let newDate = this.selectedDatePart.getValue();
+            
+            if (this.textBuffer.length >= this.selectedDatePart.getMaxBuffer()) {
+                this.textBuffer = '';
+                this.selectedDatePart = this.getNextSelectableDatePart();    
+            }
+            
+            trigger.goto(this.element, {
+                date: newDate,
+                level: this.selectedDatePart.getLevel()
+            });
+        } else {
+            this.textBuffer = this.textBuffer.slice(0, -1);
+        }
     }
     
     public getFirstSelectableDatePart() {
@@ -42,7 +78,7 @@ class Input {
         return this.selectedDatePart;
     }
     
-    public getNearestSelectableDatePart(pos:number) {        
+    public getNearestSelectableDatePart(caretPosition:number) {        
         let distance:number = Number.MAX_VALUE;
         let nearestDatePart:IDatePart;
         let start = 0;
@@ -51,8 +87,8 @@ class Input {
             let datePart = this.dateParts[i];
             
             if (datePart.isSelectable()) {
-                let fromLeft = pos - start;
-                let fromRight = pos - (start + datePart.toString().length);
+                let fromLeft = caretPosition - start;
+                let fromRight = caretPosition - (start + datePart.toString().length);
                 
                 if (fromLeft > 0 && fromRight < 0) return datePart;
                 
@@ -70,25 +106,35 @@ class Input {
     }
     
     public setSelectedDatePart(datePart:IDatePart) {
-        this.selectedDatePart = datePart;
+        if (this.selectedDatePart !== datePart) {
+            this.textBuffer = '';
+            this.selectedDatePart = datePart;
+        }
     }
     
     public getSelectedDatePart() {
         return this.selectedDatePart;
     }
     
-    public update(options:IOptions) {
+    public updateOptions(options:IOptions) {
         this.options = options;
         
         this.dateParts = Parser.parse(options.displayAs);
         this.selectedDatePart = void 0;
         
+        let format:string = '^';
+        this.dateParts.forEach((datePart) => {
+            format += datePart.getRegEx().source.slice(1,-1);
+        });
+        this.format = new RegExp(format+'$', 'i');
+                
         this.updateView();
     }
     
     public updateView() {
         let dateString = '';
         this.dateParts.forEach((datePart) => {
+            if (datePart.getValue() === void 0) return;
             dateString += datePart.toString(); 
         });
         this.element.value = dateString;
@@ -105,5 +151,12 @@ class Input {
         let end = start + this.selectedDatePart.toString().length;
         
         this.element.setSelectionRange(start, end);
+    }
+    
+    public viewchanged(date:Date, level:Level) {
+        this.dateParts.forEach((datePart) => {
+            datePart.setValue(date);
+        });
+        this.updateView();
     }
 }
