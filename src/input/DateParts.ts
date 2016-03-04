@@ -188,8 +188,40 @@ let formatBlocks = (function() {
         }
     }
     
+    class Month extends LongMonthName {
+        public getMaxBuffer() {
+            return 2;
+        }
+        
+        public setValueFromPartial(partial:string) {
+            if (/^\d{1,2}$/.test(partial)) {
+                return this.setValue(partial);
+            }
+            return false;
+        }
+        
+        public setValue(value:Date|string) {
+            if (typeof value === 'object') {
+                this.date = new Date(value.valueOf());
+                return true;
+            } else if (typeof value === 'string' && this.getRegEx().test(value)) {
+                this.date.setMonth(parseInt(value, 10));
+                return true;
+            }
+            return false;
+        }
+        
+        public getRegEx() {
+            return /^([1-9]|(1[0-2]))$/;
+        }
+        
+        public toString() {
+            return this.date.getMonth().toString();
+        }
+    }
+    
     class DateNumeral extends DatePart {
-        private daysInMonth() {
+        protected daysInMonth() {
             return new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0).getDate();
         }
         
@@ -237,6 +269,39 @@ let formatBlocks = (function() {
         
         public toString() {
             return this.date.getDate().toString();
+        }
+    }
+    
+    class PaddedDate extends DateNumeral {
+        public setValueFromPartial(partial:string) {
+            if (/^d{1,2}$/.test(partial) && parseInt(partial, 10) < this.daysInMonth()) {
+                return this.setValue(this.pad(parseInt(partial, 10)));
+            }
+            return false;
+        }
+        
+        public getRegEx() {
+            return /^[0-3][0-9]$/;
+        }
+        
+        public toString() {
+            return this.pad(this.date.getDate());
+        }
+    }
+    
+    class DateOrdinal extends DateNumeral {
+        public getRegEx() {
+            return /^[1-3]?[0-9]((st)|(nd)|(rd)|(th))$/i;
+        }
+        
+        public toString() {
+            let date = this.date.getDate();
+            let j = date % 10;
+            let k = date % 100;
+            if (j == 1 && k != 11) return date + "st";
+            if (j == 2 && k != 12) return date + "nd";
+            if (j == 3 && k != 13) return date + "rd";
+            return date + "th";
         }
     }
     
@@ -406,11 +471,27 @@ let formatBlocks = (function() {
     formatBlocks['YY'] = TwoDigitYear;
     formatBlocks['MMMM'] = LongMonthName;
     formatBlocks['MMM'] = ShortMonthName;
+    //MM
+    formatBlocks['M'] = Month;
+    formatBlocks['DD'] = PaddedDate;
+    formatBlocks['Do'] = DateOrdinal;
     formatBlocks['D'] = DateNumeral;
+    // dddd
+    // ddd
+    // X
+    // x
+    // HH
+    // hh
+    // H
     formatBlocks['h'] = Hour;
-    formatBlocks['mm'] = PaddedMinute;
     formatBlocks['A'] = UppercaseMeridiem;
     formatBlocks['a'] = LowercaseMeridiem;
+    formatBlocks['mm'] = PaddedMinute;
+    // m
+    // ss
+    // s
+    // ZZ
+    // Z
     
     return formatBlocks;
 })();
