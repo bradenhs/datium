@@ -10,7 +10,7 @@ class OptionSanitizer {
     
     static sanitizeMinDate(minDate:any, dflt:Date = void 0) {
         if (minDate === void 0) return dflt;
-        return new Date(minDate); //TODO figure this out
+        return new Date(minDate); //TODO figure this out yes
     }
     
     static sanitizeMaxDate(maxDate:any, dflt:Date = void 0) {
