@@ -20,9 +20,11 @@
         <input id="test2"/>
         <script>            
             new Datium(document.querySelector('#test1'), {
-                displayAs: 'MMM [YYYY] YYYY [YY] YY D'
+                displayAs: '[YYYY]=YYYY [MMMM]=MMMM [MMM]=MMM [MM]=MM [M]=M [DD]=DD [Do]=Do [D]=D [dddd]=dddd [ddd]=ddd'
+            });            
+            new Datium(document.querySelector('#test2'), {
+                displayAs: '[X]=X [x]=x [HH]=HH [hh]=hh [H]=H [h]=h [A]=A [a]=a [mm]=mm [m]=m [ss]=ss [ZZ]=ZZ [Z]=Z'
             });
-            new Datium(document.querySelector('#test2'));
         </script>
     </body>
 </html>
