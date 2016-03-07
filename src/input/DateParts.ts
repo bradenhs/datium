@@ -45,9 +45,16 @@ let formatBlocks = (function() {
             return this.selectable;
         }   
         
-        protected pad(num:number, size:number = 2) {
+        protected pad(num:number|string, size:number = 2) {
             let str = num.toString();
             while(str.length < size) str = '0' + str;
+            return str;
+        }
+        
+        protected trim(str:string) {
+            while (str[0] === '0' && str.length > 1) {
+                str = str.substr(1, str.length);  
+            }
             return str;
         }
     }
@@ -170,7 +177,7 @@ let formatBlocks = (function() {
         }
         
         public getMaxBuffer() {
-            return 3;
+            return [2,1,3,2,3,3,3,2,1,1,1,1][this.date.getMonth()];
         }
         
         public getLevel() {
@@ -190,12 +197,13 @@ let formatBlocks = (function() {
     
     class Month extends LongMonthName {
         public getMaxBuffer() {
-            return 2;
+            return this.date.getMonth() > 0 ? 1 : 2;
         }
         
         public setValueFromPartial(partial:string) {
             if (/^\d{1,2}$/.test(partial)) {
-                return this.setValue(partial);
+                let trimmed = this.trim(partial === '0' ? '1' : partial);
+                return this.setValue(trimmed);
             }
             return false;
         }
@@ -205,7 +213,7 @@ let formatBlocks = (function() {
                 this.date = new Date(value.valueOf());
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
-                this.date.setMonth(parseInt(value, 10));
+                this.date.setMonth(parseInt(value, 10) - 1);
                 return true;
             }
             return false;
@@ -216,7 +224,25 @@ let formatBlocks = (function() {
         }
         
         public toString() {
-            return this.date.getMonth().toString();
+            return (this.date.getMonth() + 1).toString();
+        }
+    }
+    
+    class PaddedMonth extends Month {
+        public setValueFromPartial(partial:string) {
+            if (/^\d{1,2}$/.test(partial)) {
+                let padded = this.pad(partial === '0' ? '1' : partial);
+                return this.setValue(padded);
+            }
+            return false;
+        }
+        
+        public getRegEx() {
+            return /^((0[1-9])|(1[0-2]))$/;            
+        }
+        
+        public toString() {
+            return this.pad(super.toString());
         }
     }
     
@@ -238,8 +264,9 @@ let formatBlocks = (function() {
         }
         
         public setValueFromPartial(partial:string) {
-            if (/^\d{1,2}$/.test(partial) && parseInt(partial, 10) < this.daysInMonth()) {
-                return this.setValue(parseInt(partial, 10).toString());
+            if (/^\d{1,2}$/.test(partial)) {
+                let trimmed = this.trim(partial === '0' ? '1' : partial);
+                return this.setValue(trimmed);
             }
             return false;
         }
@@ -256,11 +283,11 @@ let formatBlocks = (function() {
         }
         
         public getRegEx() {
-            return /^[1-3]?[0-9]$/;
+            return /^[1-9]|((1|2)[0-9])|(3[0-1])$/;
         }
         
         public getMaxBuffer() {
-            return 2;
+            return this.date.getDate() > Math.floor(this.daysInMonth()/10) ? 1 : 2;
         }
         
         public getLevel() {
@@ -274,14 +301,15 @@ let formatBlocks = (function() {
     
     class PaddedDate extends DateNumeral {
         public setValueFromPartial(partial:string) {
-            if (/^d{1,2}$/.test(partial) && parseInt(partial, 10) < this.daysInMonth()) {
-                return this.setValue(this.pad(parseInt(partial, 10)));
+            if (/^\d{1,2}$/.test(partial)) {
+                let padded = this.pad(partial === '0' ? '1' : partial);
+                return this.setValue(padded);
             }
             return false;
         }
         
         public getRegEx() {
-            return /^[0-3][0-9]$/;
+            return /^(0[1-9])|((1|2)[0-9])|(3[0-1])$/;
         }
         
         public toString() {
@@ -291,22 +319,83 @@ let formatBlocks = (function() {
     
     class DateOrdinal extends DateNumeral {
         public getRegEx() {
-            return /^[1-3]?[0-9]((st)|(nd)|(rd)|(th))$/i;
+            return /^([1-9]|((1|2)[0-9])|(3[0-1]))((st)|(nd)|(rd)|(th))?$/i;
         }
         
         public toString() {
             let date = this.date.getDate();
             let j = date % 10;
             let k = date % 100;
-            if (j == 1 && k != 11) return date + "st";
-            if (j == 2 && k != 12) return date + "nd";
-            if (j == 3 && k != 13) return date + "rd";
+            if (j === 1 && k !== 11) return date + "st";
+            if (j === 2 && k !== 12) return date + "nd";
+            if (j === 3 && k !== 13) return date + "rd";
             return date + "th";
         }
     }
     
+    class LongDayName extends DatePart {
+        protected getDays() {
+            return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        }
+        
+        public increment() {
+            let num = this.date.getDay() + 1;
+            if (num > 6) num = 0;
+            this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+        }
+        
+        public decrement() {
+            let num = this.date.getDay() - 1;
+            if (num < 0) num = 6;
+            this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+        }
+        
+        public setValueFromPartial(partial:string) {
+            let day = this.getDays().filter((day) => {
+                return new RegExp(`^${partial}.*$`, 'i').test(day);
+            })[0];
+            if (day !== void 0) {
+                return this.setValue(day);
+            }
+            return false;
+        }
+        
+        public setValue(value:Date|string) {
+            if (typeof value === 'object') {
+                this.date = new Date(value.valueOf());
+                return true;
+            } else if (typeof value === 'string' && this.getRegEx().test(value)) {
+                let num = this.getDays().indexOf(value);
+                this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+                return true;
+            }
+            return false;
+        }
+        
+        public getRegEx() {
+            return new RegExp(`^((${this.getDays().join(")|(")}))$`, 'i');
+        }
+        
+        public getMaxBuffer() {
+            return [2,1,2,1,2,1,2][this.date.getDay()];
+        }
+        
+        public getLevel() {
+            return Level.DATE;
+        }
+        
+        public toString() {
+            return this.getDays()[this.date.getDay()];
+        }
+    }
     
-    class Hour extends DatePart {        
+    class ShortDayName extends LongDayName {
+        protected getDays() {
+            return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        }
+    }
+    
+    class PaddedMilitaryHour extends DatePart {
         public increment() {
             let num = this.date.getHours() + 1;
             if (num > 23) num = 0;
@@ -320,9 +409,9 @@ let formatBlocks = (function() {
         }
         
         public setValueFromPartial(partial:string) {
-            let num = parseInt(partial, 10);
-            if (/^\d{1,2}$/.test(partial) && num < 24 && num >= 0) {
-                return this.setValue(num.toString());
+            if (/^\d{1,2}$/.test(partial)) {
+                let padded = this.pad(partial);
+                return this.setValue(padded);
             }
             return false;
         }
@@ -338,27 +427,93 @@ let formatBlocks = (function() {
             return false;
         }
         
-        public getRegEx() {
-            return /^[1-5]?[0-9]$/;
-        }
-        
         public getMaxBuffer() {
-            return 2;
+            return this.date.getHours() > 2 ? 1 : 2;
         }
         
         public getLevel() {
             return Level.HOUR;
         }
         
+        public getRegEx() {
+            return /^(((0|1)[0-9])|(2[0-3]))$/;
+        }
+        
+        public toString() {
+            return this.pad(this.date.getHours());
+        }
+    }
+    
+    class MilitaryHour extends PaddedMilitaryHour {
+        public setValueFromPartial(partial:string) {
+            if (/^\d{1,2}$/.test(partial)) {
+                let trimmed = this.trim(partial);
+                return this.setValue(trimmed);
+            }
+            return false;
+        }
+        
+        public getRegEx() {
+            return /^((1?[0-9])|(2[0-3]))$/;
+        }
+        
+        public toString() {
+            return this.date.getHours().toString();
+        }
+    }
+    
+    class PaddedHour extends PaddedMilitaryHour {
+        public setValueFromPartial(partial:string) {
+            let padded = this.pad(partial === '0' ? '1' : partial);
+            return this.setValue(padded);
+        }
+        
+        public setValue(value:Date|string) {
+            if (typeof value === 'object') {
+                this.date = new Date(value.valueOf());
+                return true;
+            } else if (typeof value === 'string' && this.getRegEx().test(value)) {
+                let num = parseInt(value, 10);
+                if (this.date.getHours() < 12 && num === 12) num = 0;
+                if (this.date.getHours() > 11 && num !== 12) num += 12;
+                this.date.setHours(num);
+                return true;
+            }
+            return false;
+        }
+        
+        public getRegEx() {
+            return /^(0[1-9])|(1[0-2])$/;
+        }
+        
+        public getMaxBuffer() {
+            return parseInt(this.toString(), 10) > 1 ? 1 : 2;
+        }
+        
         public toString() {
             let hours = this.date.getHours();
             if (hours > 12) hours -= 12;
             if (hours === 0) hours = 12;
-            return hours.toString();
+            return this.pad(hours);
         }
     }
     
-    class PaddedMinute extends DatePart {        
+    class Hour extends PaddedHour {
+        public setValueFromPartial(partial:string) {
+            let trimmed = this.trim(partial === '0' ? '1' : partial);
+            return this.setValue(trimmed);
+        }
+        
+        public getRegEx() {
+            return /^[1-9]|(1[0-2])$/;
+        }
+        
+        public toString() {
+            return this.trim(super.toString());
+        }
+    }
+    
+    class PaddedMinute extends DatePart {
         public increment() {
             let num = this.date.getMinutes() + 1;
             if (num > 59) num = 0;
@@ -372,11 +527,7 @@ let formatBlocks = (function() {
         }
         
         public setValueFromPartial(partial:string) {
-            let num = parseInt(partial, 10);
-            if (/^\d{1,2}$/.test(partial) && num < 60 && num >= 0) {
-                return this.setValue(this.pad(num));
-            }
-            return false;
+            return this.setValue(this.pad(partial));
         }
         
         public setValue(value:Date|string) {
@@ -395,7 +546,7 @@ let formatBlocks = (function() {
         }
         
         public getMaxBuffer() {
-            return 2;
+            return this.date.getMinutes() > 5 ? 1 : 2;
         }
         
         public getLevel() {
@@ -407,7 +558,7 @@ let formatBlocks = (function() {
         }
     }
     
-    class UppercaseMeridiem extends DatePart {        
+    class UppercaseMeridiem extends DatePart {
         public increment() {
             let num = this.date.getHours() + 12;
             if (num > 23) num -= 24;
@@ -459,7 +610,7 @@ let formatBlocks = (function() {
         }
     }
     
-    class LowercaseMeridiem extends UppercaseMeridiem {        
+    class LowercaseMeridiem extends UppercaseMeridiem {
         public toString() {
             return super.toString().toLowerCase();
         }
@@ -471,18 +622,16 @@ let formatBlocks = (function() {
     formatBlocks['YY'] = TwoDigitYear;
     formatBlocks['MMMM'] = LongMonthName;
     formatBlocks['MMM'] = ShortMonthName;
-    //MM
+    formatBlocks['MM'] = PaddedMonth;
     formatBlocks['M'] = Month;
     formatBlocks['DD'] = PaddedDate;
     formatBlocks['Do'] = DateOrdinal;
     formatBlocks['D'] = DateNumeral;
-    // dddd
-    // ddd
-    // X
-    // x
-    // HH
-    // hh
-    // H
+    formatBlocks['dddd'] = LongDayName;
+    formatBlocks['ddd'] = ShortDayName;
+    formatBlocks['HH'] = PaddedMilitaryHour;
+    formatBlocks['hh'] = PaddedHour;
+    formatBlocks['H'] = MilitaryHour;
     formatBlocks['h'] = Hour;
     formatBlocks['A'] = UppercaseMeridiem;
     formatBlocks['a'] = LowercaseMeridiem;
@@ -490,6 +639,8 @@ let formatBlocks = (function() {
     // m
     // ss
     // s
+    // X
+    // x
     // ZZ
     // Z
     

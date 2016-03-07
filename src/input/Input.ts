@@ -1,12 +1,10 @@
 class Input {
-    private options:IOptions;
-    private selectedDatePart:IDatePart;
-    private textBuffer:string = '';
-    
-    public dateParts:IDatePart[];
-    public format:RegExp;
-    
-    constructor(public element:HTMLInputElement) {
+    private options: IOptions;
+    private selectedDatePart: IDatePart;
+    private textBuffer: string = "";
+    public dateParts: IDatePart[];
+    public format: RegExp;
+    constructor(public element: HTMLInputElement) {
         new KeyboardEventHandler(this);
         new MouseEventHandler(this);
         new PasteEventHander(this);
@@ -78,7 +76,7 @@ class Input {
         return this.selectedDatePart;
     }
     
-    public getNearestSelectableDatePart(caretPosition:number) {        
+    public getNearestSelectableDatePart(caretPosition: number) {
         let distance:number = Number.MAX_VALUE;
         let nearestDatePart:IDatePart;
         let start = 0;
@@ -124,7 +122,7 @@ class Input {
         
         let format:string = '^';
         this.dateParts.forEach((datePart) => {
-            format += datePart.getRegEx().source.slice(1,-1);
+            format += `(${datePart.getRegEx().source.slice(1,-1)})`;
         });
         this.format = new RegExp(format+'$', 'i');
                 
