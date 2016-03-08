@@ -21,10 +21,20 @@
         <input id="test3"/>
         <script>            
             new Datium(document.querySelector('#test1'), {
+<<<<<<< HEAD
+                displayAs: '[YYYY]=YYYY [YY]=YY [MMMM]=MMMM [MMM]=MMM [MM]=MM [M]=M [DD]=DD [Do]=Do [D]=D'
+            });            
+            new Datium(document.querySelector('#test2'), {
+                displayAs: '[dddd]=dddd [ddd]=ddd [X]=X [x]=x [HH]=HH [hh]=hh [H]=H [h]=h'
+            });   
+            new Datium(document.querySelector('#test3'), {
+                displayAs: '[A]=A [a]=a [mm]=mm [m]=m [ss]=ss [ZZ]=ZZ [Z]=Z'
+=======
                 displayAs: '[YYYY]=YYYY [YY]=YY [MMMM]=MMMM [MMM]=MMM [MM]=MM [M]=M [DD]=DD [Do]=Do [D]=D [dddd]=dddd'
             });            
             new Datium(document.querySelector('#test2'), {
                 displayAs: '[ddd]=ddd [X]=X [x]=x [HH]=HH [hh]=hh [H]=H [h]=h [A]=A [a]=a [mm]=mm [m]=m [ss]=ss [ZZ]=ZZ [Z]=Z'
+>>>>>>> 19f808a6aae9aa721db4ee9c27c5374fb0d545c6
             });
         </script>
     </body>
