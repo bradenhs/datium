@@ -81,7 +81,7 @@ let formatBlocks = (function() {
         }
         
         public getRegEx() {
-            return /^\d{1,4}$/;
+            return /^-?\d{1,4}$/;
         }
         
         public getMaxBuffer() {
@@ -104,7 +104,7 @@ let formatBlocks = (function() {
         
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
-                this.date = new Date((<Date>value).valueOf());
+                this.date = new Date(value.valueOf());
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 let base = Math.floor(super.getValue().getFullYear()/100)*100;
@@ -115,7 +115,7 @@ let formatBlocks = (function() {
         }
         
         public getRegEx() {
-            return /^\d{1,2}$/;
+            return /^\-?d{1,2}$/;
         }
         
         public toString() {
@@ -217,6 +217,22 @@ let formatBlocks = (function() {
         
         public toString() {
             return this.date.getMonth().toString();
+        }
+    }
+    
+    class PaddedMonth extends Month {
+        public getRegEx() {
+            return /^(0[1-9])|(1[0-2])$/;
+        }
+        
+        public setValueFromPartial(partial:string) {
+            if (/^\d{1,2}$/.test(partial)) {
+                return this.setValue(this.pad(parseInt(partial, 10)));
+            }
+        }
+        
+        public toString() {
+            return this.pad(this.date.getMonth());
         }
     }
     
@@ -471,7 +487,7 @@ let formatBlocks = (function() {
     formatBlocks['YY'] = TwoDigitYear;
     formatBlocks['MMMM'] = LongMonthName;
     formatBlocks['MMM'] = ShortMonthName;
-    //MM
+    formatBlocks['MM'] = PaddedMonth;
     formatBlocks['M'] = Month;
     formatBlocks['DD'] = PaddedDate;
     formatBlocks['Do'] = DateOrdinal;
