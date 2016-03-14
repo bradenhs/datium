@@ -69,11 +69,7 @@ let formatBlocks = (function() {
         }
         
         public setValueFromPartial(partial:string) {
-            if (this.getRegEx().test(partial)) {
-                return this.setValue(partial);
-            } else {
-                return false;
-            }
+            return this.setValue(partial);
         }
         
         public setValue(value:Date|string) {
@@ -122,7 +118,7 @@ let formatBlocks = (function() {
         }
         
         public getRegEx() {
-            return /^\-?d{1,2}$/;
+            return /^-?\d{1,2}$/;
         }
         
         public toString() {
@@ -243,22 +239,6 @@ let formatBlocks = (function() {
         
         public toString() {
             return this.pad(super.toString());
-        }
-    }
-    
-    class PaddedMonth extends Month {
-        public getRegEx() {
-            return /^(0[1-9])|(1[0-2])$/;
-        }
-        
-        public setValueFromPartial(partial:string) {
-            if (/^\d{1,2}$/.test(partial)) {
-                return this.setValue(this.pad(parseInt(partial, 10)));
-            }
-        }
-        
-        public toString() {
-            return this.pad(this.date.getMonth());
         }
     }
     
@@ -574,6 +554,80 @@ let formatBlocks = (function() {
         }
     }
     
+    class Minute extends PaddedMinute {
+        public setValueFromPartial(partial:string) {
+            return this.setValue(this.trim(partial));
+        }
+        
+        public getRegEx() {
+            return /^[0-5]?[0-9]$/;
+        }
+        
+        public toString() {
+            return this.date.getMinutes().toString();
+        }
+    }
+    
+    class PaddedSecond extends DatePart {
+        public increment() {
+            let num = this.date.getSeconds() + 1;
+            if (num > 59) num = 0;
+            this.date.setSeconds(num);
+        }
+        
+        public decrement() {
+            let num = this.date.getSeconds() - 1;
+            if (num < 0) num = 59;
+            this.date.setSeconds(num);
+        }
+        
+        public setValueFromPartial(partial:string) {
+            return this.setValue(this.pad(partial));
+        }
+        
+        public setValue(value:Date|string) {
+            if (typeof value === 'object') {
+                this.date = new Date(value.valueOf());
+                return true;
+            } else if (typeof value === 'string' && this.getRegEx().test(value)) {
+                this.date.setSeconds(parseInt(value, 10));
+                return true;
+            }
+            return false;
+        }
+        
+        public getRegEx() {
+            return /^[0-5][0-9]$/;
+        }
+        
+        public getMaxBuffer() {
+            return this.date.getSeconds() > 5 ? 1 : 2;
+        }
+        
+        public getLevel() {
+            return Level.SECOND;
+        }
+        
+        public toString() {
+            return this.pad(this.date.getSeconds());
+        }
+    }
+    
+    class Second extends PaddedSecond {
+        public setValueFromPartial(partial:string) {
+            return this.setValue(this.trim(partial));
+        }
+        
+        public getRegEx() {
+            return /^[0-5]?[0-9]$/;
+        }
+        
+        public toString() {
+            return this.date.getSeconds().toString();
+        }
+        
+    }
+    
     class UppercaseMeridiem extends DatePart {
         public increment() {
             let num = this.date.getHours() + 12;
@@ -652,13 +706,9 @@ let formatBlocks = (function() {
     formatBlocks['A'] = UppercaseMeridiem;
     formatBlocks['a'] = LowercaseMeridiem;
     formatBlocks['mm'] = PaddedMinute;
-    // m
-    // ss
-    // s
-    // X
-    // x
-    // ZZ
-    // Z
+    formatBlocks['m'] = Minute;
+    formatBlocks['ss'] = PaddedSecond;
+    formatBlocks['s'] = Second;
     
     return formatBlocks;
 })();
