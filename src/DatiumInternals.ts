@@ -9,16 +9,18 @@ class Level {
 }
 
 class DatiumInternals {
-    private options:IOptions = {};
+    private options:IOptions = <any>{};
     
     private input:Input;
+    private picker:Picker;
+    
     
     constructor(private element:HTMLInputElement, options:IOptions) {
         if (element === void 0) throw 'element is required';
         element.setAttribute('spellcheck', 'false');
         
         this.input = new Input(element);
-        
+        this.picker = new Picker(element);
         
         this.updateOptions(options);        
         
@@ -44,8 +46,9 @@ class DatiumInternals {
         });
     }
     
-    public updateOptions(newOptions:IOptions = {}) {
+    public updateOptions(newOptions:IOptions = <any>{}) {
         this.options = OptionSanitizer.sanitize(newOptions, this.options);        
         this.input.updateOptions(this.options);
+        this.picker.updateOptions(this.options);
     }
 }

@@ -11,24 +11,39 @@ var run = require('run-gulp-task');
 var through = require('through2');
 var fs = require('fs');
 var gzipSize = require('gzip-size');
+var cleanCss = require('clean-css');
+var concat = require('gulp-concat');
 
 gulp.task('default', ['serve', 'watch']);
 gulp.task('watch', ['build'], watch);
 gulp.task('serve', serve);
-gulp.task('build', build);
+gulp.task('build', ['css'], build);
+gulp.task('css', css);
 gulp.task('deploy', ['closure'], deploy);
 gulp.task('closure', ['build'], closure);
 
 function watch() {
-    gulpWatch('./src/**/*', build);
+    gulpWatch('./src/**/*', function() {
+        css().on('end', build);
+    });
 }
 
 function serve() {
    liveServer.start({
        root: './public',
        port: 3000
-   }); 
-    
+   });
+}
+
+function css() {
+    return gulp.src('./src/styles/**/*.css')
+        .pipe(concat('css.ts'))
+        .pipe(through.obj(function (file, enc, cb) {
+            var css = new cleanCss().minify(file.contents.toString()).styles;
+            file.contents = new Buffer('var css="' + css + '";');
+            cb(null, file);
+        }))
+        .pipe(gulp.dest('./src/styles'));
 }
 
 function build() {
@@ -52,10 +67,6 @@ function deploy() {
     shell.exec('git add -A');
     shell.exec('git commit -m "latest deploy"');
     shell.exec('git push');
-}
-
-function findAt(str, index, search) {
-    return str.slice(index, index + search.length) === search;
 }
 
 var OBFUSCATE = false;
