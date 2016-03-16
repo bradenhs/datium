@@ -8,6 +8,8 @@
         "gulpfile.js": true,
         "deploy": true,
         "tsconfig.json": true,
-        "compiler.jar": true
+        "compiler.jar": true,
+        "src/picker/html/**/*.ts": true,
+        "src/picker/styles/**/*.ts": true
 	}
 }

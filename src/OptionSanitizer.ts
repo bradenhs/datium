@@ -1,10 +1,14 @@
+function OptionException(msg:string) {
+    return `[Datium Option Exception]\n  ${msg}\n  See http://datium.io/documentation for documentation.`;
+}
+
 class OptionSanitizer {
     
     static dfltDate:Date = new Date();
     
     static sanitizeDisplayAs(displayAs:any, dflt:string = 'h:mma MMM D, YYYY') {
         if (displayAs === void 0) return dflt;
-        if (typeof displayAs !== 'string') throw 'Display as must be a string';
+        if (typeof displayAs !== 'string') throw OptionException('The "displayAs" option must be a string');
         return displayAs;
     }
     
@@ -30,12 +34,12 @@ class OptionSanitizer {
         let rgba = '\\s*rgba\\(\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*\\,\\s*[0-9]*\\.[0-9]+\\s*\\)\\s*';
         let sanitizeColorRegex = new RegExp(`^((${threeHex})|(${sixHex})|(${rgb})|(${rgba}))$`);
 
-        if (color === void 0) throw "Color must be valid";
-        if (!sanitizeColorRegex.test(color)) throw "Color must be valid rgb, rgba, or hex code";
+        if (color === void 0) throw OptionException("All theme colors (primary, primary_text, secondary, secondary_text, secondary_accent) must be defined");
+        if (!sanitizeColorRegex.test(color)) throw OptionException("All theme colors must be valid rgb, rgba, or hex code");
         return <string>color;
     }
     
-    static sanitizeTheme(theme:any, dflt:string = "light"):ITheme {
+    static sanitizeTheme(theme:any, dflt:any = "light"):ITheme {
         if (theme === void 0) return OptionSanitizer.sanitizeTheme(dflt);
         if (typeof theme === 'string') {
             switch(theme) {
@@ -75,7 +79,7 @@ class OptionSanitizer {
                 secondary_accent: OptionSanitizer.sanitizeColor(theme['secondary_accent'])
             }
         } else {
-            throw 'Theme must be object or string';
+            throw OptionException('The "theme" option must be object or string');
         }
     } 
     

@@ -1,1 +1,0 @@
-var css="datium-container._id{color:_primary}";
