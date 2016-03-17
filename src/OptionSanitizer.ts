@@ -39,8 +39,8 @@ class OptionSanitizer {
         return <string>color;
     }
     
-    static sanitizeTheme(theme:any, dflt:any = "light"):ITheme {
-        if (theme === void 0) return OptionSanitizer.sanitizeTheme(dflt);
+    static sanitizeTheme(theme:any, dflt:any = "material"):ITheme {
+        if (theme === void 0) return OptionSanitizer.sanitizeTheme(dflt, void 0);
         if (typeof theme === 'string') {
             switch(theme) {
             case 'light':

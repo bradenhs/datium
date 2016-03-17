@@ -1,0 +1,146 @@
+datium-container._id {
+    datium-header {
+        position: relative;
+        display: block;
+        overflow: hidden;
+        width: 100%;
+        height: 80px;
+        background-color: _primary;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+        margin-bottom: 5px;
+    }
+    
+    datium-span-label-container {
+        position: absolute;
+        left: 40px;
+        right: 40px;
+        top: 0;
+        bottom: 0;
+        display: block;
+        overflow: hidden;
+        transition: .2s ease all;
+    }
+    
+    datium-span-label {
+        position: absolute;
+        font-size: 18pt;
+        color: _primary_text;
+        font-weight: bold;
+        transform-origin: 0 0;
+        white-space: nowrap;
+        transition: all .2s ease;
+        
+        &.datium-top {
+            transform: translateY(17px) scale(.66);
+            width: 151%;
+            opacity: .6;
+        }
+        
+        &.datium-bottom {
+            transform: translateY(36px) scale(1);
+            width: 100%;
+            opacity: 1;
+        }
+        
+        &.datium-top.datium-hidden {
+            transform: translateY(5px) scale(.4);
+            opacity: 0;
+        }
+        
+        &.datium-bottom.datium-hidden {
+            transform: translateY(78px) scale(1.2);
+        }
+        
+        &:after {
+            content: '';
+            display: inline-block;
+            position: absolute;
+            margin-left: 10px;
+            margin-top: 6px;
+            height: 17px;
+            width: 17px;
+            opacity: 0;
+            transition: all .2s ease;
+            
+            /* zoom out icon svg url encoded */
+            background: url('data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22_primary_text%22%3E%3Cpath%20d%3D%22M17%2015l-2%202-5-5%202-2z%22%20fill-rule%3D%22evenodd%22%2F%3E%3Cpath%20d%3D%22M7%200a7%207%200%200%200-7%207%207%207%200%200%200%207%207%207%207%200%200%200%207-7%207%207%200%200%200-7-7zm0%202a5%205%200%200%201%205%205%205%205%200%200%201-5%205%205%205%200%200%201-5-5%205%205%200%200%201%205-5z%22%2F%3E%3Cpath%20d%3D%22M4%206h6v2H4z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+        }
+        
+        &.datium-top:after {
+            opacity: 1;
+        }
+        
+        datium-variable {
+            color: _primary;
+            font-size: 14pt;
+            padding: 0 4px;
+            margin: 0 2px;
+            top: -2px;
+            position: relative;
+            
+            &:before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                border-radius: 5px;
+                background-color: _primary_text;
+                z-index: -1;
+                opacity: .7;
+            }
+        }
+    }
+    
+    datium-prev, datium-next {
+        position: absolute;
+        width: 40px;
+        top: 0;
+        bottom: 0;
+        transform-origin: 20px 52px;
+        &:before, &:after {
+            content: '';
+            position: absolute;
+            display: block;
+            width: 3px;
+            height: 8px;
+            left: 50%;
+            background-color: _primary_text;
+            top: 48px;
+        }
+        
+        &.datium-active {
+            transform: scale(.9);
+            opacity: .9;
+        }
+    }
+    
+    datium-prev {
+        left: 0;
+        &:before, &:after {
+            margin-left: -3px;
+        }
+    }
+    
+    datium-next {
+        right: 0;
+    }
+    
+    datium-prev:before {
+        transform: rotate(45deg) translateY(-3px);
+    }
+    
+    datium-prev:after {
+        transform: rotate(-45deg) translateY(3px);
+    }
+    
+    datium-next:before {
+        transform: rotate(45deg) translateY(3px);
+    }
+    
+    datium-next:after {
+        transform: rotate(-45deg) translateY(-3px);
+    }
+}

@@ -1,28 +1,22 @@
-class Level {
-    static YEAR = 0;
-    static MONTH = 1;
-    static DATE = 2;
-    static HOUR = 3;
-    static MINUTE = 4;
-    static SECOND = 5;
-    static NONE = 6;
+const enum Level {
+    YEAR, MONTH, DATE, HOUR,
+    MINUTE, SECOND, NONE
 }
 
 class DatiumInternals {
     private options:IOptions = <any>{};
     
     private input:Input;
-    private picker:Picker;
-    
+    private pickerManager:PickerManager;
     
     constructor(private element:HTMLInputElement, options:IOptions) {
         if (element === void 0) throw 'element is required';
         element.setAttribute('spellcheck', 'false');
         
         this.input = new Input(element);
-        this.picker = new Picker(element);
+        this.pickerManager = new PickerManager(element);
         
-        this.updateOptions(options);        
+        this.updateOptions(options);
         
         listen.goto(element, (e) => this.goto(e.date, e.level));
         
@@ -49,6 +43,6 @@ class DatiumInternals {
     public updateOptions(newOptions:IOptions = <any>{}) {
         this.options = OptionSanitizer.sanitize(newOptions, this.options);        
         this.input.updateOptions(this.options);
-        this.picker.updateOptions(this.options);
+        this.pickerManager.updateOptions(this.options, this.input.getLevels());
     }
 }

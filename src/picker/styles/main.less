@@ -1,9 +1,18 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto);
-
 datium-container._id {
-    width: 300px;
-    height: 300px;
     display: block;
-    background-color: _primary;
-    border: 1px solid _secondary_text;
+    position: absolute;
+    border-radius: 3px;
+    width: 280px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+    font-family: Roboto;
+    
+    &, & * {
+        -webkit-touch-callout:none;
+        -webkit-user-select:none;
+        -khtml-user-select:none;
+        -moz-user-select:none;
+        -ms-user-select:none;
+        -webkit-tap-highlight-color:rgba(0,0,0,0);
+        cursor: default;   
+    }
 }

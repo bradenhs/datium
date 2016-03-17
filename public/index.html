@@ -1,32 +1,13 @@
 <html>
     <head>
-        <title>Datium Production</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
-        
+        <title>Datium Production</title>        
         <script src="datium.js"></script>
-        
-        <style>
-            input {
-                display: block;
-                margin-bottom: 5px;
-                width: 700px;
-                padding: 10px;
-            }
-        </style>
     </head>
     <body>
         <input id="test1"/>
-        <input id="test2"/>
-        <input id="test3"/>
         <script>            
             new Datium(document.querySelector('#test1'), {
-                displayAs: '[YYYY]=YYYY [YY]=YY [MMMM]=MMMM [MMM]=MMM [MM]=MM [M]=M [DD]=DD [Do]=Do [D]=D'
-            });            
-            new Datium(document.querySelector('#test2'), {
-                displayAs: ' [dddd]=dddd [ddd]=ddd [HH]=HH [hh]=hh [H]=H [h]=h [A]=A [a]=a'
-            });         
-            new Datium(document.querySelector('#test3'), {
-                displayAs: '[mm]=mm [m]=m [ss]=ss [s]=s'
+                displayAs: "YYYY MMMM Do h:mm:ssa"
             });
         </script>
     </body>

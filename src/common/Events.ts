@@ -5,6 +5,39 @@ interface IListenerReference {
 }
 
 namespace listen {
+    let matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
+    
+    function handleDelegateEvent(parent:Element, delegateSelector:string, callback:(e?:MouseEvent|TouchEvent) => void) {
+        return (e:MouseEvent|TouchEvent) => {
+            var target = e.srcElement || <Element>e.target;
+            
+            while(!target.isEqualNode(parent)) {
+                if (matches.call(target, delegateSelector)) {
+                    callback(e);
+                    return;
+                }
+                target = target.parentElement;
+            }
+        }
+    }
+    
+    function attachEventsDelegate(events:string[], parent:Element, delegateSelector:string, callback:(e?:MouseEvent|TouchEvent) => void):IListenerReference[] {
+        let listeners:IListenerReference[] = [];
+        for (let key in events) {
+            let event:string = events[key];
+            
+            let newListener = handleDelegateEvent(parent, delegateSelector, callback);
+            listeners.push({
+                element: parent,
+                reference: newListener,
+                event: event
+            });
+            
+            parent.addEventListener(event, newListener);
+        }
+        return listeners;
+    }
+    
     function attachEvents(events:string[], element:Element|Document|Window, callback:(e?:any) => void):IListenerReference[] {
         let listeners:IListenerReference[] = [];
         events.forEach((event) => {
@@ -20,8 +53,28 @@ namespace listen {
     
     // NATIVE
     
-    export function focus(element:Element, callback:(e?:FocusEvent) => void):IListenerReference[] {
+    export function focus(element:Element|Document|Window, callback:(e?:FocusEvent) => void):IListenerReference[] {
         return attachEvents(['focus'], element, (e) => {
+            callback(e);
+        });
+    }
+    
+    export function down(element:Element|Document|Window, callback:(e?:MouseEvent|TouchEvent) => void):IListenerReference[];
+    export function down(parent:Element|Document|Window, delegateSelector:string, callback:(e?:MouseEvent|TouchEvent) => void):IListenerReference[];
+    export function down(...params:any[]) {
+        if (params.length === 3) {
+            return attachEventsDelegate(['mousedown', 'touchstart'], params[0], params[1], (e) => {
+                params[2](<any>e);
+            });
+        } else {
+            return attachEvents(['mousedown', 'touchstart'], params[0], (e) => {
+                params[1](<any>e);
+            });        
+        } 
+    };
+    
+    export function up(element:Element|Document|Window, callback:(e?:MouseEvent) => void):IListenerReference[] {
+        return attachEvents(['mouseup', 'touchend'], element, (e) => {
             callback(e);
         });
     }

@@ -38,7 +38,7 @@ class MouseEventHandler {
         this.input.setSelectedDatePart(block);
         
         if (this.input.element.selectionStart > 0 || this.input.element.selectionEnd < this.input.element.value.length) {
-            this.input.updateView();
+            this.input.triggerViewChange();
         }
     };
 }

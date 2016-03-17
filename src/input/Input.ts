@@ -12,6 +12,16 @@ class Input {
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level));
     }
     
+    public getLevels():Level[] {
+        let levels:Level[] = [];
+        this.dateParts.forEach((datePart) => {
+            if (levels.indexOf(datePart.getLevel()) === -1 && datePart.isSelectable()) {
+                levels.push(datePart.getLevel());
+            }
+        });
+        return levels;
+    }
+    
     public getTextBuffer() {
         return this.textBuffer;
     }
@@ -157,4 +167,12 @@ class Input {
         });
         this.updateView();
     }
+    
+    public triggerViewChange() {
+        trigger.viewchanged(this.element, {
+            date: this.getSelectedDatePart().getValue(),
+            level: this.getSelectedDatePart().getLevel()
+        });        
+    }
+    
 }

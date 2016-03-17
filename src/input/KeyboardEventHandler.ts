@@ -19,13 +19,13 @@ class KeyboardEventHandler {
             let first = this.input.getFirstSelectableDatePart();
             this.input.setSelectedDatePart(first);
             setTimeout(() => {
-               this.input.updateView();
+               this.input.triggerViewChange();
             });
         } else if (this.shiftTabDown) {
             let last = this.input.getLastSelectableDatePart();
             this.input.setSelectedDatePart(last);
             setTimeout(() => {
-               this.input.updateView();
+               this.input.triggerViewChange();
             });
         }
     }
@@ -93,32 +93,32 @@ class KeyboardEventHandler {
     private home() {
         let first = this.input.getFirstSelectableDatePart();
         this.input.setSelectedDatePart(first);
-        this.input.updateView();
+        this.input.triggerViewChange();
     }
     
     private end() {
         let last = this.input.getLastSelectableDatePart();
         this.input.setSelectedDatePart(last);     
-        this.input.updateView();   
+        this.input.triggerViewChange();
     }
     
     private left() {
         let previous = this.input.getPreviousSelectableDatePart();
         this.input.setSelectedDatePart(previous);
-        this.input.updateView();
+        this.input.triggerViewChange();
     }
     
     private right() {
         let next = this.input.getNextSelectableDatePart();
         this.input.setSelectedDatePart(next);
-        this.input.updateView();
+        this.input.triggerViewChange();
     }
     
     private shiftTab() {
         let previous = this.input.getPreviousSelectableDatePart();
         if (previous !== this.input.getSelectedDatePart()) {
             this.input.setSelectedDatePart(previous);
-            this.input.updateView();
+            this.input.triggerViewChange();
             return true;
         }
         return false;
@@ -128,7 +128,7 @@ class KeyboardEventHandler {
         let next = this.input.getNextSelectableDatePart();
         if (next !== this.input.getSelectedDatePart()) {
             this.input.setSelectedDatePart(next);
-            this.input.updateView();
+            this.input.triggerViewChange();
             return true;
         }
         return false;

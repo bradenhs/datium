@@ -112,50 +112,15 @@ function deploy() {
     shell.exec('git push');
 }
 
-var OBFUSCATE = false;
-
-String.prototype.replaceAll = function(search, replacement) {
-    return this.split(search).join(replacement);
-}
-
-function obfuscate(fileContents) {
-    fileContents = fileContents.replace(/\n/g, '');
-    
-    if (!OBFUSCATE) return fileContents;
-    
-    fileContents = fileContents.replace(/\\/g, '\\\\');
-    
-    replacements = [];
-    
-    replacements['=function('] = '=e(';
-    //replacements['{return '] = '{e ';
-    replacements['.prototype.'] = '.e.';
-    
-    replacementString = '';
-    
-    for (key in replacements) {
-        fileContents = fileContents.replaceAll(key, replacements[key]);
-        replacementString += '.e("'+replacements[key]+'","'+key+'")';
-    }
-    
-    return "String.prototype.e=function(a,e){return this.split(a).join(e)};eval('"+fileContents+"'"+replacementString+")";
-}
-
-function escapeString(str) {
-  return str.replace(/\"/g, "\\\"");
-}
-
-function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
 function closure() {
-    // Needed so that closure works properly
-    var str = fs.readFileSync('public/datium.js').toString();
-    str = str.replace('function __() { this.constructor = d; }', '/** @constructor */\nfunction __() { this.constructor = d; }');
-    fs.writeFileSync('public/datium.js', str);
-    
     return gulp.src('./public/datium.js')
+        .pipe(through.obj(function (file, enc, cb) { // weird optimization
+            var result = file.contents.toString().replace('function __() { this.constructor = d; }',
+                '/** @constructor */ function __() { this.constructor = d; }');
+            file.contents = new Buffer(result);
+            cb(null, file);
+        }))
+        .pipe(gulp.dest('public'))
         .pipe(closureCompiler({
             compilerPath: 'compiler.jar',
             fileName: 'datium.js',
@@ -165,7 +130,8 @@ function closure() {
             }
         }))
         .pipe(through.obj(function (file, enc, cb) { // weird optimization
-            var result = obfuscate(file.contents.toString());
+            
+            var result = file.contents.toString().replace(/\n/g, '');
             file.contents = new Buffer(result);
             console.log('Compressed size: ', gzipSize.sync(file.contents)/1000+'kb');
             cb(null, file);
