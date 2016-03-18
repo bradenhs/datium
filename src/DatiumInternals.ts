@@ -18,12 +18,12 @@ class DatiumInternals {
         
         this.updateOptions(options);
         
-        listen.goto(element, (e) => this.goto(e.date, e.level));
+        listen.goto(element, (e) => this.goto(e.date, e.level, e.update));
         
         this.goto(this.options['defaultDate'], Level.NONE);
     }
     
-    public goto(date:Date, level:Level) {
+    public goto(date:Date, level:Level, update:boolean = true) {
         if (date === void 0) date = new Date();
         
         if (this.options.minDate !== void 0 && date.valueOf() < this.options.minDate.valueOf()) {
@@ -36,7 +36,8 @@ class DatiumInternals {
         
         trigger.viewchanged(this.element, {
             date: date,
-            level: level
+            level: level,
+            update: update
         });
     }
     

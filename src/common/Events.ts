@@ -97,15 +97,58 @@ namespace listen {
         });
     }
     
+    export function tap(element:Element|Document, callback:(e?:Event) => void):IListenerReference[];
+    export function tap(parent:Element|Document, delegateClass:string, callback:(e?:Event) => void):IListenerReference[];
+    export function tap(...params:any[]):IListenerReference[] {
+        let startTouchX:number, startTouchY:number;
+        
+        let handleStart = (e:TouchEvent) => {
+            startTouchX = e.touches[0].clientX;
+            startTouchY = e.touches[0].clientY;
+            // TODO Problem on devices with touch and click
+        }
+        
+        let handleEnd = (e:TouchEvent, callback:(e?:Event) => void) => {
+            if (startTouchX === void 0 || startTouchY === void 0) {
+                e.preventDefault();
+                callback(e);
+                return;
+            }
+            
+            let xDiff = e.changedTouches[0].clientX - startTouchX;
+            let yDiff = e.changedTouches[0].clientY - startTouchY;
+            
+            if (Math.sqrt(xDiff * xDiff + yDiff * yDiff) < 10) {
+                e.preventDefault();
+                callback(e);
+            }
+        }
+        
+        let listeners:IListenerReference[] = [];
+        
+        if (params.length === 3) {
+            listeners = listeners.concat(attachEventsDelegate(['touchstart'], params[0], params[1], handleStart));
+            listeners = listeners.concat(attachEventsDelegate(['touchend', 'click'], params[0], params[1], (e:TouchEvent) => {
+                handleEnd(e, params[2]);
+            }));
+        } else if (params.length === 2) {
+            listeners = listeners.concat(attachEvents(['touchstart'], params[0], handleStart));
+            listeners = listeners.concat(attachEvents(['touchend', 'click'], params[0], (e:TouchEvent) => {
+                handleEnd(e, params[1]);
+            }));
+        }
+        return listeners;
+    }
+    
     // CUSTOM
     
-    export function goto(element:Element, callback:(e?:{date:Date, level:Level}) => void):IListenerReference[] {
+    export function goto(element:Element, callback:(e?:{date:Date, level:Level, update?:boolean}) => void):IListenerReference[] {
         return attachEvents(['datium-goto'], element, (e:CustomEvent) => {
             callback(e.detail);
         });
     }
     
-    export function viewchanged(element:Element, callback:(e?:{date:Date, level:Level}) => void):IListenerReference[] {
+    export function viewchanged(element:Element, callback:(e?:{date:Date, level:Level, update?:boolean}) => void):IListenerReference[] {
         return attachEvents(['datium-viewchanged'], element, (e:CustomEvent) => {
             callback(e.detail);
         });
@@ -119,7 +162,7 @@ namespace listen {
 }
 
 namespace trigger {
-    export function goto(element:Element, data?:{date:Date, level:Level}) {
+    export function goto(element:Element, data?:{date:Date, level:Level, update?:boolean}) {
         element.dispatchEvent(new CustomEvent('datium-goto', {
             bubbles: false,
             cancelable: true,
@@ -127,7 +170,7 @@ namespace trigger {
         }));
     }
     
-    export function viewchanged(element:Element, data?:{date:Date, level:Level}) {
+    export function viewchanged(element:Element, data?:{date:Date, level:Level, update?:boolean}) {
         element.dispatchEvent(new CustomEvent('datium-viewchanged', {
             bubbles: false,
             cancelable: true,

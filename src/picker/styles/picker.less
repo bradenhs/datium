@@ -1,0 +1,27 @@
+datium-container._id {
+    datium-picker-container-wrapper {
+        overflow: hidden;
+        position: absolute;
+        left: -20px;
+        right: -20px;
+        top: 80px;
+        height: 285px;
+        display: block;
+        pointer-events: none;
+    }
+    datium-picker-container {
+        position: relative;
+        width: calc(100% ~"-" 40px);
+        height: 270px;
+        background-color: _secondary;
+        display: block;
+        margin: 20px;
+        margin-top: 0;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.17), 0 6px 6px rgba(0,0,0,0.21);
+        transform: translateY(-20px);
+        pointer-events: auto;
+        border-bottom-right-radius: 3px;
+        border-bottom-left-radius: 3px;
+        transition: all ease .2s;
+    }
+}

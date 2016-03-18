@@ -9,7 +9,7 @@ class Input {
         new MouseEventHandler(this);
         new PasteEventHander(this);
         
-        listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level));
+        listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));
     }
     
     public getLevels():Level[] {
@@ -161,9 +161,14 @@ class Input {
         this.element.setSelectionRange(start, end);
     }
     
-    public viewchanged(date:Date, level:Level) {
+    public viewchanged(date:Date, level:Level, update?:boolean) {        
         this.dateParts.forEach((datePart) => {
-            datePart.setValue(date);
+            if (update) datePart.setValue(date);
+            if (datePart.getLevel() === level &&
+                this.getSelectedDatePart() !== void 0 &&
+                level !== this.getSelectedDatePart().getLevel()) {
+                this.setSelectedDatePart(datePart);
+            }
         });
         this.updateView();
     }

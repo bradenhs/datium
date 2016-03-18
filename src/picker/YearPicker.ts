@@ -1,3 +1,0 @@
-class YearPicker implements IPicker {
-    
-}

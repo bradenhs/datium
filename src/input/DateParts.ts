@@ -28,7 +28,7 @@ class PlainText implements IDatePart {
 }
     
 let formatBlocks = (function() {    
-    class DatePart {
+    class DatePart extends Common {
         protected date:Date;
         protected selectable:boolean = true;
         
@@ -43,19 +43,6 @@ let formatBlocks = (function() {
         
         public isSelectable() {
             return this.selectable;
-        }   
-        
-        protected pad(num:number|string, size:number = 2) {
-            let str = num.toString();
-            while(str.length < size) str = '0' + str;
-            return str;
-        }
-        
-        protected trim(str:string) {
-            while (str[0] === '0' && str.length > 1) {
-                str = str.substr(1, str.length);  
-            }
-            return str;
         }
     }
     
@@ -128,7 +115,7 @@ let formatBlocks = (function() {
     
     class LongMonthName extends DatePart {
         protected getMonths() {
-            return ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            return super.getMonths();
         } 
         
         public increment() {
@@ -187,7 +174,7 @@ let formatBlocks = (function() {
     
     class ShortMonthName extends LongMonthName {
         protected getMonths() {
-            return ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            return super.getShortMonths();
         }
     }
     
@@ -331,7 +318,7 @@ let formatBlocks = (function() {
     
     class LongDayName extends DatePart {
         protected getDays() {
-            return ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            return super.getDays();
         }
         
         public increment() {
@@ -387,7 +374,7 @@ let formatBlocks = (function() {
     
     class ShortDayName extends LongDayName {
         protected getDays() {
-            return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            return super.getShortDays();
         }
     }
     
@@ -487,10 +474,7 @@ let formatBlocks = (function() {
         }
         
         public toString() {
-            let hours = this.date.getHours();
-            if (hours > 12) hours -= 12;
-            if (hours === 0) hours = 12;
-            return this.pad(hours);
+            return this.pad(this.getHours(this.date));
         }
     }
     
@@ -676,13 +660,13 @@ let formatBlocks = (function() {
         }
         
         public toString() {
-            return this.date.getHours() < 12 ? 'AM' : 'PM';
+            return this.getMeridiem(this.date).toUpperCase();
         }
     }
     
     class LowercaseMeridiem extends UppercaseMeridiem {
         public toString() {
-            return super.toString().toLowerCase();
+            return this.getMeridiem(this.date);
         }
     }
     

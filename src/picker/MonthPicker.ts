@@ -1,3 +1,0 @@
-class MonthPicker implements IPicker {
-    
-}

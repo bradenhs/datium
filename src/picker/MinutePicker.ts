@@ -1,3 +1,0 @@
-class MinutePicker implements IPicker {
-    
-}

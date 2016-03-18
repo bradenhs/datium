@@ -1,4 +1,8 @@
-class Header {
+const enum StepDirection {
+    UP, DOWN
+}
+
+class Header extends Common {
     private yearLabel:Element;
     private monthLabel:Element;
     private dateLabel:Element;
@@ -9,8 +13,14 @@ class Header {
     private labels:Element[];
     
     private options:IOptions;
+    private levels:Level[];
+    
+    private level:Level;
+    private date:Date;
     
     constructor(private element:HTMLElement, private container:HTMLElement) {
+        super();
+        
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level));
         
         this.yearLabel = container.querySelector('datium-span-label.datium-year');
@@ -21,36 +31,93 @@ class Header {
         this.secondLabel = container.querySelector('datium-span-label.datium-second');
         
         this.labels = [this.yearLabel, this.monthLabel, this.dateLabel, this.hourLabel, this.minuteLabel, this.secondLabel];
+        
+        let previousButton = container.querySelector('datium-prev');
+        let nextButton = container.querySelector('datium-next');
+        let spanLabelContainer = container.querySelector('datium-span-label-container');
+        
+        listen.tap(previousButton, () => this.previous());
+        listen.tap(nextButton, () => this.next());
+        listen.tap(spanLabelContainer, () => this.zoomOut());
+    }
+    
+    private previous() {
+        trigger.goto(this.element, {
+           date: this.stepDate(StepDirection.DOWN),
+           level: this.level,
+           update: false
+        });
+    }
+    
+    private next() {
+        trigger.goto(this.element, {
+           date: this.stepDate(StepDirection.UP),
+           level: this.level,
+           update: false
+        });
+    }
+    
+    private zoomOut() {
+        let newLevel  = this.levels[this.levels.indexOf(this.level) - 1];
+        if (newLevel === void 0) return;
+        trigger.goto(this.element, {
+           date: this.date,
+           level: newLevel,
+           update: false
+        });
+    }
+    
+    private stepDate(stepType:StepDirection):Date {
+        let date = new Date(this.date.valueOf());
+        let direction = stepType === StepDirection.UP ? 1 : -1;
+        switch (this.level) {
+            case Level.YEAR:
+                date.setFullYear(date.getFullYear() + 10 * direction);
+                break;
+            case Level.MONTH:
+                date.setFullYear(date.getFullYear() + direction);
+                break;
+            case Level.DATE:
+                date.setMonth(date.getMonth() + direction);
+                break;
+            case Level.HOUR:
+                date.setDate(date.getDate() + direction);
+                break;
+            case Level.MINUTE:
+                date.setHours(date.getHours() + direction);
+                break;
+            case Level.SECOND:
+                date.setMinutes(date.getMinutes() + direction);
+                break;
+        }
+        return date;
     }
     
     private viewchanged(date:Date, level:Level) {
-        this.labels.forEach((label, i) => {
+        if (this.date !== void 0 &&
+            date.valueOf() === this.date.valueOf() &&
+            level === this.level) {
+            return;
+        }
+        this.date = date;
+        this.level = level;
+        this.labels.forEach((label, labelLevel) => {
             label.classList.remove('datium-top');
             label.classList.remove('datium-bottom');
             label.classList.remove('datium-hidden');
                         
-            if (i < level) {
+            if (labelLevel < level) {
                 label.classList.add('datium-top');
-                label.innerHTML = this.getHeaderTopText(date, i);
+                label.innerHTML = this.getHeaderTopText(date, labelLevel);
             } else {
                 label.classList.add('datium-bottom');
-                label.innerHTML = this.getHeaderBottomText(date, i);
+                label.innerHTML = this.getHeaderBottomText(date, labelLevel);
             }
             
-            if (i < level - 1 || i > level) {
+            if (labelLevel < level - 1 || labelLevel > level) {
                 label.classList.add('datium-hidden');
             }
         });
-    }
-    
-    // genreAL USE?
-    private getMonth(date:Date):string {
-        return ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][date.getMonth()];
-    }
-    
-    // genreAL USE?
-    private getDay(date:Date):string {
-        return ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][date.getDay()];
     }
     
     private getHeaderTopText(date:Date, level:Level):string {
@@ -60,36 +127,11 @@ class Header {
             case Level.MONTH:
                 return date.getFullYear().toString();
             case Level.DATE:
-                return `${this.getMonth(date)} ${date.getFullYear()}`;
+                return `${this.getShortMonths()[date.getMonth()]} ${date.getFullYear()}`;
             case Level.HOUR:
             case Level.MINUTE:
-                return `${this.getDay(date)} ${this.pad(date.getDate())} ${this.getMonth(date)} ${date.getFullYear()}`;
+                return `${this.getShortDays()[date.getDay()]} ${this.pad(date.getDate())} ${this.getShortMonths()[date.getMonth()]} ${date.getFullYear()}`;
         }
-    }
-    
-    // genreAL USE?
-    private pad(num:number|string, size:number = 2) {
-        let str = num.toString();
-        while(str.length < size) str = '0' + str;
-        return str;
-    }
-    
-    // general use?
-    private getDecade(date:Date):string {
-        return `${Math.floor(date.getFullYear()/10)*10} - ${Math.ceil((date.getFullYear() + 1)/10)*10}`;
-    }
-    
-    // general use?
-    private getHours(date:Date):string {
-        let num = date.getHours();
-        if (num === 0) num = 12;
-        if (num > 12) num -= 12;
-        return num.toString();
-    }
-    
-    // general use?
-    private getMeridiem(date:Date):string {
-        return date.getHours() < 12 ? 'AM' : 'PM';
     }
     
     private getHeaderBottomText(date:Date, level:Level):string {
@@ -99,9 +141,9 @@ class Header {
             case Level.MONTH:
                 return date.getFullYear().toString();
             case Level.DATE:
-                return this.getMonth(date);
+                return this.getShortMonths()[date.getMonth()];
             case Level.HOUR:
-                return `${this.getDay(date)} ${this.pad(date.getDate())} <datium-variable>${this.getHours(date)}${this.getMeridiem(date)}</datium-variable>`;
+                return `${this.getShortDays()[date.getDay()]} ${this.pad(date.getDate())} <datium-variable>${this.getHours(date)}${this.getMeridiem(date)}</datium-variable>`;
             case Level.MINUTE:
                 return `${this.getHours(date)}:<datium-variable>${this.pad(date.getMinutes())}</datium-variable>${this.getMeridiem(date)}`;
             case Level.SECOND:
@@ -109,7 +151,8 @@ class Header {
         }
     }
     
-    private updateOptions(options:IOptions) {
+    public updateOptions(options:IOptions, levels:Level[]) {
         this.options = options;
+        this.levels = levels;
     }
 }
