@@ -1,4 +1,4 @@
-class YearPicker implements IPicker {
+class SecondPicker implements IPicker {
     constructor(private element:Element) {
         
     }
@@ -8,6 +8,6 @@ class YearPicker implements IPicker {
     }
     
     public getHeight() {
-        return 100;
+        return 180;
     }
 }

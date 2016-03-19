@@ -10,9 +10,12 @@ class PickerManager {
     private container:HTMLElement;
     private header:Header;
     
-    private yearPicker:YearPicker;
-    
-    private currentPicker:IPicker;
+    private yearPicker:IPicker;
+    private monthPicker:IPicker;
+    private datePicker:IPicker;
+    private hourPicker:IPicker;
+    private minutePicker:IPicker;
+    private secondPicker:IPicker;
     
     private pickerContainer:HTMLElement;
     
@@ -26,6 +29,11 @@ class PickerManager {
         this.header = new Header(element, this.container);
         
         this.yearPicker = new YearPicker(element);
+        this.monthPicker = new MonthPicker(element);
+        this.datePicker = new DatePicker(element);
+        this.hourPicker = new HourPicker(element);
+        this.minutePicker = new MinutePicker(element);
+        this.secondPicker = new SecondPicker(element);
                 
         listen.down(this.container, '*', (e) => this.down(e));
         listen.up(document, () => this.up());
@@ -40,29 +48,29 @@ class PickerManager {
     }
     
     private viewchanged(date:Date, level:Level) {
-        let transition = Transition.ZOOM_IN;
-        if (this.currentPicker !== void 0) {
-            if (level > this.currentPicker.getLevel()) {
-                transition = Transition.ZOOM_IN;
-                this.currentPicker.destroy(transition);
-            } else if (level < this.currentPicker.getLevel()) {
-                transition = Transition.ZOOM_OUT;
-                this.currentPicker.destroy(transition);
-            } else if (this.currentPicker.needsTransition(date)) {
-                transition = date.valueOf() > this.currentPicker.getDate().valueOf() ? Transition.SLIDE_LEFT : Transition.SLIDE_RIGHT;
-                this.currentPicker.destroy(transition);
-            }
-        }
-        
+        let height = 10;
         switch(level) {
             case Level.YEAR:
-                this.currentPicker = this.yearPicker;
+                height = this.yearPicker.getHeight();
+                break;
+            case Level.MONTH:
+                height = this.monthPicker.getHeight();
+                break;
+            case Level.DATE:
+                height = this.datePicker.getHeight();
+                break;
+            case Level.HOUR:
+                height = this.hourPicker.getHeight();
+                break;
+            case Level.MINUTE:
+                height = this.minutePicker.getHeight();
+                break;
+            case Level.SECOND:
+                height = this.secondPicker.getHeight();
                 break;
             default:
                 return;
         }
-        
-        let height = this.currentPicker.getHeight();
         this.pickerContainer.style.transform = `translateY(${height-280}px)`;
     }
     
@@ -101,6 +109,11 @@ class PickerManager {
         this.header.updateOptions(options, levels);
         
         this.yearPicker.updateOptions(options);
+        this.monthPicker.updateOptions(options);
+        this.datePicker.updateOptions(options);
+        this.hourPicker.updateOptions(options);
+        this.minutePicker.updateOptions(options);
+        this.secondPicker.updateOptions(options);
     }
     
     private createView():HTMLElement {
