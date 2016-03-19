@@ -109,7 +109,7 @@ function deploy() {
 
     shell.exec('git add -A');
     shell.exec('git commit -m "latest deploy"');
-    shell.exec('git push');
+    shell.exec('git push -f');
 }
 
 function closure() {

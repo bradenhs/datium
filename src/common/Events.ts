@@ -105,11 +105,10 @@ namespace listen {
         let handleStart = (e:TouchEvent) => {
             startTouchX = e.touches[0].clientX;
             startTouchY = e.touches[0].clientY;
-            // TODO Problem on devices with touch and click
         }
         
         let handleEnd = (e:TouchEvent, callback:(e?:Event) => void) => {
-            if (startTouchX === void 0 || startTouchY === void 0) {
+            if (e.changedTouches === void 0) {
                 e.preventDefault();
                 callback(e);
                 return;

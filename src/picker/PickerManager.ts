@@ -61,8 +61,9 @@ class PickerManager {
             default:
                 return;
         }
+        
         let height = this.currentPicker.getHeight();
-        this.pickerContainer.style.transform = `translateY(${height-270}px)`;
+        this.pickerContainer.style.transform = `translateY(${height-280}px)`;
     }
     
     private up() {

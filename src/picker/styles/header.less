@@ -1,11 +1,12 @@
+@import 'global.less';
 datium-container._id {
     datium-header-wrapper {
         overflow: hidden;
         position: absolute;
-        left: -20px;
-        right: -20px;
-        top: -20px;
-        height: 100px;
+        left: -@wrap-overflow;
+        right: -@wrap-overflow;
+        top: -@wrap-overflow;
+        height: 80px + @wrap-overflow;
         display: block;
         pointer-events: none;
     }
@@ -17,13 +18,12 @@ datium-container._id {
         height: 80px;
         background-color: _primary;
         border-top-left-radius: 3px;
-        
         border-top-right-radius: 3px;
         z-index: 1;
-        margin: 20px;
-        width: calc(100% ~"-" 40px);
+        margin: @wrap-overflow;
+        width: calc(100% ~"-" 2 * @wrap-overflow);
         pointer-events: auto;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        box-shadow: 0 10px 10px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
     }
     
     datium-span-label-container {

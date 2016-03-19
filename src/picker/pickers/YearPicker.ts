@@ -8,7 +8,7 @@ class YearPicker implements IPicker {
     }
     
     public getHeight() {
-        return 100;
+        return 260;
     }
     
     public getLevel() {
