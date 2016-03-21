@@ -1,6 +1,8 @@
-class MinutePicker implements IPicker {
-    constructor(private element:Element) {
-        
+/// <reference path="picker.ts" />
+
+class MinutePicker extends Picker implements IPicker {
+    constructor(element:HTMLElement, container:HTMLElement) {
+        super(element, container);
     }
     
     public updateOptions(options:IOptions) {

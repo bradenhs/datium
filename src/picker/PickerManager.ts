@@ -1,8 +1,8 @@
 const enum Transition {
-    ZOOM_IN,
-    ZOOM_OUT,
+    SLIDE_LEFT,
     SLIDE_RIGHT,
-    SLIDE_LEFT
+    ZOOM_IN,
+    ZOOM_OUT
 }
 
 class PickerManager {
@@ -17,6 +17,8 @@ class PickerManager {
     private minutePicker:IPicker;
     private secondPicker:IPicker;
     
+    private currentPicker:IPicker;
+    
     private pickerContainer:HTMLElement;
     
     constructor(private element:HTMLInputElement) {
@@ -28,12 +30,12 @@ class PickerManager {
         
         this.header = new Header(element, this.container);
         
-        this.yearPicker = new YearPicker(element);
-        this.monthPicker = new MonthPicker(element);
-        this.datePicker = new DatePicker(element);
-        this.hourPicker = new HourPicker(element);
-        this.minutePicker = new MinutePicker(element);
-        this.secondPicker = new SecondPicker(element);
+        this.yearPicker = new YearPicker(element, this.container);
+        this.monthPicker = new MonthPicker(element, this.container);
+        this.datePicker = new DatePicker(element, this.container);
+        this.hourPicker = new HourPicker(element, this.container);
+        this.minutePicker = new MinutePicker(element, this.container);
+        this.secondPicker = new SecondPicker(element, this.container);
                 
         listen.down(this.container, '*', (e) => this.down(e));
         listen.up(document, () => this.up());
@@ -44,34 +46,49 @@ class PickerManager {
            return false; 
         });
         
-        listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level));
+        listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));
     }
     
-    private viewchanged(date:Date, level:Level) {
-        let height = 10;
-        switch(level) {
-            case Level.YEAR:
-                height = this.yearPicker.getHeight();
-                break;
-            case Level.MONTH:
-                height = this.monthPicker.getHeight();
-                break;
-            case Level.DATE:
-                height = this.datePicker.getHeight();
-                break;
-            case Level.HOUR:
-                height = this.hourPicker.getHeight();
-                break;
-            case Level.MINUTE:
-                height = this.minutePicker.getHeight();
-                break;
-            case Level.SECOND:
-                height = this.secondPicker.getHeight();
-                break;
-            default:
-                return;
+    private viewchanged(date:Date, level:Level, selectedDateChange:boolean) {
+        if (level === Level.NONE) {
+            if (this.currentPicker !== void 0) {
+                this.currentPicker.remove(Transition.ZOOM_OUT);
+            }
+            this.adjustHeight(10);
+            return;
         }
-        this.pickerContainer.style.transform = `translateY(${height-280}px)`;
+        
+        let transition:Transition;
+        if (this.currentPicker === void 0) {
+            this.currentPicker = this.getPicker(level);
+            this.currentPicker.create(date, Transition.ZOOM_IN);
+        } else if ((transition = this.getTransition(date, level)) !== void 0) {
+            this.currentPicker.remove(transition);
+            this.currentPicker = this.getPicker(level);
+            this.currentPicker.create(date, transition);
+        }
+        
+        if (selectedDateChange) {
+            this.currentPicker.setSelectedDate(date);
+        }
+        
+        this.adjustHeight(this.currentPicker.getHeight());
+    }
+    
+    private getTransition(date:Date, level:Level):Transition {
+        if (level > this.currentPicker.getLevel()) return Transition.ZOOM_IN;
+        if (level < this.currentPicker.getLevel()) return Transition.ZOOM_OUT;
+        if (date.valueOf() < this.currentPicker.getMin().valueOf()) return Transition.SLIDE_LEFT;
+        if (date.valueOf() > this.currentPicker.getMax().valueOf()) return Transition.SLIDE_RIGHT;
+        return void 0;
+    }
+    
+    private adjustHeight(height:number) {
+        this.pickerContainer.style.transform = `translateY(${height - 280}px)`;
+    }
+    
+    private getPicker(level:Level):IPicker {
+        return [this.yearPicker,this.monthPicker,this.datePicker,this.hourPicker,this.minutePicker,this.secondPicker][level];
     }
     
     private up() {

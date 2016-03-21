@@ -1,6 +1,8 @@
-class SecondPicker implements IPicker {
-    constructor(private element:Element) {
-        
+/// <reference path="picker.ts" />
+
+class SecondPicker extends Picker implements IPicker {
+    constructor(element:HTMLElement, container:HTMLElement) {
+        super(element, container);
     }
     
     public updateOptions(options:IOptions) {

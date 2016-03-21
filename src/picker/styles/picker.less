@@ -25,5 +25,46 @@ datium-container._id {
         border-bottom-right-radius: 3px;
         border-bottom-left-radius: 3px;
         transition: all ease .2s;
+        overflow: hidden;
+    }
+    
+    datium-picker {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        color: _secondary_text;
+        transition: .4s ease all;
+    }
+    
+    datium-picker.datium-picker-left {
+        transform: translateX(-100%);
+        pointer-events: none;
+        opacity: 0;
+    }
+    
+    datium-picker.datium-picker-right {
+        transform: translateX(100%);
+        pointer-events: none;
+        opacity: 0;
+    }
+    
+    datium-picker.datium-picker-in {
+        transform: scale(.8);
+        pointer-events: none;
+        opacity: 0;
+    }
+    
+    datium-picker.datium-picker-out {
+        transform: scale(1.2);
+        pointer-events: none;
+        opacity: 0;
+    }
+    
+    datium-year-element {
+        display: inline-block;
+        width: 25%;
+        line-height: 60px;
+        text-align: center;
     }
 }
