@@ -41,7 +41,7 @@ class Header extends Common {
         listen.tap(spanLabelContainer, () => this.zoomOut());
     }
     
-    private previous() {
+    public previous() {
         trigger.goto(this.element, {
            date: this.stepDate(StepDirection.DOWN),
            level: this.level,
@@ -49,7 +49,7 @@ class Header extends Common {
         });
     }
     
-    private next() {
+    public next() {
         trigger.goto(this.element, {
            date: this.stepDate(StepDirection.UP),
            level: this.level,

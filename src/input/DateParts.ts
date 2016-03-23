@@ -230,19 +230,15 @@ let formatBlocks = (function() {
     }
     
     class DateNumeral extends DatePart {
-        protected daysInMonth() {
-            return new Date(this.date.getFullYear(), this.date.getMonth() + 1, 0).getDate();
-        }
-        
         public increment() {
             let num = this.date.getDate() + 1;
-            if (num > this.daysInMonth()) num = 1;
+            if (num > this.daysInMonth(this.date)) num = 1;
             this.date.setDate(num);
         }
         
         public decrement() {
             let num = this.date.getDate() - 1;
-            if (num < 1) num = this.daysInMonth();
+            if (num < 1) num = this.daysInMonth(this.date);
             this.date.setDate(num);
         }
         
@@ -258,7 +254,7 @@ let formatBlocks = (function() {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
                 return true;
-            } else if (typeof value === 'string' && this.getRegEx().test(value) && parseInt(value, 10) < this.daysInMonth()) {
+            } else if (typeof value === 'string' && this.getRegEx().test(value) && parseInt(value, 10) < this.daysInMonth(this.date)) {
                 this.date.setDate(parseInt(value, 10));
                 return true;
             }
@@ -270,7 +266,7 @@ let formatBlocks = (function() {
         }
         
         public getMaxBuffer() {
-            return this.date.getDate() > Math.floor(this.daysInMonth()/10) ? 1 : 2;
+            return this.date.getDate() > Math.floor(this.daysInMonth(this.date)/10) ? 1 : 2;
         }
         
         public getLevel() {

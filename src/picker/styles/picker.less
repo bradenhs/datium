@@ -35,45 +35,56 @@ datium-container._id {
         right: 0;
         bottom: 0;
         color: _secondary_text;
+        transition: all ease .2s;
     }
     
+    @transition-time: .3s;
+    
     datium-picker.datium-to-left {
-        animation: datiumToLeft .3s 1 ease;
+        animation: datiumToLeft @transition-time 1 ease forwards;
         pointer-events: none;
     }
     
     datium-picker.datium-from-left {
-        animation: datiumFromLeft .3s 1 ease;
+        animation: datiumFromLeft @transition-time 1 ease forwards;
+        transform: translateX(-100%);
     }
     
     datium-picker.datium-to-right {
-        animation: datiumToRight .3s 1 ease;
+        animation: datiumToRight @transition-time 1 ease forwards;
         pointer-events: none;
     }
     
     datium-picker.datium-from-right {
-        animation: datiumFromRight .3s 1 ease;
+        animation: datiumFromRight @transition-time 1 ease forwards;
+        transform: translateX(100%);
     }
     
     datium-picker.datium-to-in {
-        animation: datiumToIn .3s 1 ease;
+        animation: datiumToIn @transition-time 1 ease forwards;
         pointer-events: none;
     }
     
     datium-picker.datium-from-in {
-        animation: datiumFromIn .3s 1 ease;
+        animation: datiumFromIn @transition-time 1 ease forwards;
+        opacity: 0;
     }
     
     datium-picker.datium-to-out {
-        animation: datiumToOut .3s 1 ease;
+        animation: datiumToOut @transition-time 1 ease forwards;
         pointer-events: none;
     }
     
     datium-picker.datium-from-out {
-        animation: datiumFromOut .3s 1 ease;
+        animation: datiumFromOut @transition-time 1 ease forwards;
+        opacity: 0;
     }
     
-    datium-year-element {
+    datium-picker.datium-dragging {
+        transition: none;
+    }
+    
+    datium-year-element, datium-month-element {
         display: inline-block;
         width: 25%;
         line-height: 60px;
@@ -96,7 +107,51 @@ datium-container._id {
             transition: none;
         }
     }
+    datium-month-element.datium-selected:after {
+        left: 25px;
+        right: 25px;
+    }
+    
+    datium-date-header {
+        display: inline-block;
+        width: 40px;
+        line-height: 28px;
+        opacity: .6;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    datium-date-element {
+        display: inline-block;
+        width: 40px;
+        line-height: 36px;
+        text-align: center;
+        position: relative;
+        transition: .2s ease all;
+        &.datium-selected:after {
+            content: '';
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            top: 50%;
+            margin-top: 10px;
+            height: 2px;
+            display: block;
+            background-color: _primary;
+        }
+        &.datium-active {
+            transform: scale(.9);
+            transition: none;
+        }
+        &:not([datium-data]) {
+            opacity: .6;
+            pointer-events: none;
+        }
+    }
 }
+
+@zoomed-in-scale: .7;
+@zoomed-out-scale: 1.3;
 
 @keyframes datiumToRight {
     from {
@@ -136,13 +191,13 @@ datium-container._id {
         opacity: 1;
     }
     to {
-        transform: scale(.8);
+        transform: scale(@zoomed-in-scale);
         opacity: 0;
     }
 }
 @keyframes datiumFromIn {
     from {
-        transform: scale(.8);
+        transform: scale(@zoomed-in-scale);
         opacity: 0;
     }
     to {
@@ -156,13 +211,13 @@ datium-container._id {
         opacity: 1;
     }
     to {
-        transform: scale(1.2);
+        transform: scale(@zoomed-out-scale);
         opacity: 0;
     }
 }
 @keyframes datiumFromOut {
     from {
-        transform: scale(1.2);
+        transform: scale(@zoomed-out-scale);
         opacity: 0;
     }
     to {

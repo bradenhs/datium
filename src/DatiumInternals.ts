@@ -24,6 +24,7 @@ class DatiumInternals {
     }
     
     public goto(date:Date, level:Level, update:boolean = true) {
+        if (this.pickerManager.dragging) return;
         if (date === void 0) date = new Date();
         
         if (this.options.minDate !== void 0 && date.valueOf() < this.options.minDate.valueOf()) {

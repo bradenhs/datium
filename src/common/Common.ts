@@ -15,6 +15,10 @@ class Common {
         return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     }
     
+    protected daysInMonth(date:Date) {
+        return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+    }
+    
     protected getHours(date:Date):string {
         let num = date.getHours();
         if (num === 0) num = 12;

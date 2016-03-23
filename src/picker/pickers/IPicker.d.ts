@@ -7,4 +7,5 @@ interface IPicker {
     getMin():Date;
     getMax():Date;
     setSelectedDate(date:Date):void;
+    getPicker():HTMLElement;
 }

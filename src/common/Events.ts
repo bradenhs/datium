@@ -4,6 +4,12 @@ interface IListenerReference {
     event: string;
 }
 
+interface IDragCallbacks {
+    dragStart?:(e?:MouseEvent|TouchEvent) => void;
+    dragMove?:(e?:MouseEvent|TouchEvent) => void;
+    dragEnd?:(e?:MouseEvent|TouchEvent) => void;
+}
+
 namespace listen {
     let matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
     
@@ -137,6 +143,45 @@ namespace listen {
             }));
         }
         return listeners;
+    }
+    
+    export function drag(element:Element, callbacks:IDragCallbacks):void;
+    export function drag(parent:Element, delegateClass:string, callbacks:IDragCallbacks):void;
+    export function drag(...params:any[]):void {
+        let dragging:boolean = false;
+        
+        let callbacks:IDragCallbacks = params[params.length-1];
+        
+        let startEvents = (e?:MouseEvent|TouchEvent) => {
+            dragging = true;
+            if (callbacks.dragStart !== void 0) {
+                callbacks.dragStart(e);
+                e.preventDefault();
+            }
+            
+            let listeners:IListenerReference[] = [];
+            
+            listeners = listeners.concat(attachEvents(['touchmove', 'mousemove'], document, (e?:MouseEvent|TouchEvent) => {
+                if (dragging && callbacks.dragMove !== void 0) {
+                    callbacks.dragMove(e);
+                    e.preventDefault();
+                }
+            }));
+            listeners = listeners.concat(attachEvents(['touchend', 'mouseup'], document, (e?:MouseEvent|TouchEvent) => {
+                if (dragging && callbacks.dragEnd !== void 0) {
+                    callbacks.dragEnd(e);
+                    e.preventDefault();
+                }
+                dragging = false;
+                removeListeners(listeners);            
+            }));  
+        }
+        
+        if (params.length === 3) {
+            attachEventsDelegate(['touchstart', 'mousedown'], params[0], params[1], startEvents);
+        } else {
+            attachEvents(['touchstart', 'mousedown'], params[0], startEvents);
+        }
     }
     
     // CUSTOM

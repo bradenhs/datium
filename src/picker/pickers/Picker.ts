@@ -1,5 +1,5 @@
-
-class Picker {
+/// <reference path="../../common/Common.ts" />
+class Picker extends Common {
     protected pickerContainer:HTMLElement;
     protected min:Date = new Date();
     protected max:Date = new Date();
@@ -7,6 +7,7 @@ class Picker {
     protected selectedDate:Date;
     
     constructor(element:HTMLElement, private container:HTMLElement) {
+        super();
         this.pickerContainer = <HTMLElement>container.querySelector('datium-picker-container');
     }
     
@@ -22,21 +23,17 @@ class Picker {
     }
     
     protected getOffset(el:HTMLElement):{x:number, y:number} {
-        let x = 0;
-        let y = 0;
-        do {
-            x += el.offsetLeft;
-            y += el.offsetTop;
-            el = el.parentElement;
-        } while(el !== this.container);
-        return {
-            x: x, y: y
-        }
+        let x = el.getBoundingClientRect().left - this.container.getBoundingClientRect().left;
+        let y = el.getBoundingClientRect().top - this.container.getBoundingClientRect().top;
+        return { x: x, y: y };
     }
-    
     
     public updateOptions(options:IOptions) {
         
+    }
+    
+    public getPicker():HTMLElement {
+        return this.picker;
     }
     
     public getMin():Date {

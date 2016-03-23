@@ -6,7 +6,7 @@ class YearPicker extends Picker implements IPicker {
         
         listen.tap(container, 'datium-year-element[datium-data]', (e) => {
            let el:Element = <Element>e.target || e.srcElement;
-           let year = parseInt(el.getAttribute('datium-data'), 10);
+           let year = new Date(el.getAttribute('datium-data')).getFullYear();
            
            let date = new Date(this.selectedDate.valueOf());
            date.setFullYear(year);
@@ -19,11 +19,11 @@ class YearPicker extends Picker implements IPicker {
         
         listen.down(container, 'datium-year-element', (e) => {
             let el:HTMLElement = <HTMLElement>(e.target || e.srcElement);
-            let text = el.getAttribute('datium-data');
+            let text = new Date(el.getAttribute('datium-data')).getFullYear().toString();
             let offset = this.getOffset(el);
             trigger.openBubble(element, {
                 x: offset.x + 35,
-                y: offset.y - 85,
+                y: offset.y + 15,
                 text: text
            });
         });
@@ -47,7 +47,7 @@ class YearPicker extends Picker implements IPicker {
             let yearElement = document.createElement('datium-year-element');
             
             yearElement.innerHTML = iterator.getFullYear().toString();
-            yearElement.setAttribute('datium-data', iterator.getFullYear().toString());
+            yearElement.setAttribute('datium-data', iterator.toISOString());
             
             this.picker.appendChild(yearElement);
             
@@ -56,20 +56,17 @@ class YearPicker extends Picker implements IPicker {
         
         this.pickerContainer.appendChild(this.picker);
         
-        this.updateSelected();
+        this.setSelectedDate(this.selectedDate);
+    }
+    
+    public setSelectedDate(selectedDate:Date) {
+        this.selectedDate = new Date(selectedDate.valueOf());
         
-    }
-    
-    public setSelectedDate(date:Date) {
-        this.selectedDate = new Date(date.valueOf());
-        this.updateSelected();
-    }
-    
-    private updateSelected() {
         let yearElements = this.pickerContainer.querySelectorAll('datium-year-element');
         for (let i = 0; i < yearElements.length; i++) {
             let el = yearElements.item(i);
-            if (parseInt(el.getAttribute('datium-data'), 10) === this.selectedDate.getFullYear()) {
+            let date = new Date(el.getAttribute('datium-data'));
+            if (date.getFullYear() === selectedDate.getFullYear()) {
                 el.classList.add('datium-selected');
             } else {
                 el.classList.remove('datium-selected');
