@@ -98,7 +98,7 @@ namespace listen {
     }
     
     export function tap(element:Element|Document, callback:(e?:Event) => void):IListenerReference[];
-    export function tap(parent:Element|Document, delegateClass:string, callback:(e?:Event) => void):IListenerReference[];
+    export function tap(parent:Element|Document, delegateSelector:string, callback:(e?:Event) => void):IListenerReference[];
     export function tap(...params:any[]):IListenerReference[] {
         let startTouchX:number, startTouchY:number;
         
@@ -153,6 +153,12 @@ namespace listen {
         });
     }
     
+    export function openBubble(element:Element, callback:(e:{x:number, y:number, text:string}) => void):IListenerReference[] {
+        return attachEvents(['datium-open-bubble'], element, (e:CustomEvent) => {
+            callback(e.detail);
+        });
+    }
+    
     export function removeListeners(listeners:IListenerReference[]) {
         listeners.forEach((listener) => {
            listener.element.removeEventListener(listener.event, listener.reference); 
@@ -171,6 +177,14 @@ namespace trigger {
     
     export function viewchanged(element:Element, data?:{date:Date, level:Level, update?:boolean}) {
         element.dispatchEvent(new CustomEvent('datium-viewchanged', {
+            bubbles: false,
+            cancelable: true,
+            detail: data
+        }));
+    }
+    
+    export function openBubble(element:Element, data:{x:number, y:number, text:string}) {
+        element.dispatchEvent(new CustomEvent('datium-open-bubble', {
             bubbles: false,
             cancelable: true,
             detail: data

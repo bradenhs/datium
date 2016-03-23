@@ -12,4 +12,8 @@ class SecondPicker extends Picker implements IPicker {
     public getHeight() {
         return 180;
     }
+    
+    public getLevel() {
+        return Level.SECOND;
+    }
 }

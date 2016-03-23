@@ -12,4 +12,8 @@ class DatePicker extends Picker implements IPicker {
     public getHeight() {
         return 200;
     }
+    
+    public getLevel() {
+        return Level.HOUR;
+    }
 }

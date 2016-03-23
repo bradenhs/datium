@@ -12,4 +12,8 @@ class HourPicker extends Picker implements IPicker {
     public getHeight() {
         return 260;
     }
+    
+    public getLevel() {
+        return Level.HOUR;
+    }
 }

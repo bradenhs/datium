@@ -38,7 +38,10 @@ class PickerManager {
         this.secondPicker = new SecondPicker(element, this.container);
                 
         listen.down(this.container, '*', (e) => this.down(e));
-        listen.up(document, () => this.up());
+        listen.up(document, () => {
+            this.closeBubble();
+            this.removeActiveClasses();
+        });
         
         listen.mousedown(this.container, (e) => {
            e.preventDefault();
@@ -47,14 +50,48 @@ class PickerManager {
         });
         
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));
+        
+        listen.openBubble(element, (e) => {
+           this.openBubble(e.x, e.y, e.text); 
+        });
     }
     
-    private viewchanged(date:Date, level:Level, selectedDateChange:boolean) {
+    public closeBubble() {
+        if (this.bubble === void 0) return;
+        this.bubble.classList.remove('datium-bubble-visible');
+        setTimeout((bubble:HTMLElement) => {
+            bubble.remove();
+        }, 200, this.bubble);
+        this.bubble = void 0;
+    }
+    
+    private bubble:HTMLElement;
+    
+    public openBubble(x:number, y:number, text:string) {
+        if (this.bubble !== void 0) {
+            this.closeBubble();
+        }
+        this.bubble = document.createElement('datium-bubble');
+        this.container.appendChild(this.bubble);
+        this.updateBubble(x, y, text);
+        setTimeout(() => {
+           this.bubble.classList.add('datium-bubble-visible'); 
+        });
+    }
+    
+    public updateBubble(x:number, y:number, text:string) {
+        this.bubble.innerHTML = text;
+        this.bubble.style.top = y + 'px';
+        this.bubble.style.left = x + 'px';
+    }
+    
+    private viewchanged(date:Date, level:Level, update:boolean) {
         if (level === Level.NONE) {
             if (this.currentPicker !== void 0) {
                 this.currentPicker.remove(Transition.ZOOM_OUT);
             }
             this.adjustHeight(10);
+            if (update) this.updateSelectedDate(date);
             return;
         }
         
@@ -68,11 +105,18 @@ class PickerManager {
             this.currentPicker.create(date, transition);
         }
         
-        if (selectedDateChange) {
-            this.currentPicker.setSelectedDate(date);
-        }
+        if (update) this.updateSelectedDate(date);
         
         this.adjustHeight(this.currentPicker.getHeight());
+    }
+    
+    private updateSelectedDate(date:Date) {
+        this.yearPicker.setSelectedDate(date);
+        this.monthPicker.setSelectedDate(date);
+        this.datePicker.setSelectedDate(date);
+        this.hourPicker.setSelectedDate(date);
+        this.minutePicker.setSelectedDate(date);
+        this.secondPicker.setSelectedDate(date);
     }
     
     private getTransition(date:Date, level:Level):Transition {
@@ -91,7 +135,7 @@ class PickerManager {
         return [this.yearPicker,this.monthPicker,this.datePicker,this.hourPicker,this.minutePicker,this.secondPicker][level];
     }
     
-    private up() {
+    private removeActiveClasses() {
         let activeElements = this.container.querySelectorAll('.datium-active');
         for (let i = 0; i < activeElements.length; i++) {
             activeElements[i].classList.remove('datium-active');

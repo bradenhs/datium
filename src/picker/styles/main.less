@@ -4,6 +4,7 @@ datium-container._id {
     width: 280px;
     font-family: Roboto, Arial;
     margin-top: 2px;
+    font-size: 16px;
     
     &, & * {
         -webkit-touch-callout:none;
@@ -13,5 +14,45 @@ datium-container._id {
         -ms-user-select:none;
         -webkit-tap-highlight-color:rgba(0,0,0,0);
         cursor: default;   
+    }
+    
+    datium-bubble {
+        position: absolute;
+        width: 50px;
+        line-height: 26px;
+        text-align: center;
+        font-size: 14px;
+        background-color: _secondary_accent;
+        font-weight: bold;
+        border-radius: 3px;
+        margin-left: -25px;
+        margin-top: -32px;
+        color: _secondary;
+        z-index: 1;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        transform-origin: 30px 36px;
+        transition: ease all .2s;
+        transform: scale(.5);
+        opacity: 0;
+        &:after {
+            content: '';
+            position: absolute;
+            display: block;
+            width: 10px;
+            height: 10px;
+            transform: rotate(45deg);
+            background-color: _secondary_accent;
+            left: 50%;
+            top: 20px;
+            margin-left: -5px;
+        }
+        &.datium-bubble-visible {
+            transform: scale(1);
+            opacity: 1;
+            transition-timing-function: ease;
+            transition-property: all;
+            transition-duration: .2s;
+            transition-delay: .2s;
+        }
     }
 }

@@ -12,4 +12,8 @@ class MonthPicker extends Picker implements IPicker {
     public getHeight() {
         return 150;
     }
+    
+    public getLevel() {
+        return Level.MONTH;
+    }
 }

@@ -10,6 +10,7 @@ datium-container._id {
         display: block;
         pointer-events: none;
     }
+    
     datium-picker-container {
         position: relative;
         width: calc(100% ~"-" 2 * @wrap-overflow);
@@ -34,31 +35,42 @@ datium-container._id {
         right: 0;
         bottom: 0;
         color: _secondary_text;
-        transition: .4s ease all;
     }
     
-    datium-picker.datium-picker-left {
-        transform: translateX(-100%);
+    datium-picker.datium-to-left {
+        animation: datiumToLeft .3s 1 ease;
         pointer-events: none;
-        opacity: 0;
     }
     
-    datium-picker.datium-picker-right {
-        transform: translateX(100%);
-        pointer-events: none;
-        opacity: 0;
+    datium-picker.datium-from-left {
+        animation: datiumFromLeft .3s 1 ease;
     }
     
-    datium-picker.datium-picker-in {
-        transform: scale(.8);
+    datium-picker.datium-to-right {
+        animation: datiumToRight .3s 1 ease;
         pointer-events: none;
-        opacity: 0;
     }
     
-    datium-picker.datium-picker-out {
-        transform: scale(1.2);
+    datium-picker.datium-from-right {
+        animation: datiumFromRight .3s 1 ease;
+    }
+    
+    datium-picker.datium-to-in {
+        animation: datiumToIn .3s 1 ease;
         pointer-events: none;
-        opacity: 0;
+    }
+    
+    datium-picker.datium-from-in {
+        animation: datiumFromIn .3s 1 ease;
+    }
+    
+    datium-picker.datium-to-out {
+        animation: datiumToOut .3s 1 ease;
+        pointer-events: none;
+    }
+    
+    datium-picker.datium-from-out {
+        animation: datiumFromOut .3s 1 ease;
     }
     
     datium-year-element {
@@ -66,5 +78,95 @@ datium-container._id {
         width: 25%;
         line-height: 60px;
         text-align: center;
+        position: relative;
+        transition: .2s ease all;
+        &.datium-selected:after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            top: 50%;
+            margin-top: 11px;
+            height: 2px;
+            display: block;
+            background-color: _primary;
+        }
+        &.datium-active {
+            transform: scale(.9);
+            transition: none;
+        }
+    }
+}
+
+@keyframes datiumToRight {
+    from {
+        transform: translate(0);
+    }
+    to {
+        transform: translate(100%);
+    }
+}
+@keyframes datiumFromRight {
+    from {
+        transform: translate(-100%);
+    }
+    to {
+        transform: translate(0);
+    }
+}
+@keyframes datiumToLeft {
+    from {
+        transform: translate(0);
+    }
+    to {
+        transform: translate(-100%);
+    }
+}
+@keyframes datiumFromLeft {
+    from {
+        transform: translate(100%);
+    }
+    to {
+        transform: translate(0);
+    }
+}
+@keyframes datiumToIn {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(.8);
+        opacity: 0;
+    }
+}
+@keyframes datiumFromIn {
+    from {
+        transform: scale(.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+@keyframes datiumToOut {
+    from {
+        transform: scale(1);
+        opacity: 1;
+    }
+    to {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+}
+@keyframes datiumFromOut {
+    from {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
     }
 }

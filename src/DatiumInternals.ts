@@ -20,7 +20,7 @@ class DatiumInternals {
         
         listen.goto(element, (e) => this.goto(e.date, e.level, e.update));
         
-        this.goto(this.options['defaultDate'], Level.NONE);
+        this.goto(this.options['defaultDate'], Level.NONE, true);
     }
     
     public goto(date:Date, level:Level, update:boolean = true) {

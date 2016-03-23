@@ -12,4 +12,8 @@ class MinutePicker extends Picker implements IPicker {
     public getHeight() {
         return 230;
     }
+    
+    public getLevel() {
+        return Level.MINUTE;
+    }
 }
