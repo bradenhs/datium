@@ -20,7 +20,7 @@ class Picker extends Common {
         this.transitionOut(transition);
         setTimeout((dragWrapper:HTMLElement) => {
             dragWrapper.remove();
-        }, 500, this.dragWrapper);        
+        }, 400, this.dragWrapper);        
     }
     
     protected getOffset(el:HTMLElement):{x:number, y:number} {
@@ -56,10 +56,6 @@ class Picker extends Common {
     }
     
     protected transitionOut(transition:Transition) {
-        this.picker.classList.remove('datium-from-right');
-        this.picker.classList.remove('datium-from-left');
-        this.picker.classList.remove('datium-from-in');
-        this.picker.classList.remove('datium-from-out');
         if (transition === Transition.SLIDE_LEFT) {
             this.picker.classList.add('datium-to-right');
         } else if (transition === Transition.SLIDE_RIGHT) {

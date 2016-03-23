@@ -1,71 +1,78 @@
 class DragHandle {
     public dragging = false;
     
-    constructor(pickerManager:PickerManager) {
-        let offsetX = 0;
-        let cancelDrag = false;
-        let startTime:number = 0;
+    private startX:number;
+    private cancelDrag:boolean;
+    private startTime:number;
+    
+    constructor(private pickerManager:PickerManager) {
         listen.drag(pickerManager.container, {
-            dragStart: (e) => {
-                let x = (<MouseEvent>e).clientX;
-                if (x === void 0) {
-                    x = (<TouchEvent>e).changedTouches[0].clientX;
-                }
-                offsetX = x;
-                cancelDrag = false;
-            },
-            dragMove: (e) => {
-                if (cancelDrag) return;
-                let x = (<MouseEvent>e).clientX;
-                if (x === void 0) {
-                    x = (<TouchEvent>e).changedTouches[0].clientX;
-                }
-                
-                if (!this.dragging && Math.abs(x - offsetX) > 20) {
-                    this.dragging = true;
-                    offsetX = x;
-                    pickerManager.removeActiveClasses();
-                    startTime = new Date().valueOf();
-                    pickerManager.closeBubble();
-                    pickerManager.currentPicker.getDragWrapper().classList.add('datium-dragging');
-                }
-                
-                if (this.dragging) {
-                    pickerManager.currentPicker.getDragWrapper().style.transform = `translateX(${x - offsetX}px)`;
-                    e.preventDefault();
-                    if (x - offsetX < -120) {
-                        cancelDrag = true;
-                        this.dragging = false;
-                        pickerManager.header.next();
-                    } else if (x - offsetX > 120) {
-                        cancelDrag = true;
-                        this.dragging = false;
-                        pickerManager.header.previous();
-                    }
-                }
-                
-            },
-            dragEnd: (e) => {
-                let x = (<MouseEvent>e).clientX;
-                if (x === void 0) {
-                    x = (<TouchEvent>e).changedTouches[0].clientX;
-                }
-                if (Math.abs(x - offsetX) > 30 && new Date().valueOf() - startTime < 100) {
-                    cancelDrag = true;
-                    this.dragging = false;
-                    if (x - offsetX < 0) {
-                        pickerManager.header.next();
-                    } else {
-                        pickerManager.header.previous();
-                    }
-                } else {
-                    setTimeout(() => {
-                        this.dragging = false;
-                    });
-                    pickerManager.currentPicker.getDragWrapper().classList.remove('datium-dragging');
-                    pickerManager.currentPicker.getDragWrapper().style.transform = `translateX(0px)`;
-                }
-            },  
-        })
+            dragStart: (e) => this.dragStart(e),
+            dragMove: (e) => this.dragMove(e),
+            dragEnd: (e) => this.dragEnd(e),  
+        });
     }
+    
+    private dragStart(e:MouseEvent|TouchEvent) {
+        this.startX = this.getClientX(e);
+        this.cancelDrag = false;
+    }
+    
+    private dragMove(e:MouseEvent|TouchEvent) {
+        if (this.cancelDrag) return;
+        let x = this.getClientX(e);
+        
+        let diff = x - this.startX;
+        
+        if (!this.dragging && Math.abs(diff) > 20) {
+            this.dragging = true;
+            this.startX = x;
+            this.pickerManager.removeActiveClasses();
+            this.startTime = new Date().valueOf();
+            this.pickerManager.closeBubble();
+            this.pickerManager.currentPicker.getDragWrapper().classList.add('datium-dragging');
+        }
+        
+        if (this.dragging) {
+            this.pickerManager.currentPicker.getDragWrapper().style.transform = `translateX(${diff}px)`;
+            e.preventDefault();
+            if (diff < -100) {
+                this.cancelDrag = true;
+                this.dragging = false;
+                this.pickerManager.header.next();
+            } else if (diff > 100) {
+                this.cancelDrag = true;
+                this.dragging = false;
+                this.pickerManager.header.previous();
+            }
+        }
+        
+    }
+    
+    private dragEnd(e:MouseEvent|TouchEvent) {
+        if (!this.dragging) return;
+        let x = this.getClientX(e);
+        if (Math.abs(x - this.startX) > 30 && new Date().valueOf() - this.startTime < 200) {
+            this.cancelDrag = true;
+            this.dragging = false;
+            if (x - this.startX < 0) {
+                this.pickerManager.header.next();
+            } else {
+                this.pickerManager.header.previous();
+            }
+        } else {
+            setTimeout(() => {
+                this.dragging = false;
+            });
+            this.pickerManager.currentPicker.getDragWrapper().classList.remove('datium-dragging');
+            this.pickerManager.currentPicker.getDragWrapper().style.transform = `translateX(0px)`;
+        }
+    }
+    
+    private getClientX(e:any) {
+        if (e.clientX === void 0) return e.changedTouches[0].clientX;
+        return e.clientX;
+    }
+    
+    
 }
