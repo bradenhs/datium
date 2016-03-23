@@ -4,6 +4,7 @@ class Picker extends Common {
     protected min:Date = new Date();
     protected max:Date = new Date();
     protected picker:HTMLElement;
+    protected dragWrapper:HTMLElement;
     protected selectedDate:Date;
     
     constructor(element:HTMLElement, private container:HTMLElement) {
@@ -15,11 +16,11 @@ class Picker extends Common {
     }
     
     public remove(transition:Transition) {
-        if (this.picker === void 0) return;
+        if (this.dragWrapper === void 0) return;
         this.transitionOut(transition);
-        setTimeout((picker:HTMLElement) => {
-            picker.remove();
-        }, 300, this.picker);        
+        setTimeout((dragWrapper:HTMLElement) => {
+            dragWrapper.remove();
+        }, 500, this.dragWrapper);        
     }
     
     protected getOffset(el:HTMLElement):{x:number, y:number} {
@@ -32,8 +33,14 @@ class Picker extends Common {
         
     }
     
-    public getPicker():HTMLElement {
-        return this.picker;
+    protected attach() {
+        this.dragWrapper = document.createElement('datium-drag-wrapper');
+        this.dragWrapper.appendChild(this.picker);
+        this.pickerContainer.appendChild(this.dragWrapper);
+    }
+    
+    public getDragWrapper():HTMLElement {
+        return this.dragWrapper;
     }
     
     public getMin():Date {

@@ -55,7 +55,7 @@ class MonthPicker extends Picker implements IPicker {
             iterator.setMonth(iterator.getMonth() + 1);
         } while (iterator.valueOf() < this.max.valueOf());
         
-        this.pickerContainer.appendChild(this.picker);
+        this.attach();
         
         this.setSelectedDate(this.selectedDate);
     }

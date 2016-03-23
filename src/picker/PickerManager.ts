@@ -7,8 +7,8 @@ const enum Transition {
 
 class PickerManager {
     private options:IOptions;
-    private container:HTMLElement;
-    private header:Header;
+    public container:HTMLElement;
+    public header:Header;
     
     private yearPicker:IPicker;
     private monthPicker:IPicker;
@@ -17,9 +17,11 @@ class PickerManager {
     private minutePicker:IPicker;
     private secondPicker:IPicker;
     
-    private currentPicker:IPicker;
+    public currentPicker:IPicker;
     
     private pickerContainer:HTMLElement;
+    
+    public dragHandle:DragHandle;
     
     constructor(private element:HTMLInputElement) {
         this.container = this.createView();
@@ -55,68 +57,8 @@ class PickerManager {
            this.openBubble(e.x, e.y, e.text); 
         });
         
-        let offsetX = 0;
-        let cancelDrag = false;
-        listen.drag(this.container, {
-            dragStart: (e) => {
-                let x = (<MouseEvent>e).clientX;
-                if (x === void 0) {
-                    x = (<TouchEvent>e).changedTouches[0].clientX;
-                }
-                offsetX = x;
-                cancelDrag = false;
-            },
-            dragMove: (e) => {
-                if (cancelDrag) return;
-                let x = (<MouseEvent>e).clientX;
-                if (x === void 0) {
-                    x = (<TouchEvent>e).changedTouches[0].clientX;
-                }
-                
-                if (!this.dragging && Math.abs(x - offsetX) > 20) {
-                    this.dragging = true;
-                    offsetX = x;
-                    this.removeActiveClasses();
-                    this.closeBubble();
-                    this.currentPicker.getPicker().className = 'datium-dragging';
-                }
-                
-                if (this.dragging) {
-                    this.currentPicker.getPicker().style.transform = `translateX(${x - offsetX}px)`;
-                    e.preventDefault();
-                    if (x - offsetX < -100) {
-                        cancelDrag = true;
-                        this.dragging = false;
-                        this.currentPicker.getPicker().classList.remove('datium-dragging');
-                        let timeOffset = Math.abs(x - offsetX)/440 * -.3;
-                        this.currentPicker.getPicker().style.animationDelay = timeOffset + 's';
-                        this.header.next();
-                    } else if (x - offsetX > 100) {
-                        cancelDrag = true;
-                        this.dragging = false;
-                        this.currentPicker.getPicker().classList.remove('datium-dragging');
-                        let timeOffset = Math.abs(x - offsetX)/440 * -.3;
-                        this.currentPicker.getPicker().style.animationDelay = timeOffset + 's';
-                        this.header.previous();
-                    }
-                }
-                
-            },
-            dragEnd: () => {
-                this.stopDragging();
-            },  
-        })
+        this.dragHandle = new DragHandle(this);
     }
-    
-    public stopDragging() {
-        setTimeout(() => {
-            this.dragging = false;
-        });
-        this.currentPicker.getPicker().classList.remove('datium-dragging');
-        this.currentPicker.getPicker().style.transform = `translateX(0px)`;
-    }
-    
-    public dragging:boolean;
     
     public closeBubble() {
         if (this.bubble === void 0) return;
@@ -197,7 +139,7 @@ class PickerManager {
         return [this.yearPicker,this.monthPicker,this.datePicker,this.hourPicker,this.minutePicker,this.secondPicker][level];
     }
     
-    private removeActiveClasses() {
+    public removeActiveClasses() {
         let activeElements = this.container.querySelectorAll('.datium-active');
         for (let i = 0; i < activeElements.length; i++) {
             activeElements[i].classList.remove('datium-active');

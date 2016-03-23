@@ -81,7 +81,7 @@ class DatePicker extends Picker implements IPicker {
         
         this.height = Math.ceil(times / 7) * 36 + 28;
         
-        this.pickerContainer.appendChild(this.picker);
+        this.attach();
         
         this.setSelectedDate(this.selectedDate);
     }

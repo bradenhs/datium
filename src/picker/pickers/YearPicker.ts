@@ -54,7 +54,7 @@ class YearPicker extends Picker implements IPicker {
             iterator.setFullYear(iterator.getFullYear() + 1);
         } while (iterator.valueOf() <= this.max.valueOf());
         
-        this.pickerContainer.appendChild(this.picker);
+        this.attach();
         
         this.setSelectedDate(this.selectedDate);
     }

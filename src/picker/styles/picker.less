@@ -29,6 +29,19 @@ datium-container._id {
         overflow: hidden;
     }
     
+    @transition-time: .5s;
+    
+    datium-drag-wrapper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transition: all ease @transition-time;
+        &.datium-dragging {
+            transition: none;
+        }
+    }
+    
     datium-picker {
         position: absolute;
         left: 0;
@@ -38,7 +51,6 @@ datium-container._id {
         transition: all ease .2s;
     }
     
-    @transition-time: .3s;
     
     datium-picker.datium-to-left {
         animation: datiumToLeft @transition-time 1 ease forwards;
