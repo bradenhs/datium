@@ -21,8 +21,6 @@ class PickerManager {
     
     private pickerContainer:HTMLElement;
     
-    public dragHandle:DragHandle;
-    
     constructor(private element:HTMLInputElement) {
         this.container = this.createView();
         
@@ -56,8 +54,6 @@ class PickerManager {
         listen.openBubble(element, (e) => {
            this.openBubble(e.x, e.y, e.text); 
         });
-        
-        this.dragHandle = new DragHandle(this);
     }
     
     public closeBubble() {

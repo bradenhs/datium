@@ -39,6 +39,14 @@ class Header extends Common {
         listen.tap(previousButton, () => this.previous());
         listen.tap(nextButton, () => this.next());
         listen.tap(spanLabelContainer, () => this.zoomOut());
+        
+        listen.swipeLeft(container, () => {
+           this.next(); 
+        });
+        
+        listen.swipeRight(container, () => {
+           this.previous(); 
+        });
     }
     
     public previous() {

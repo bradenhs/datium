@@ -4,7 +4,6 @@ class Picker extends Common {
     protected min:Date = new Date();
     protected max:Date = new Date();
     protected picker:HTMLElement;
-    protected dragWrapper:HTMLElement;
     protected selectedDate:Date;
     
     constructor(element:HTMLElement, private container:HTMLElement) {
@@ -16,11 +15,11 @@ class Picker extends Common {
     }
     
     public remove(transition:Transition) {
-        if (this.dragWrapper === void 0) return;
-        this.transitionOut(transition);
-        setTimeout((dragWrapper:HTMLElement) => {
-            dragWrapper.remove();
-        }, 400, this.dragWrapper);        
+        if (this.picker === void 0) return;
+        this.transitionOut(transition, this.picker);
+        setTimeout((picker:HTMLElement) => {
+            picker.remove();
+        }, 500, this.picker);        
     }
     
     protected getOffset(el:HTMLElement):{x:number, y:number} {
@@ -34,13 +33,7 @@ class Picker extends Common {
     }
     
     protected attach() {
-        this.dragWrapper = document.createElement('datium-drag-wrapper');
-        this.dragWrapper.appendChild(this.picker);
-        this.pickerContainer.appendChild(this.dragWrapper);
-    }
-    
-    public getDragWrapper():HTMLElement {
-        return this.dragWrapper;
+        this.pickerContainer.appendChild(this.picker);
     }
     
     public getMin():Date {
@@ -55,27 +48,32 @@ class Picker extends Common {
         this.selectedDate = new Date(date.valueOf());
     }
     
-    protected transitionOut(transition:Transition) {
+    protected transitionOut(transition:Transition, picker:HTMLElement) {
         if (transition === Transition.SLIDE_LEFT) {
-            this.picker.classList.add('datium-to-right');
+            picker.classList.add('datium-picker-right');
         } else if (transition === Transition.SLIDE_RIGHT) {
-            this.picker.classList.add('datium-to-left');
+            picker.classList.add('datium-picker-left');
         } else if (transition === Transition.ZOOM_IN) {
-            this.picker.classList.add('datium-to-out');
+            picker.classList.add('datium-picker-out');
         } else {
-            this.picker.classList.add('datium-to-in');
+            picker.classList.add('datium-picker-in');
         }
     }
     
-    protected transitionIn(transition:Transition) {
+    protected transitionIn(transition:Transition, picker:HTMLElement) {
+        let cls;
         if (transition === Transition.SLIDE_LEFT) {
-            this.picker.classList.add('datium-from-right');
+            cls = 'datium-picker-left';
         } else if (transition === Transition.SLIDE_RIGHT) {
-            this.picker.classList.add('datium-from-left');
+            cls = 'datium-picker-right';
         } else if (transition === Transition.ZOOM_IN) {
-            this.picker.classList.add('datium-from-in');
+            cls = 'datium-picker-in';
         } else {
-            this.picker.classList.add('datium-from-out');
+            cls = 'datium-picker-out';
         }
+        picker.classList.add(cls);
+        setTimeout((p) => {
+            p.classList.remove(cls);
+        }, 100, picker);
     }
 }

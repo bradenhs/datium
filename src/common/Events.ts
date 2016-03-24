@@ -4,12 +4,6 @@ interface IListenerReference {
     event: string;
 }
 
-interface IDragCallbacks {
-    dragStart?:(e?:MouseEvent|TouchEvent) => void;
-    dragMove?:(e?:MouseEvent|TouchEvent) => void;
-    dragEnd?:(e?:MouseEvent|TouchEvent) => void;
-}
-
 namespace listen {
     let matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
     
@@ -145,43 +139,57 @@ namespace listen {
         return listeners;
     }
     
-    export function drag(element:Element, callbacks:IDragCallbacks):void;
-    export function drag(parent:Element, delegateClass:string, callbacks:IDragCallbacks):void;
-    export function drag(...params:any[]):void {
-        let dragging:boolean = false;
+    function swipe(element:Element, direction:string, callback:(e?:Event) => void) {
+        let startTouchX:number, startTouchY:number, startTime:number;
+        let touchMoveListener:IListenerReference;
+        let scrollingDisabled:boolean;
         
-        let callbacks:IDragCallbacks = params[params.length-1];
+        attachEvents(['touchstart'], element, (e:TouchEvent) => {
+            startTouchX = e.touches[0].clientX;
+            startTouchY = e.touches[0].clientY;
+            startTime = new Date().valueOf();
+            scrollingDisabled = false;
+            touchMoveListener = attachEvents(['touchmove'], document, (e:TouchEvent) => {
+                let xDiff = Math.abs(e.changedTouches[0].clientX - startTouchX);
+                let yDiff = Math.abs(e.changedTouches[0].clientY - startTouchY);
+                if (xDiff > yDiff && xDiff > 20) {
+                    scrollingDisabled = true;
+                } else if (yDiff > xDiff && yDiff > 20) {
+                    scrollingDisabled = false;
+                }
+                if (new Date().valueOf() - startTime > 500) {
+                    scrollingDisabled = false;
+                }
+                if (scrollingDisabled) {
+                    e.preventDefault();
+                }
+            })[0]; 
+        });
         
-        let startEvents = (e?:MouseEvent|TouchEvent) => {
-            dragging = true;
-            if (callbacks.dragStart !== void 0) {
-                callbacks.dragStart(e);
+        attachEvents(['touchend'], element, (e:TouchEvent) => {
+            document.removeEventListener(touchMoveListener.event, touchMoveListener.reference);
+            if (startTouchX === void 0 || startTouchY === void 0) return;
+            if (new Date().valueOf() - startTime > 500) return;
+            let xDiff = e.changedTouches[0].clientX - startTouchX;
+            let yDiff = e.changedTouches[0].clientY - startTouchY;
+            if (Math.abs(xDiff) > Math.abs(yDiff) && Math.abs(xDiff) > 20) {
                 e.preventDefault();
-            }
-            
-            let listeners:IListenerReference[] = [];
-            
-            listeners = listeners.concat(attachEvents(['touchmove', 'mousemove'], document, (e?:MouseEvent|TouchEvent) => {
-                if (dragging && callbacks.dragMove !== void 0) {
-                    callbacks.dragMove(e);
-                    e.preventDefault();
+                if (direction === 'left' && xDiff < 0) {
+                    callback(e);
                 }
-            }));
-            listeners = listeners.concat(attachEvents(['touchend', 'mouseup'], document, (e?:MouseEvent|TouchEvent) => {
-                if (dragging && callbacks.dragEnd !== void 0) {
-                    callbacks.dragEnd(e);
-                    e.preventDefault();
+                if (direction === 'right' && xDiff > 0) {
+                    callback(e);
                 }
-                dragging = false;
-                removeListeners(listeners);            
-            }));  
-        }
-        
-        if (params.length === 3) {
-            attachEventsDelegate(['touchstart', 'mousedown'], params[0], params[1], startEvents);
-        } else {
-            attachEvents(['touchstart', 'mousedown'], params[0], startEvents);
-        }
+            } 
+        });
+    }
+
+    export function swipeLeft(element:Element, callback:(e?:Event) => void) {
+        swipe(element, 'left', callback);
+    }
+
+    export function swipeRight(element:Element, callback:(e?:Event) => void) {
+        swipe(element, 'right', callback);
     }
     
     // CUSTOM

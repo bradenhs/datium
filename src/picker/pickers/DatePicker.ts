@@ -53,7 +53,7 @@ class DatePicker extends Picker implements IPicker {
         
         this.picker = document.createElement('datium-picker');
         
-        this.transitionIn(transition);
+        this.transitionIn(transition, this.picker);
         
         for (let i = 0; i < 7; i++) {
             let header = document.createElement('datium-date-header');
