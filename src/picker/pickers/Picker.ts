@@ -6,7 +6,7 @@ class Picker extends Common {
     protected picker:HTMLElement;
     protected selectedDate:Date;
     
-    constructor(element:HTMLElement, private container:HTMLElement) {
+    constructor(protected element:HTMLElement, protected container:HTMLElement) {
         super();
         this.pickerContainer = <HTMLElement>container.querySelector('datium-picker-container');
     }

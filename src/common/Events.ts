@@ -4,6 +4,12 @@ interface IListenerReference {
     event: string;
 }
 
+interface IDragCallbacks {
+    dragStart?:(e?:MouseEvent|TouchEvent) => void;
+    dragMove?:(e?:MouseEvent|TouchEvent) => void;
+    dragEnd?:(e?:MouseEvent|TouchEvent) => void;
+}
+
 namespace listen {
     let matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
     
@@ -192,6 +198,45 @@ namespace listen {
         swipe(element, 'right', callback);
     }
     
+    export function drag(element:Element, callbacks:IDragCallbacks):void;
+    export function drag(parent:Element, delegateSelector:string, callbacks:IDragCallbacks):void;
+    export function drag(...params:any[]):void {
+        let dragging:boolean = false;
+        
+        let callbacks:IDragCallbacks = params[params.length-1];
+        
+        let startEvents = (e?:MouseEvent|TouchEvent) => {
+            dragging = true;
+            if (callbacks.dragStart !== void 0) {
+                callbacks.dragStart(e);
+                e.preventDefault();
+            }
+            
+            let listeners:IListenerReference[] = [];
+            
+            listeners = listeners.concat(attachEvents(['touchmove', 'mousemove'], document, (e?:MouseEvent|TouchEvent) => {
+                if (dragging && callbacks.dragMove !== void 0) {
+                    callbacks.dragMove(e);
+                    e.preventDefault();
+                }
+            }));
+            listeners = listeners.concat(attachEvents(['touchend', 'mouseup'], document, (e?:MouseEvent|TouchEvent) => {
+                if (dragging && callbacks.dragEnd !== void 0) {
+                    callbacks.dragEnd(e);
+                    e.preventDefault();
+                }
+                dragging = false;
+                removeListeners(listeners);            
+            }));  
+        }
+        
+        if (params.length === 3) {
+            attachEventsDelegate(['touchstart', 'mousedown'], params[0], params[1], startEvents);
+        } else {
+            attachEvents(['touchstart', 'mousedown'], params[0], startEvents);
+        }
+    }
+    
     // CUSTOM
     
     export function goto(element:Element, callback:(e?:{date:Date, level:Level, update?:boolean}) => void):IListenerReference[] {
@@ -208,6 +253,12 @@ namespace listen {
     
     export function openBubble(element:Element, callback:(e:{x:number, y:number, text:string}) => void):IListenerReference[] {
         return attachEvents(['datium-open-bubble'], element, (e:CustomEvent) => {
+            callback(e.detail);
+        });
+    }
+    
+    export function updateBubble(element:Element, callback:(e:{x:number, y:number, text:string}) => void):IListenerReference[] {
+        return attachEvents(['datium-update-bubble'], element, (e:CustomEvent) => {
             callback(e.detail);
         });
     }
@@ -238,6 +289,14 @@ namespace trigger {
     
     export function openBubble(element:Element, data:{x:number, y:number, text:string}) {
         element.dispatchEvent(new CustomEvent('datium-open-bubble', {
+            bubbles: false,
+            cancelable: true,
+            detail: data
+        }));
+    }
+    
+    export function updateBubble(element:Element, data:{x:number, y:number, text:string}) {
+        element.dispatchEvent(new CustomEvent('datium-update-bubble', {
             bubbles: false,
             cancelable: true,
             detail: data

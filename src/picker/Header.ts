@@ -102,11 +102,6 @@ class Header extends Common {
     }
     
     private viewchanged(date:Date, level:Level) {
-        if (this.date !== void 0 &&
-            date.valueOf() === this.date.valueOf() &&
-            level === this.level) {
-            return;
-        }
         this.date = date;
         this.level = level;
         this.labels.forEach((label, labelLevel) => {

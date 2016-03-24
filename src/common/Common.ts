@@ -46,4 +46,17 @@ class Common {
         }
         return str;
     }
+    
+    protected getClientCoor(e:any):{x:number, y:number} {
+        if (e.clientX !== void 0) {
+            return {
+                x: e.clientX,
+                y: e.clientY
+            }
+        }
+        return {
+            x: e.changedTouches[0].clientX,
+            y: e.changedTouches[0].clientY
+        }
+    }
 }

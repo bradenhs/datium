@@ -54,6 +54,9 @@ class PickerManager {
         listen.openBubble(element, (e) => {
            this.openBubble(e.x, e.y, e.text); 
         });
+        listen.updateBubble(element, (e) => {
+           this.updateBubble(e.x, e.y, e.text); 
+        });
     }
     
     public closeBubble() {

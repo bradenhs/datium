@@ -31,7 +31,10 @@ datium-container._id {
         z-index: 1;
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         transform-origin: 30px 36px;
-        transition: ease all .2s;
+        transition-property: transform, opacity;
+        transition-timing-function: ease;
+        transition-duration: .2s;
+        transition-delay: 0;
         transform: scale(.5);
         opacity: 0;
         &:after {
@@ -49,8 +52,8 @@ datium-container._id {
         &.datium-bubble-visible {
             transform: scale(1);
             opacity: 1;
+            transition-property: transform, opacity;
             transition-timing-function: ease;
-            transition-property: all;
             transition-duration: .2s;
             transition-delay: .2s;
         }
