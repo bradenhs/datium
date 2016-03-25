@@ -20,6 +20,7 @@ class HourPicker extends Picker implements IPicker {
            y: 70 * Math.cos(this.rotation) + 175,
            text: this.getTime() 
         });
+        this.picker.classList.add('datium-dragging');
     }
     
     private dragMove(e:MouseEvent|TouchEvent) {
@@ -30,20 +31,22 @@ class HourPicker extends Picker implements IPicker {
            text: this.getTime()
         });
         let point = this.fromCenter(this.getClientCoor(e));
-        this.rotation = Math.atan2(point.x, point.y);
+        let r = Math.atan2(point.x, point.y);
+        while (r - this.rotation > Math.PI) r -= 2*Math.PI;
+        while (this.rotation - r < -Math.PI) r += 2*Math.PI;
+        this.rotation = r;
         this.updateTimeDragArm();
     }
     
     private getTime() {
         let time = 180/Math.PI * this.rotation / 30 + 6;
         time = time > 11.5 ? 0 : Math.round(time);
-        if (Math.floor(this.rotation / 2 * Math.PI) % 2 === 0) {
-            time += 12;
-        }
         return time.toString();
+        
     }
     
     private dragEnd(e:MouseEvent|TouchEvent) {
+        this.picker.classList.remove('datium-dragging');
     }
     
     private fromCenter(point:{x:number, y:number}):{x:number, y:number} {
@@ -98,12 +101,16 @@ class HourPicker extends Picker implements IPicker {
         this.picker.appendChild(this.timeDragArm);
         this.picker.appendChild(this.hourHand);
         
-        this.rotation = date.getHours() * Math.PI / 6 - Math.PI;
-        
-        this.updateTimeDragArm();
-        
         this.attach();
         this.setSelectedDate(this.selectedDate);
+    }
+    
+    public setSelectedDate(date:Date) {
+        this.selectedDate = new Date(date.valueOf());
+        this.rotation = date.getHours() * Math.PI / 6 - Math.PI;
+        if (this.timeDragArm !== void 0 && this.hourHand !== void 0) {
+            this.updateTimeDragArm();
+        }
     }
     
     public getHeight() {

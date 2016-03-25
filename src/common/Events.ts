@@ -16,8 +16,7 @@ namespace listen {
     function handleDelegateEvent(parent:Element, delegateSelector:string, callback:(e?:MouseEvent|TouchEvent) => void) {
         return (e:MouseEvent|TouchEvent) => {
             var target = e.srcElement || <Element>e.target;
-            
-            while(!target.isEqualNode(parent)) {
+            while(target !== null && !target.isEqualNode(parent)) {
                 if (matches.call(target, delegateSelector)) {
                     callback(e);
                     return;
