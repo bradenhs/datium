@@ -66,7 +66,7 @@ class Header extends Common {
     }
     
     private zoomOut() {
-        let newLevel  = this.levels[this.levels.indexOf(this.level) - 1];
+        let newLevel  = this.levels.sort()[this.levels.indexOf(this.level) - 1];
         if (newLevel === void 0) return;
         trigger.goto(this.element, {
            date: this.date,
@@ -146,16 +146,32 @@ class Header extends Common {
             case Level.DATE:
                 return this.getShortMonths()[date.getMonth()];
             case Level.HOUR:
-                return `${this.getShortDays()[date.getDay()]} ${this.pad(date.getDate())} <datium-variable>${this.getHours(date)}${this.getMeridiem(date)}</datium-variable>`;
+                if (this.options.militaryTime) {
+                    return `${this.getShortDays()[date.getDay()]} ${this.pad(date.getDate())} <datium-variable>${this.pad(date.getHours())}</datium-variable>`;
+                } else {
+                    return `${this.getShortDays()[date.getDay()]} ${this.pad(date.getDate())} <datium-variable>${this.getHours(date)}${this.getMeridiem(date)}</datium-variable>`;    
+                }
             case Level.MINUTE:
-                return `${this.getHours(date)}:<datium-variable>${this.pad(date.getMinutes())}</datium-variable>${this.getMeridiem(date)}`;
+                if (this.options.militaryTime) {
+                    return `${this.pad(date.getHours())}:<datium-variable>${this.pad(date.getMinutes())}</datium-variable>`;    
+                } else {
+                    return `${this.getHours(date)}:<datium-variable>${this.pad(date.getMinutes())}</datium-variable>${this.getMeridiem(date)}`;
+                }
             case Level.SECOND:
-                return `${this.getHours(date)}:${this.pad(date.getMinutes())}:<datium-variable>${this.pad(date.getSeconds())}</datium-variable>${this.getMeridiem(date)}`;
+                if (this.options.militaryTime) {
+                    return `${this.pad(date.getHours())}:${this.pad(date.getMinutes())}:<datium-variable>${this.pad(date.getSeconds())}</datium-variable>`;   
+                } else {
+                    return `${this.getHours(date)}:${this.pad(date.getMinutes())}:<datium-variable>${this.pad(date.getSeconds())}</datium-variable>${this.getMeridiem(date)}`;    
+                }
         }
     }
     
     public updateOptions(options:IOptions, levels:Level[]) {
+        let updateView = this.options !== void 0 && this.options.militaryTime !== options.militaryTime;
         this.options = options;
         this.levels = levels;
+        if (updateView) {
+            this.viewchanged(this.date, this.level);
+        }
     }
 }

@@ -12,4 +12,5 @@ interface IOptions {
     maxDate:Date;
     defaultDate:Date;
     theme:ITheme;
+    militaryTime:boolean;
 }

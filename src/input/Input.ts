@@ -4,6 +4,9 @@ class Input {
     private textBuffer: string = "";
     public dateParts: IDatePart[];
     public format: RegExp;
+    private date:Date;
+    private level:Level;
+    
     constructor(public element: HTMLInputElement) {
         new KeyboardEventHandler(this);
         new MouseEventHandler(this);
@@ -136,7 +139,7 @@ class Input {
         });
         this.format = new RegExp(format+'$', 'i');
                 
-        this.updateView();
+        this.viewchanged(this.date, this.level, true);
     }
     
     public updateView() {
@@ -161,7 +164,9 @@ class Input {
         this.element.setSelectionRange(start, end);
     }
     
-    public viewchanged(date:Date, level:Level, update?:boolean) {        
+    public viewchanged(date:Date, level:Level, update?:boolean) { 
+        this.date = date;
+        this.level = level;       
         this.dateParts.forEach((datePart) => {
             if (update) datePart.setValue(date);
             if (datePart.getLevel() === level &&

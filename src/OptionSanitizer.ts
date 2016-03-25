@@ -83,6 +83,13 @@ class OptionSanitizer {
         }
     } 
     
+    static sanitizeMilitaryTime(militaryTime:any, dflt:boolean = false) {
+        if (militaryTime === void 0) return dflt;
+        if (typeof militaryTime !== 'boolean') {
+            throw OptionException('The "militaryTime" option must be a boolean');
+        }
+        return <boolean>militaryTime;
+    }
     
     static sanitize(options:IOptions, defaults:IOptions) {
         let opts:IOptions = {
@@ -90,7 +97,8 @@ class OptionSanitizer {
             minDate: OptionSanitizer.sanitizeMinDate(options['minDate'], defaults.minDate),
             maxDate: OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate),
             defaultDate: OptionSanitizer.sanitizeDefaultDate(options['defaultDate'], defaults.defaultDate),
-            theme: OptionSanitizer.sanitizeTheme(options['theme'], defaults.theme)
+            theme: OptionSanitizer.sanitizeTheme(options['theme'], defaults.theme),
+            militaryTime: OptionSanitizer.sanitizeMilitaryTime(options['militaryTime'], defaults.militaryTime)
         }
         
         return opts;
