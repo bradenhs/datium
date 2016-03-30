@@ -8,3 +8,7 @@ interface IPicker {
     getMax():Date;
     setSelectedDate(date:Date):void;
 }
+
+interface ITimePicker extends IPicker {
+    isDragging():boolean;
+}

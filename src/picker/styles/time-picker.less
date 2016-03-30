@@ -1,5 +1,6 @@
 datium-container._id {
-    datium-picker.datium-time-picker {
+    datium-picker.datium-hour-picker,
+    datium-picker.datium-minute-picker {
         height: 240px;
         
         &:before {
@@ -50,25 +51,115 @@ datium-container._id {
             opacity: .5;
         }
     }
-    datium-tick-label {
+    
+    datium-meridiem-switcher {
+        position: absolute;
+        left: 50%;
+        margin-left: -30px;
+        top: 50%;
+        margin-top: 15px;
+        display: block;
+        width: 60px;
+        height: 40px;
+        &:before, &:after {
+            position: absolute;
+            width: 30px;
+            top: 0;
+            display: block;
+            line-height: 40px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 14px;
+            transform: scale(.9);
+            opacity: .9;
+            color: _secondary_text;
+            transition: all ease .2s;
+        }
+        &.datium-military-time {
+            &:before {
+                content: '-12';
+            }
+            &:after {
+                content: '+12';
+            }
+        }
+        &:before {
+            content: 'AM';
+            left: 0;
+        }
+        &:after {
+            content: 'PM';
+            right: 0;
+        }
+        &.datium-am-selected:before {
+            transform: scale(1);
+            color: _secondary_accent;
+            opacity: 1;
+        }
+        &.datium-pm-selected:after {
+            transform: scale(1);
+            color: _secondary_accent;
+            opacity: 1;
+        }
+        &.datium-active:before, &.datium-active:after {
+            transition: none;
+        }
+        &.datium-active.datium-am-selected {
+            &:before {
+                transform: scale(.9);
+            }
+            &:after {
+                transform: scale(.8);
+            }
+        }
+        &.datium-active.datium-pm-selected {
+            &:before {
+                transform: scale(.8);
+            }
+            &:after {
+                transform: scale(.9);
+            }
+        }
+        
+    }
+    
+    datium-tick-label-container {
         position: absolute;
         bottom: -50px;
         left: -24px;
         display: block;
-        line-height: 50px;
+        height: 50px;
         width: 50px;
+    }
+    datium-tick-label {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: block;
+        width: 100%;
+        line-height: 50px;
         border-radius: 25px;
         text-align: center;
         font-size: 14px;
-    }
-    
-    datium-picker.datium-time-picker.datium-dragging {
-        datium-hour-hand, datium-time-drag-arm {
+        transition: .2s ease all;
+        
+        &.datium-active {
+            transform: scale(.9);
             transition: none;
         }
     }
     
-    datium-hour-hand {
+    datium-picker.datium-hour-picker,
+    datium-picker.datium-minute-picker {
+        &.datium-dragging {
+            datium-hour-hand, datium-minute-hand, 
+            datium-second-hand, datium-time-drag-arm {
+                transition: none;
+            }
+        }
+    }
+    
+    datium-hour-hand, datium-minute-hand {
         position: absolute;
         display: block;
         width: 0;
@@ -78,12 +169,31 @@ datium-container._id {
         transform-origin: 3px 3px;
         margin-left: -3px;
         margin-top: -3px;
-        border-top: 30px solid _secondary_accent;
         border-left: 3px solid transparent;
         border-right: 3px solid transparent;
         border-top-left-radius: 3px;
-        border-top-right-radius: 3px;    
-        transition: .2s ease all;    
+        border-top-right-radius: 3px;  
+        transition: .3s ease all; 
+    }
+    
+    datium-picker.datium-minute-picker datium-hour-hand {
+        border-top-color: _secondary_text;
+        opacity: .5;
+    }
+    
+    datium-hour-hand {
+        border-top: 30px solid _secondary_accent;
+    }
+    
+    datium-minute-hand {
+        transform-origin: 2px 2px;
+        margin-left: -2px;
+        margin-top: -2px;
+        border-left: 2px solid transparent;
+        border-right: 2px solid transparent;
+        border-top-left-radius: 2px;
+        border-top-right-radius: 2px;   
+        border-top: 45px solid _secondary_accent;
     }
     
     datium-time-drag-arm {
@@ -94,8 +204,8 @@ datium-container._id {
         top: 50%;
         margin-left: -1px;
         transform-origin: 1px 0;
-        transform: rotate(45deg);
-        transition: .2s ease all;
+        transform: rotate(45deg);  
+        transition: .3s ease all;
         &:before, &:after {
             content: '';
             border: 4px solid transparent;
@@ -141,5 +251,4 @@ datium-container._id {
             border-color: _secondary;
         }
     }
-    
 }

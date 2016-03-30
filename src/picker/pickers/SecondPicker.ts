@@ -1,6 +1,6 @@
-/// <reference path="picker.ts" />
+/// <reference path="TimePicker.ts" />
 
-class SecondPicker extends Picker implements IPicker {
+class SecondPicker extends TimePicker implements ITimePicker {
     constructor(element:HTMLElement, container:HTMLElement) {
         super(element, container);
     }

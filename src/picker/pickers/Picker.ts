@@ -5,6 +5,7 @@ class Picker extends Common {
     protected max:Date = new Date();
     protected picker:HTMLElement;
     protected selectedDate:Date;
+    protected options:IOptions;
     
     constructor(protected element:HTMLElement, protected container:HTMLElement) {
         super();
@@ -29,7 +30,7 @@ class Picker extends Common {
     }
     
     public updateOptions(options:IOptions) {
-        
+        this.options = options;
     }
     
     protected attach() {

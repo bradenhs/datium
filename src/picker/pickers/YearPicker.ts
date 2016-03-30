@@ -1,4 +1,4 @@
-/// <reference path="picker.ts" />
+/// <reference path="Picker.ts" />
 
 class YearPicker extends Picker implements IPicker {
     constructor(element:HTMLElement, container:HTMLElement) {
@@ -11,9 +11,9 @@ class YearPicker extends Picker implements IPicker {
            let date = new Date(this.selectedDate.valueOf());
            date.setFullYear(year);
            
-           trigger.goto(element, {
+           trigger.zoomIn(element, {
                date: date,
-               level: Level.MONTH
+               currentLevel: Level.YEAR
            })
         });
         

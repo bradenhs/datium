@@ -1,4 +1,4 @@
-/// <reference path="picker.ts" />
+/// <reference path="Picker.ts" />
 
 class DatePicker extends Picker implements IPicker {
     constructor(element:HTMLElement, container:HTMLElement) {
@@ -19,9 +19,9 @@ class DatePicker extends Picker implements IPicker {
            }
            date.setDate(dateOfMonth);
            
-           trigger.goto(element, {
+           trigger.zoomIn(element, {
                date: date,
-               level: Level.HOUR
+               currentLevel: Level.DATE
            })
         });
         

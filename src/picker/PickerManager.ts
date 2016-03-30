@@ -13,9 +13,9 @@ class PickerManager {
     private yearPicker:IPicker;
     private monthPicker:IPicker;
     private datePicker:IPicker;
-    private hourPicker:IPicker;
-    private minutePicker:IPicker;
-    private secondPicker:IPicker;
+    private hourPicker:ITimePicker;
+    private minutePicker:ITimePicker;
+    private secondPicker:ITimePicker;
     
     public currentPicker:IPicker;
     
@@ -37,7 +37,7 @@ class PickerManager {
         this.minutePicker = new MinutePicker(element, this.container);
         this.secondPicker = new SecondPicker(element, this.container);
                 
-        listen.down(this.container, '*', (e) => this.down(e));
+        listen.down(this.container, '*', (e) => this.addActiveClasses(e));
         listen.up(document, () => {
             this.closeBubble();
             this.removeActiveClasses();
@@ -56,6 +56,20 @@ class PickerManager {
         });
         listen.updateBubble(element, (e) => {
            this.updateBubble(e.x, e.y, e.text); 
+        });
+        
+        listen.swipeLeft(this.container, () => {
+            if (this.secondPicker.isDragging() ||
+                this.minutePicker.isDragging() ||
+                this.hourPicker.isDragging()) return;
+            this.header.next(); 
+        });
+        
+        listen.swipeRight(this.container, () => {
+            if (this.secondPicker.isDragging() ||
+                this.minutePicker.isDragging() ||
+                this.hourPicker.isDragging()) return;
+            this.header.previous(); 
         });
     }
     
@@ -77,9 +91,9 @@ class PickerManager {
         this.bubble = document.createElement('datium-bubble');
         this.container.appendChild(this.bubble);
         this.updateBubble(x, y, text);
-        setTimeout(() => {
-           this.bubble.classList.add('datium-bubble-visible'); 
-        });
+        setTimeout((bubble:HTMLElement) => {
+           bubble.classList.add('datium-bubble-visible'); 
+        }, 0, this.bubble);
     }
     
     public updateBubble(x:number, y:number, text:string) {
@@ -146,7 +160,7 @@ class PickerManager {
         this.container.classList.remove('datium-active');
     }
     
-    private down(e:MouseEvent|TouchEvent) {
+    private addActiveClasses(e:MouseEvent|TouchEvent) {
         let el = e.srcElement || <Element>e.target;
         while (el !== this.container) {
             el.classList.add('datium-active');
@@ -155,7 +169,7 @@ class PickerManager {
         this.container.classList.add('datium-active');
     }
     
-    public updateOptions(options:IOptions, levels:Level[]) {
+    public updateOptions(options:IOptions) {
         let themeUpdated = this.options === void 0 ||
             this.options.theme === void 0 ||
             this.options.theme.primary !== options.theme.primary ||
@@ -170,7 +184,7 @@ class PickerManager {
             this.insertStyles();
         }
         
-        this.header.updateOptions(options, levels);
+        this.header.updateOptions(options);
         
         this.yearPicker.updateOptions(options);
         this.monthPicker.updateOptions(options);

@@ -1,77 +1,102 @@
-/// <reference path="picker.ts" />
+/// <reference path="TimePicker.ts" />
 
-class HourPicker extends Picker implements IPicker {
+class HourPicker extends TimePicker implements ITimePicker {
     constructor(element:HTMLElement, container:HTMLElement) {
         super(element, container);
         
-        listen.drag(container, 'datium-time-drag', {
+        listen.drag(container, '.datium-hour-drag', {
             dragStart: (e) => this.dragStart(e),
             dragMove: (e) => this.dragMove(e),
             dragEnd: (e) => this.dragEnd(e), 
         });
-    }
-    
-    private offsetX:number;
-    private offsetY:number;
-    
-    private dragStart(e:MouseEvent|TouchEvent) {
-        trigger.openBubble(this.element, {
-           x: -70 * Math.sin(this.rotation) + 140, 
-           y: 70 * Math.cos(this.rotation) + 175,
-           text: this.getTime() 
-        });
-        this.picker.classList.add('datium-dragging');
-    }
-    
-    private dragMove(e:MouseEvent|TouchEvent) {
-        this.getTime();
-        trigger.updateBubble(this.element, {
-           x: -70 * Math.sin(this.rotation) + 140, 
-           y: 70 * Math.cos(this.rotation) + 175,
-           text: this.getTime()
-        });
-        let point = this.fromCenter(this.getClientCoor(e));
-        let r = Math.atan2(point.x, point.y);
-        while (r - this.rotation > Math.PI) r -= 2*Math.PI;
-        while (this.rotation - r < -Math.PI) r += 2*Math.PI;
-        this.rotation = r;
-        this.updateTimeDragArm();
-    }
-    
-    private getTime() {
-        let time = 180/Math.PI * this.rotation / 30 + 6;
-        time = time > 11.5 ? 0 : Math.round(time);
-        return time.toString();
         
+        listen.tap(container, '.datium-hour-element', (e) => {
+            let el:Element = <Element>e.target || e.srcElement;
+            
+            trigger.zoomIn(this.element, {
+                date: this.getElementDate(el),
+                currentLevel: Level.HOUR
+            });
+        });
+        
+        listen.down(container, '.datium-hour-element', (e) => {
+            let el:HTMLElement = <HTMLElement>(e.target || e.srcElement);
+            let hours = new Date(el.getAttribute('datium-data')).getHours();
+            
+            let offset = this.getOffset(el);
+            trigger.openBubble(element, {
+                x: offset.x + 25,
+                y: offset.y + 3,
+                text: this.getBubbleText(hours)
+           });
+        });
+        
+        listen.tap(container, 'datium-meridiem-switcher', () => {
+            let newDate = new Date(this.lastLabelDate.valueOf());
+            if (newDate.getHours() < 12) {
+                newDate.setHours(newDate.getHours() + 12);
+                this.rotation += Math.PI * 2;
+            } else {
+                newDate.setHours(newDate.getHours() - 12);
+                this.rotation -= Math.PI * 2;
+            }
+            
+            this.updateLabels(newDate);
+            trigger.goto(this.element, {
+                date: newDate,
+                level: Level.HOUR,
+                update: false
+            });
+            this.updateElements();
+        });
     }
     
-    private dragEnd(e:MouseEvent|TouchEvent) {
-        this.picker.classList.remove('datium-dragging');
-    }
-    
-    private fromCenter(point:{x:number, y:number}):{x:number, y:number} {
-        return {
-            x: this.getCenter().x - point.x,
-            y: point.y - this.getCenter().y
+    protected getBubbleText(hours?:number) {
+        if (hours === void 0) {
+            hours = this.rotationToTime(this.rotation); 
+        }
+        if (this.options.militaryTime) {
+            return this.pad(hours)+'hr';
+        } else if (hours === 12) {
+            return '12pm';
+        } else if (hours === 0) {
+            return '12am';
+        } else if (hours > 11) {
+            return (hours - 12) + 'pm';
+        } else {
+            return hours + 'am';
         }
     }
     
-    private getCenter():{x:number, y:number} {
-        return {
-            x: this.picker.getBoundingClientRect().left + 140,
-            y: this.picker.getBoundingClientRect().top + 120
+    protected getElementDate(el:Element) {
+        let d = new Date(el.getAttribute('datium-data'));
+        let year = d.getFullYear();
+        let month = d.getMonth();
+        let dateOfMonth = d.getDate();
+        let hours = d.getHours();
+        
+        let newDate = new Date(this.selectedDate.valueOf());
+        newDate.setFullYear(year);
+        newDate.setMonth(month);
+        if (newDate.getMonth() !== month) {
+            newDate.setDate(0);
         }
+        newDate.setDate(dateOfMonth);
+        newDate.setHours(hours);
+        return newDate;
     }
     
-    private updateTimeDragArm() {
-        this.timeDragArm.style.transform = `rotate(${this.rotation}rad)`;
-        this.hourHand.style.transform = `rotate(${this.rotation}rad)`;
+    protected rotationToTime(r:number) {
+        while (r > 5*Math.PI) r -= 4*Math.PI;
+        while (r < Math.PI) r += 4*Math.PI;
+        r -= 2 * Math.PI;
+        let t = (r / Math.PI * 6) + 6;
+        return t >= 23.5 ? 0 : Math.round(t);
     }
     
-    private rotation:number = 0;
-    private timeDragArm:HTMLElement;
-    private timeDrag:HTMLElement;
-    private hourHand:HTMLElement;
+    protected timeToRotation(t:number) {
+        return this.normalizeRotation((t + 6) / 6 * Math.PI);
+    }
     
     public create(date:Date, transition:Transition) {
         this.min = new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -80,41 +105,121 @@ class HourPicker extends Picker implements IPicker {
         let iterator = new Date(this.min.valueOf());
         
         this.picker = document.createElement('datium-picker');
-        this.picker.classList.add('datium-time-picker');
+        this.picker.classList.add('datium-hour-picker');
         
         this.transitionIn(transition, this.picker);
         
         for (let i = 0; i < 12; i++) {
             let tick = document.createElement('datium-tick');
             let tickLabel = document.createElement('datium-tick-label');
-            tickLabel.innerHTML = (i === 0 ? 12 : i).toString();
-            tick.appendChild(tickLabel);
-            tick.style.transform = `rotate(${i * 30 + 180}deg)`;
-            tickLabel.style.transform = `rotate(${i * -30 + 180}deg)`;
+            tickLabel.classList.add('datium-hour-element');
+            let tickLabelContainer = document.createElement('datium-tick-label-container');
+            let r = i * Math.PI/6 + Math.PI;
+            tickLabelContainer.appendChild(tickLabel);
+            tick.appendChild(tickLabelContainer);
+            tick.style.transform = `rotate(${r}rad)`;
+            tickLabelContainer.style.transform = `rotate(${2*Math.PI - r}rad)`;
+            tickLabel.setAttribute('datium-clock-pos', i.toString());
+            
+            let d = new Date(date.valueOf());
+            
+            let hours = this.rotationToTime(r);
+            if (date.getHours() > 11) hours += 12;
+            d.setHours(hours);
+            
+            tickLabel.setAttribute('datium-data', d.toISOString());
+            
             this.picker.appendChild(tick);
         }
+        
+        this.meridiemSwitcher = document.createElement('datium-meridiem-switcher');
+        if (this.options.militaryTime) {
+            this.meridiemSwitcher.classList.add('datium-military-time');
+        }
+        
+        
+        this.picker.appendChild(this.meridiemSwitcher);
         
         this.hourHand = document.createElement('datium-hour-hand');
         this.timeDragArm = document.createElement('datium-time-drag-arm');
         this.timeDrag = document.createElement('datium-time-drag');
+        this.timeDrag.classList.add('datium-hour-drag');
+        
+        this.timeDrag.setAttribute('datium-data', date.toISOString());
+        
         this.timeDragArm.appendChild(this.timeDrag);
         this.picker.appendChild(this.timeDragArm);
         this.picker.appendChild(this.hourHand);
+        
+        this.meridiem = void 0;
         
         this.attach();
         this.setSelectedDate(this.selectedDate);
     }
     
-    public setSelectedDate(date:Date) {
-        this.selectedDate = new Date(date.valueOf());
-        this.rotation = date.getHours() * Math.PI / 6 - Math.PI;
-        if (this.timeDragArm !== void 0 && this.hourHand !== void 0) {
-            this.updateTimeDragArm();
+    private meridiemSwitcher:HTMLElement;
+    
+    private meridiem:string;
+    private lastLabelDate:Date;
+    protected updateLabels(date:Date, forceUpdate:boolean = false) {
+        this.lastLabelDate = date;
+        
+        if (this.meridiem !== void 0 &&
+            (this.meridiem === 'AM' && date.getHours() < 12) ||
+            (this.meridiem === 'PM' && date.getHours() > 11)) {
+            if (!forceUpdate) return;
         }
+        
+        this.meridiem = date.getHours() < 12 ? 'AM' : 'PM';
+        
+        if (this.meridiem === 'AM') {
+            this.meridiemSwitcher.classList.remove('datium-pm-selected');
+            this.meridiemSwitcher.classList.add('datium-am-selected');
+        } else {
+            this.meridiemSwitcher.classList.remove('datium-am-selected');
+            this.meridiemSwitcher.classList.add('datium-pm-selected');
+        }
+        
+        let labels = this.picker.querySelectorAll('[datium-clock-pos]');
+        for (let i = 0; i < labels.length; i++) {
+            let label = labels.item(i);
+            let r = Math.PI*parseInt(label.getAttribute('datium-clock-pos'), 10)/6-3*Math.PI;
+            let time = this.rotationToTime(r);
+            
+            let d = new Date(label.getAttribute('datium-data'));
+            if (date.getHours() > 11) {
+                d.setHours(time + 12);
+            } else {
+                d.setHours(time);
+            }
+            
+            label.setAttribute('datium-data', d.toISOString());
+            
+            if (this.options.militaryTime) {
+                if (date.getHours() > 11) time += 12;
+                label.innerHTML = this.pad(time);
+            } else {
+                if (time === 0) time = 12;
+                label.innerHTML = time.toString();
+            }
+        }
+        
     }
     
-    public getHeight() {
-        return 240;
+    public updateOptions(options:IOptions) {
+        if (this.options !== void 0 && this.options.militaryTime !== options.militaryTime) {
+            this.options = options;
+            this.updateLabels(this.lastLabelDate, true);
+        }
+        this.options = options;
+        
+        if (this.meridiemSwitcher !== void 0) {
+            if (this.options.militaryTime) {
+                this.meridiemSwitcher.classList.add('datium-military-time');
+            } else {
+                this.meridiemSwitcher.classList.remove('datium-military-time');
+            }
+        }
     }
     
     public getLevel() {

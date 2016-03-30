@@ -13,7 +13,6 @@ class Header extends Common {
     private labels:Element[];
     
     private options:IOptions;
-    private levels:Level[];
     
     private level:Level;
     private date:Date;
@@ -39,14 +38,6 @@ class Header extends Common {
         listen.tap(previousButton, () => this.previous());
         listen.tap(nextButton, () => this.next());
         listen.tap(spanLabelContainer, () => this.zoomOut());
-        
-        listen.swipeLeft(container, () => {
-           this.next(); 
-        });
-        
-        listen.swipeRight(container, () => {
-           this.previous(); 
-        });
     }
     
     public previous() {
@@ -66,12 +57,10 @@ class Header extends Common {
     }
     
     private zoomOut() {
-        let newLevel  = this.levels.sort()[this.levels.indexOf(this.level) - 1];
-        if (newLevel === void 0) return;
-        trigger.goto(this.element, {
-           date: this.date,
-           level: newLevel,
-           update: false
+        trigger.zoomOut(this.element, {
+            date: this.date,
+            currentLevel: this.level,
+            update: false
         });
     }
     
@@ -147,7 +136,7 @@ class Header extends Common {
                 return this.getShortMonths()[date.getMonth()];
             case Level.HOUR:
                 if (this.options.militaryTime) {
-                    return `${this.getShortDays()[date.getDay()]} ${this.pad(date.getDate())} <datium-variable>${this.pad(date.getHours())}</datium-variable>`;
+                    return `${this.getShortDays()[date.getDay()]} ${this.pad(date.getDate())} <datium-variable>${this.pad(date.getHours())}<datium-lower>hr</datium-lower></datium-variable>`;
                 } else {
                     return `${this.getShortDays()[date.getDay()]} ${this.pad(date.getDate())} <datium-variable>${this.getHours(date)}${this.getMeridiem(date)}</datium-variable>`;    
                 }
@@ -166,10 +155,9 @@ class Header extends Common {
         }
     }
     
-    public updateOptions(options:IOptions, levels:Level[]) {
+    public updateOptions(options:IOptions) {
         let updateView = this.options !== void 0 && this.options.militaryTime !== options.militaryTime;
         this.options = options;
-        this.levels = levels;
         if (updateView) {
             this.viewchanged(this.date, this.level);
         }
