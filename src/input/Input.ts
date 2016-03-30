@@ -130,7 +130,7 @@ class Input {
     public updateOptions(options:IOptions) {
         this.options = options;
         
-        this.dateParts = Parser.parse(options.displayAs);
+        this.dateParts = Parser.parse(options);
         this.selectedDatePart = void 0;
         
         let format:string = '^';

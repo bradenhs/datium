@@ -81,7 +81,31 @@ class OptionSanitizer {
         } else {
             throw OptionException('The "theme" option must be object or string');
         }
-    } 
+    }
+    
+    static sanitizeSecondSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+        return dflt;
+    }
+    
+    static sanitizeMinuteSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+        return dflt;
+    }
+    
+    static sanitizeHourSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+        return dflt;
+    }
+    
+    static sanitizeDateSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+        return dflt;
+    }
+    
+    static sanitizeMonthSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+        return dflt;
+    }
+    
+    static sanitizeYearSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+        return (d:Date) => d.getFullYear() % 2 === 0;
+    }
     
     static sanitizeMilitaryTime(militaryTime:any, dflt:boolean = false) {
         if (militaryTime === void 0) return dflt;
@@ -98,7 +122,13 @@ class OptionSanitizer {
             maxDate: OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate),
             defaultDate: OptionSanitizer.sanitizeDefaultDate(options['defaultDate'], defaults.defaultDate),
             theme: OptionSanitizer.sanitizeTheme(options['theme'], defaults.theme),
-            militaryTime: OptionSanitizer.sanitizeMilitaryTime(options['militaryTime'], defaults.militaryTime)
+            militaryTime: OptionSanitizer.sanitizeMilitaryTime(options['militaryTime'], defaults.militaryTime),
+            secondSelectable: OptionSanitizer.sanitizeSecondSelectable(options['secondSelectable'], defaults.secondSelectable),
+            minuteSelectable: OptionSanitizer.sanitizeMinuteSelectable(options['minuteSelectable'], defaults.secondSelectable),
+            hourSelectable: OptionSanitizer.sanitizeHourSelectable(options['hourSelectable'], defaults.secondSelectable),
+            dateSelectable: OptionSanitizer.sanitizeDateSelectable(options['dateSelectable'], defaults.secondSelectable),
+            monthSelectable: OptionSanitizer.sanitizeMonthSelectable(options['monthSelectable'], defaults.secondSelectable),
+            yearSelectable: OptionSanitizer.sanitizeYearSelectable(options['yearSelectable'], defaults.secondSelectable)
         }
         
         return opts;

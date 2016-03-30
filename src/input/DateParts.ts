@@ -32,6 +32,10 @@ let formatBlocks = (function() {
         protected date:Date;
         protected selectable:boolean = true;
         
+        constructor(protected options:IOptions) {
+            super();
+        }
+        
         public getValue():Date {
             return this.date
         }
@@ -47,12 +51,18 @@ let formatBlocks = (function() {
     }
     
     class FourDigitYear extends DatePart {
+        constructor(options:IOptions) { super(options); }
+        
         public increment() {
-            this.date.setFullYear(this.date.getFullYear() + 1);
+            do {
+                this.date.setFullYear(this.date.getFullYear() + 1);
+            } while (!this.options.yearSelectable(this.date));
         }
         
         public decrement() {
-            this.date.setFullYear(this.date.getFullYear() - 1);
+            do {
+                this.date.setFullYear(this.date.getFullYear() - 1);
+            } while (!this.options.yearSelectable(this.date));
         }
         
         public setValueFromPartial(partial:string) {
@@ -61,10 +71,15 @@ let formatBlocks = (function() {
         
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
-                this.date = new Date(value.valueOf());
+                let date = new Date(value.valueOf());
+                if (!this.options.yearSelectable(date)) return false;
+                this.date = date;
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
-                this.date.setFullYear(parseInt(value, 10));
+                let date = new Date(this.date.valueOf());
+                date.setFullYear(parseInt(value, 10));
+                if (!this.options.yearSelectable(date)) return false;
+                this.date = date;
                 return true;
             }
             return false;
@@ -88,6 +103,8 @@ let formatBlocks = (function() {
     }
     
     class TwoDigitYear extends FourDigitYear {
+        constructor(options:IOptions) { super(options); }
+        
         public getMaxBuffer() {
             return 2;
         }
@@ -114,6 +131,8 @@ let formatBlocks = (function() {
     }
     
     class LongMonthName extends DatePart {
+        constructor(options:IOptions) { super(options); }
+        
         protected getMonths() {
             return super.getMonths();
         } 
@@ -173,12 +192,16 @@ let formatBlocks = (function() {
     }
     
     class ShortMonthName extends LongMonthName {
+        constructor(options:IOptions) { super(options); }
+        
         protected getMonths() {
             return super.getShortMonths();
         }
     }
     
     class Month extends LongMonthName {
+        constructor(options:IOptions) { super(options); }
+        
         public getMaxBuffer() {
             return this.date.getMonth() > 0 ? 1 : 2;
         }
@@ -212,6 +235,8 @@ let formatBlocks = (function() {
     }
     
     class PaddedMonth extends Month {
+        constructor(options:IOptions) { super(options); }
+        
         public setValueFromPartial(partial:string) {
             if (/^\d{1,2}$/.test(partial)) {
                 let padded = this.pad(partial === '0' ? '1' : partial);
@@ -230,6 +255,8 @@ let formatBlocks = (function() {
     }
     
     class DateNumeral extends DatePart {
+        constructor(options:IOptions) { super(options); }
+        
         public increment() {
             let num = this.date.getDate() + 1;
             if (num > this.daysInMonth(this.date)) num = 1;
@@ -279,6 +306,8 @@ let formatBlocks = (function() {
     }
     
     class PaddedDate extends DateNumeral {
+        constructor(options:IOptions) { super(options); }
+        
         public setValueFromPartial(partial:string) {
             if (/^\d{1,2}$/.test(partial)) {
                 let padded = this.pad(partial === '0' ? '1' : partial);
@@ -297,6 +326,8 @@ let formatBlocks = (function() {
     }
     
     class DateOrdinal extends DateNumeral {
+        constructor(options:IOptions) { super(options); }
+        
         public getRegEx() {
             return /^([1-9]|((1|2)[0-9])|(3[0-1]))((st)|(nd)|(rd)|(th))?$/i;
         }
@@ -313,6 +344,8 @@ let formatBlocks = (function() {
     }
     
     class LongDayName extends DatePart {
+        constructor(options:IOptions) { super(options); }
+        
         protected getDays() {
             return super.getDays();
         }
@@ -369,12 +402,16 @@ let formatBlocks = (function() {
     }
     
     class ShortDayName extends LongDayName {
+        constructor(options:IOptions) { super(options); }
+        
         protected getDays() {
             return super.getShortDays();
         }
     }
     
     class PaddedMilitaryHour extends DatePart {
+        constructor(options:IOptions) { super(options); }
+        
         public increment() {
             let num = this.date.getHours() + 1;
             if (num > 23) num = 0;
@@ -428,6 +465,8 @@ let formatBlocks = (function() {
     }
     
     class MilitaryHour extends PaddedMilitaryHour {
+        constructor(options:IOptions) { super(options); }
+        
         public setValueFromPartial(partial:string) {
             if (/^\d{1,2}$/.test(partial)) {
                 let trimmed = this.trim(partial);
@@ -446,6 +485,8 @@ let formatBlocks = (function() {
     }
     
     class PaddedHour extends PaddedMilitaryHour {
+        constructor(options:IOptions) { super(options); }
+        
         public setValueFromPartial(partial:string) {
             let padded = this.pad(partial === '0' ? '1' : partial);
             return this.setValue(padded);
@@ -479,6 +520,8 @@ let formatBlocks = (function() {
     }
     
     class Hour extends PaddedHour {
+        constructor(options:IOptions) { super(options); }
+        
         public setValueFromPartial(partial:string) {
             let trimmed = this.trim(partial === '0' ? '1' : partial);
             return this.setValue(trimmed);
@@ -494,6 +537,8 @@ let formatBlocks = (function() {
     }
     
     class PaddedMinute extends DatePart {
+        constructor(options:IOptions) { super(options); }
+        
         public increment() {
             let num = this.date.getMinutes() + 1;
             if (num > 59) num = 0;
@@ -539,6 +584,8 @@ let formatBlocks = (function() {
     }
     
     class Minute extends PaddedMinute {
+        constructor(options:IOptions) { super(options); }
+        
         public setValueFromPartial(partial:string) {
             return this.setValue(this.trim(partial));
         }
@@ -553,6 +600,8 @@ let formatBlocks = (function() {
     }
     
     class PaddedSecond extends DatePart {
+        constructor(options:IOptions) { super(options); }
+        
         public increment() {
             let num = this.date.getSeconds() + 1;
             if (num > 59) num = 0;
@@ -598,6 +647,8 @@ let formatBlocks = (function() {
     }
     
     class Second extends PaddedSecond {
+        constructor(options:IOptions) { super(options); }
+        
         public setValueFromPartial(partial:string) {
             return this.setValue(this.trim(partial));
         }
@@ -613,6 +664,8 @@ let formatBlocks = (function() {
     }
     
     class UppercaseMeridiem extends DatePart {
+        constructor(options:IOptions) { super(options); }
+        
         public increment() {
             let num = this.date.getHours() + 12;
             if (num > 23) num -= 24;
@@ -670,7 +723,7 @@ let formatBlocks = (function() {
         }
     }
     
-    let formatBlocks:{ [key:string]: new () => IDatePart; } = {};
+    let formatBlocks:{ [key:string]: new (options:IOptions) => IDatePart; } = {};
     
     formatBlocks['YYYY'] = FourDigitYear;
     formatBlocks['YY'] = TwoDigitYear;
