@@ -1,11 +1,13 @@
 <html>
     <head>
         <title>Datium Production</title>
-        <!--
+        
         <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,300,300italic,400italic,500,500italic,700italic,900,900italic' rel='stylesheet' type='text/css'>
-        -->
+        
         <meta name="viewport" content="width=device-width, initial-scale=1">   
+        
         <script src="datium.js"></script>
+        
         <style>
             body {
                 margin: 15px;
@@ -20,7 +22,7 @@
         <h4>Newest</h4>
         <input id="test1" readonly/>
         <script>            
-            var test = new Datium(document.querySelector('#test1'), {
+            var picker = new Datium(document.querySelector('#test1'), {
                 displayAs: 'hh:mm:ssa MM/DD/YY',
                 militaryTime: false
             });

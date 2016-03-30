@@ -4,6 +4,7 @@ class TimePicker extends Picker {
     protected timeDrag:HTMLElement;
     protected timeDragArm:HTMLElement;
     
+    protected secondHand:HTMLElement;
     protected hourHand:HTMLElement;
     protected minuteHand:HTMLElement;
     
@@ -44,6 +45,8 @@ class TimePicker extends Picker {
             newDate.setHours(this.rotationToTime(this.rotation));
         } else if (this.getLevel() === Level.MINUTE) {
             newDate.setMinutes(this.rotationToTime(this.rotation));            
+        } else if (this.getLevel() === Level.SECOND) {
+            newDate.setSeconds(this.rotationToTime(this.rotation));
         }
         this.updateLabels(newDate);
         trigger.goto(this.element, {
@@ -61,8 +64,10 @@ class TimePicker extends Picker {
         let date = this.getElementDate(this.timeDrag);
         if (this.getLevel() === Level.HOUR) {
             date.setHours(this.rotationToTime(this.rotation));
-        } else {
+        } else if (this.getLevel() === Level.MINUTE) {
             date.setMinutes(this.rotationToTime(this.rotation));
+        } else if (this.getLevel() === Level.SECOND) {
+            date.setSeconds(this.rotationToTime(this.rotation));
         }
         
         trigger.zoomIn(this.element, {
@@ -77,7 +82,7 @@ class TimePicker extends Picker {
         this.timeDragArm.style.transform = `rotate(${this.rotation}rad)`;
         if (this.getLevel() == Level.HOUR) {
             this.hourHand.style.transform = `rotate(${this.rotation}rad)`;
-        } else {
+        } else if (this.getLevel() === Level.MINUTE) {
             
             let t = this.selectedDate.getHours();
             let r1 =  (t + 6) / 6 * Math.PI;
@@ -88,6 +93,23 @@ class TimePicker extends Picker {
             
             this.hourHand.style.transform = `rotate(${r1}rad)`;
             this.minuteHand.style.transform = `rotate(${this.rotation}rad)`;
+        } else if (this.getLevel() === Level.SECOND) {
+            
+            let t = this.selectedDate.getHours();
+            let r1 =  (t + 6) / 6 * Math.PI;
+            
+            
+            
+            let t2 = this.selectedDate.getMinutes();
+            let r2 = this.timeToRotation(t2);
+            
+            let r = r2;
+            r = this.putRotationInBounds(r);
+            r1 += (r+Math.PI)/12;
+            
+            this.hourHand.style.transform = `rotate(${r1}rad)`;
+            this.minuteHand.style.transform = `rotate(${r2}rad)`;
+            this.secondHand.style.transform = `rotate(${this.rotation}rad)`;
         }
     }
     
@@ -106,8 +128,10 @@ class TimePicker extends Picker {
         
         if (this.getLevel() === Level.HOUR) {
             this.rotation = this.normalizeRotation((date.getHours() + 6) / 6 * Math.PI, 2);
-        } else {
+        } else if (this.getLevel() === Level.MINUTE) {
             this.rotation = this.normalizeRotation((date.getMinutes() + 30) / 30 * Math.PI, 2);            
+        } else if (this.getLevel() === Level.SECOND) {
+            this.rotation = this.normalizeRotation((date.getSeconds() + 30) / 30 * Math.PI, 2);
         }
         
         if (this.timeDragArm !== void 0) {
@@ -127,5 +151,6 @@ class TimePicker extends Picker {
     protected getElementDate(el:Element):Date { throw 'unimplemented' }
     protected getBubbleText():string { throw 'unimplemented' }
     protected rotationToTime(rotation:number):number { throw 'unimplemented' }
+    protected timeToRotation(time:number):number { throw 'unimplemented' }
     public getLevel():Level { throw 'unimplemented' }
 }

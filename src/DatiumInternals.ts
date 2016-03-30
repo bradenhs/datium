@@ -10,6 +10,7 @@ class DatiumInternals {
     private pickerManager:PickerManager;
     
     private levels:Level[];
+    private date:Date;
     
     constructor(private element:HTMLInputElement, options:IOptions) {
         if (element === void 0) throw 'element is required';
@@ -57,7 +58,7 @@ class DatiumInternals {
         if (this.options.maxDate !== void 0 && date.valueOf() > this.options.maxDate.valueOf()) {
             date = new Date(this.options.maxDate.valueOf());
         }
-        
+        this.date = date;
         trigger.viewchanged(this.element, {
             date: date,
             level: level,
@@ -71,6 +72,17 @@ class DatiumInternals {
         
         this.levels = this.input.getLevels().slice();
         this.levels.sort();
+        
+        if (this.pickerManager.currentPicker !== void 0) {
+            let curLevel = this.pickerManager.currentPicker.getLevel();
+            
+            if (this.levels.indexOf(curLevel) == -1) {
+                trigger.goto(this.element, {
+                    date: this.date,
+                    level: this.levels[0]
+                })
+            }
+        }
         
         this.pickerManager.updateOptions(this.options);
     }

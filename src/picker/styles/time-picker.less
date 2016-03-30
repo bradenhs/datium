@@ -1,6 +1,7 @@
 datium-container._id {
     datium-picker.datium-hour-picker,
-    datium-picker.datium-minute-picker {
+    datium-picker.datium-minute-picker,
+    datium-picker.datium-second-picker, {
         height: 240px;
         
         &:before {
@@ -150,7 +151,8 @@ datium-container._id {
     }
     
     datium-picker.datium-hour-picker,
-    datium-picker.datium-minute-picker {
+    datium-picker.datium-minute-picker,
+    datium-picker.datium-second-picker, {
         &.datium-dragging {
             datium-hour-hand, datium-minute-hand, 
             datium-second-hand, datium-time-drag-arm {
@@ -159,7 +161,7 @@ datium-container._id {
         }
     }
     
-    datium-hour-hand, datium-minute-hand {
+    datium-hour-hand, datium-minute-hand, datium-second-hand {
         position: absolute;
         display: block;
         width: 0;
@@ -181,6 +183,12 @@ datium-container._id {
         opacity: .5;
     }
     
+    datium-picker.datium-second-picker datium-hour-hand,
+    datium-picker.datium-second-picker datium-minute-hand {
+        border-top-color: _secondary_text;
+        opacity: .5;
+    }
+    
     datium-hour-hand {
         border-top: 30px solid _secondary_accent;
     }
@@ -193,7 +201,18 @@ datium-container._id {
         border-right: 2px solid transparent;
         border-top-left-radius: 2px;
         border-top-right-radius: 2px;   
-        border-top: 45px solid _secondary_accent;
+        border-top: 40px solid _secondary_accent;
+    }
+    
+    datium-second-hand {
+        transform-origin: 1px 1px;
+        margin-left: -1px;
+        margin-top: -1px;
+        border-left: 1px solid transparent;
+        border-right: 1px solid transparent;
+        border-top-left-radius: 1px;
+        border-top-right-radius: 1px;   
+        border-top: 50px solid _secondary_accent;
     }
     
     datium-time-drag-arm {

@@ -17,6 +17,7 @@ class Picker extends Common {
     
     public remove(transition:Transition) {
         if (this.picker === void 0) return;
+        clearTimeout(this.transitionInTimeout);
         this.transitionOut(transition, this.picker);
         setTimeout((picker:HTMLElement) => {
             picker.remove();
@@ -61,8 +62,10 @@ class Picker extends Common {
         }
     }
     
+    protected transitionInTimeout:number;
+    
     protected transitionIn(transition:Transition, picker:HTMLElement) {
-        let cls;
+        let cls:string;
         if (transition === Transition.SLIDE_LEFT) {
             cls = 'datium-picker-left';
         } else if (transition === Transition.SLIDE_RIGHT) {
@@ -73,7 +76,8 @@ class Picker extends Common {
             cls = 'datium-picker-out';
         }
         picker.classList.add(cls);
-        setTimeout((p) => {
+        clearTimeout(this.transitionInTimeout);
+        this.transitionInTimeout = setTimeout((p:HTMLElement) => {
             p.classList.remove(cls);
         }, 100, picker);
     }

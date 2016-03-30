@@ -385,6 +385,10 @@ let formatBlocks = (function() {
             let num = this.date.getHours() - 1;
             if (num < 0) num = 23;
             this.date.setHours(num);
+            // Day Light Savings Adjustment
+            if (this.date.getHours() !== num) {
+                this.date.setHours(num - 1);
+            }
         }
         
         public setValueFromPartial(partial:string) {
