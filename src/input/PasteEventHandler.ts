@@ -4,6 +4,7 @@ class PasteEventHander {
     }
     
     private paste() {
+        //TODO fix this cause it's not working
         let originalValue = this.input.element.value;
         setTimeout(() => {
            if (!this.input.format.test(this.input.element.value)) {
@@ -26,8 +27,10 @@ class PasteEventHander {
                
                datePart.setValue(newDate);
                if (datePart.setValue(val)) {
+                   this.input.blurDatePart(datePart);
                    newDate = datePart.getValue();
                } else {
+                   // TODO set all dateparts back to original value
                    this.input.element.value = originalValue;
                    return;
                }
@@ -37,7 +40,6 @@ class PasteEventHander {
                date: newDate,
                level: this.input.getSelectedDatePart().getLevel()
            });
-           
         });
     }
 }

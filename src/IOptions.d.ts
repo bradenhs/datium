@@ -13,10 +13,10 @@ interface IOptions {
     defaultDate:Date;
     theme:ITheme;
     militaryTime:boolean;
-    secondSelectable:(date:Date) => boolean;
-    minuteSelectable:(date:Date) => boolean;
-    hourSelectable:(date:Date) => boolean;
-    dateSelectable:(date:Date) => boolean;
-    monthSelectable:(date:Date) => boolean;
-    yearSelectable:(date:Date) => boolean;
+    isSecondSelectable:(date:Date) => boolean;
+    isMinuteSelectable:(date:Date) => boolean;
+    isHourSelectable:(date:Date) => boolean;
+    isDateSelectable:(date:Date) => boolean;
+    isMonthSelectable:(date:Date) => boolean;
+    isYearSelectable:(date:Date) => boolean;
 }

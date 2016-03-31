@@ -12,12 +12,12 @@ class OptionSanitizer {
         return displayAs;
     }
     
-    static sanitizeMinDate(minDate:any, dflt:Date = void 0) {
+    static sanitizeMinDate(minDate:any, dflt:Date = new Date(-8640000000000000)) {
         if (minDate === void 0) return dflt;
         return new Date(minDate); //TODO figure this out yes
     }
     
-    static sanitizeMaxDate(maxDate:any, dflt:Date = void 0) {
+    static sanitizeMaxDate(maxDate:any, dflt:Date = new Date(8640000000000000)) {
         if (maxDate === void 0) return dflt;
         return new Date(maxDate); //TODO figure this out 
     }
@@ -83,28 +83,28 @@ class OptionSanitizer {
         }
     }
     
-    static sanitizeSecondSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+    static sanitizeIsSecondSelectable(isSecondSelectable:any, dflt:any = (date:Date) => true) {
         return dflt;
     }
     
-    static sanitizeMinuteSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+    static sanitizeIsMinuteSelectable(isMinuteSelectable:any, dflt:any = (date:Date) => true) {
         return dflt;
     }
     
-    static sanitizeHourSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
+    static sanitizeIsHourSelectable(isHourSelectable:any, dflt:any = (date:Date) => true) {
         return dflt;
     }
     
-    static sanitizeDateSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
-        return dflt;
+    static sanitizeIsDateSelectable(isDateSelectable:any, dflt:any = (date:Date) => true) {
+        return (date:Date) => date.getDay() !== 0 && date.getDay() !== 6;
     }
     
-    static sanitizeMonthSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
-        return dflt;
+    static sanitizeIsMonthSelectable(isMonthSelectable:any, dflt:any = (date:Date) => true) {
+        return (date:Date) => date.getMonth() % 2 === 0;
     }
     
-    static sanitizeYearSelectable(secondSelectable:any, dflt:any = (d:Date) => true) {
-        return (d:Date) => d.getFullYear() % 2 === 0;
+    static sanitizeIsYearSelectable(isYearSelectable:any, dflt:any = (date:Date) => true) {
+        return dflt;
     }
     
     static sanitizeMilitaryTime(militaryTime:any, dflt:boolean = false) {
@@ -123,12 +123,12 @@ class OptionSanitizer {
             defaultDate: OptionSanitizer.sanitizeDefaultDate(options['defaultDate'], defaults.defaultDate),
             theme: OptionSanitizer.sanitizeTheme(options['theme'], defaults.theme),
             militaryTime: OptionSanitizer.sanitizeMilitaryTime(options['militaryTime'], defaults.militaryTime),
-            secondSelectable: OptionSanitizer.sanitizeSecondSelectable(options['secondSelectable'], defaults.secondSelectable),
-            minuteSelectable: OptionSanitizer.sanitizeMinuteSelectable(options['minuteSelectable'], defaults.secondSelectable),
-            hourSelectable: OptionSanitizer.sanitizeHourSelectable(options['hourSelectable'], defaults.secondSelectable),
-            dateSelectable: OptionSanitizer.sanitizeDateSelectable(options['dateSelectable'], defaults.secondSelectable),
-            monthSelectable: OptionSanitizer.sanitizeMonthSelectable(options['monthSelectable'], defaults.secondSelectable),
-            yearSelectable: OptionSanitizer.sanitizeYearSelectable(options['yearSelectable'], defaults.secondSelectable)
+            isSecondSelectable: OptionSanitizer.sanitizeIsSecondSelectable(options['isSecondSelectable'], defaults.isSecondSelectable),
+            isMinuteSelectable: OptionSanitizer.sanitizeIsMinuteSelectable(options['isMinuteSelectable'], defaults.isMinuteSelectable),
+            isHourSelectable: OptionSanitizer.sanitizeIsHourSelectable(options['isHourSelectable'], defaults.isHourSelectable),
+            isDateSelectable: OptionSanitizer.sanitizeIsDateSelectable(options['isDateSelectable'], defaults.isDateSelectable),
+            isMonthSelectable: OptionSanitizer.sanitizeIsMonthSelectable(options['isMonthSelectable'], defaults.isMonthSelectable),
+            isYearSelectable: OptionSanitizer.sanitizeIsYearSelectable(options['isYearSelectable'], defaults.isYearSelectable)
         }
         
         return opts;

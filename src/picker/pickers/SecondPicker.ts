@@ -36,6 +36,15 @@ class SecondPicker extends TimePicker implements ITimePicker {
         if (seconds === void 0) {
             seconds = this.rotationToTime(this.rotation); 
         }
+        
+        let d = new Date(this.selectedDate.valueOf());
+        d.setSeconds(seconds);
+        if (d.valueOf() < this.options.minDate.valueOf()) {
+            seconds = this.options.minDate.getSeconds();
+        } else if (d.valueOf() > this.options.maxDate.valueOf()) {
+            seconds = this.options.maxDate.getSeconds();
+        }
+        
         return this.pad(seconds)+'s';
     }
     
@@ -135,6 +144,15 @@ class SecondPicker extends TimePicker implements ITimePicker {
             let d = new Date(label.getAttribute('datium-data'));
             
             label.setAttribute('datium-data', d.toISOString());
+            
+            let start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+            let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1);
+            if (end.valueOf() > this.options.minDate.valueOf() &&
+                start.valueOf() < this.options.maxDate.valueOf()) {
+                label.classList.remove('datium-inactive');
+            } else {
+                label.classList.add('datium-inactive');
+            }
             
             label.innerHTML = this.pad(time);
         }

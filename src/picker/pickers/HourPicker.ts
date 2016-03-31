@@ -55,6 +55,15 @@ class HourPicker extends TimePicker implements ITimePicker {
         if (hours === void 0) {
             hours = this.rotationToTime(this.rotation); 
         }
+        
+        let d = new Date(this.selectedDate.valueOf());
+        d.setHours(hours);
+        if (d.valueOf() < this.options.minDate.valueOf()) {
+            hours = this.options.minDate.getHours();
+        } else if (d.valueOf() > this.options.maxDate.valueOf()) {
+            hours = this.options.maxDate.getHours();
+        }
+        
         if (this.options.militaryTime) {
             return this.pad(hours)+'hr';
         } else if (hours === 12) {
@@ -91,7 +100,7 @@ class HourPicker extends TimePicker implements ITimePicker {
         while (r < Math.PI) r += 4*Math.PI;
         r -= 2 * Math.PI;
         let t = (r / Math.PI * 6) + 6;
-        return t >= 23.5 ? 0 : Math.round(t);
+        return Math.floor(t+.000001);
     }
     
     protected timeToRotation(t:number) {
@@ -194,6 +203,15 @@ class HourPicker extends TimePicker implements ITimePicker {
             }
             
             label.setAttribute('datium-data', d.toISOString());
+            
+            let start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours());
+            let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1);
+            if (end.valueOf() > this.options.minDate.valueOf() &&
+                start.valueOf() < this.options.maxDate.valueOf()) {
+                label.classList.remove('datium-inactive');
+            } else {
+                label.classList.add('datium-inactive');
+            }
             
             if (this.options.militaryTime) {
                 if (date.getHours() > 11) time += 12;

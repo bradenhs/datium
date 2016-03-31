@@ -16,28 +16,36 @@ class TimePicker extends Picker {
     protected rotation:number = 0;
     
     protected dragStart(e:MouseEvent|TouchEvent) {
+        let minuteAdjust = 0;
+        if (this.getLevel() === Level.HOUR) {
+            minuteAdjust = (Math.PI * this.selectedDate.getMinutes() / 30) / 12;
+        }
         trigger.openBubble(this.element, {
-           x: -70 * Math.sin(this.rotation) + 140, 
-           y: 70 * Math.cos(this.rotation) + 175,
+           x: -70 * Math.sin(this.rotation + minuteAdjust) + 140, 
+           y: 70 * Math.cos(this.rotation + minuteAdjust) + 175,
            text: this.getBubbleText() 
         });
         this.picker.classList.add('datium-dragging');
         this.dragging = true;
+        this.moved = 0;
     }
     
+    private moved:number = 0;
     protected dragMove(e:MouseEvent|TouchEvent) {
-        trigger.updateBubble(this.element, {
-           x: -70 * Math.sin(this.rotation) + 140, 
-           y: 70 * Math.cos(this.rotation) + 175,
-           text: this.getBubbleText()
-        });
+        if (this.moved++ > 1) {
+            trigger.updateBubble(this.element, {
+                x: -70 * Math.sin(this.rotation) + 140, 
+                y: 70 * Math.cos(this.rotation) + 175,
+                text: this.getBubbleText()
+            });
+        }
         
         let point = {
             x: this.picker.getBoundingClientRect().left + 140 - this.getClientCoor(e).x,
             y: this.getClientCoor(e).y - this.picker.getBoundingClientRect().top - 120
         }
         
-        let r = Math.atan2(point.x, point.y);        
+        let r = Math.atan2(point.x, point.y);
         this.rotation = this.normalizeRotation(r);
         
         let newDate = this.getElementDate(this.timeDrag);
@@ -76,12 +84,19 @@ class TimePicker extends Picker {
         });
         
         this.dragging = false;
+        
+        this.updateElements();
     }
     
     protected updateElements() {
         this.timeDragArm.style.transform = `rotate(${this.rotation}rad)`;
         if (this.getLevel() == Level.HOUR) {
-            this.hourHand.style.transform = `rotate(${this.rotation}rad)`;
+            let minuteAdjust = 0;
+            if (!this.dragging) {
+                minuteAdjust = (Math.PI * this.selectedDate.getMinutes() / 30) / 12;
+            }
+            this.timeDragArm.style.transform = `rotate(${this.rotation + minuteAdjust}rad)`;
+            this.hourHand.style.transform = `rotate(${this.rotation + minuteAdjust}rad)`;
         } else if (this.getLevel() === Level.MINUTE) {
             
             let t = this.selectedDate.getHours();

@@ -87,6 +87,10 @@ datium-container._id {
             transform: scale(.9);
             transition: none;
         }
+        &:not([datium-data]) {
+            opacity: .4;
+            pointer-events: none;
+        }
     }
     datium-month-element.datium-selected:after {
         left: 25px;
@@ -97,7 +101,7 @@ datium-container._id {
         display: inline-block;
         width: 40px;
         line-height: 28px;
-        opacity: .6;
+        opacity: .4;
         font-weight: bold;
         text-align: center;
     }
@@ -125,7 +129,7 @@ datium-container._id {
             transition: none;
         }
         &:not([datium-data]) {
-            opacity: .6;
+            opacity: .4;
             pointer-events: none;
         }
     }

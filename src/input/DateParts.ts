@@ -3,6 +3,7 @@ interface IDatePart {
     decrement():void;
     setValueFromPartial(partial:string):boolean;
     setValue(value:Date|string):boolean;
+    getLastValue():Date;
     getValue():Date;
     getRegEx():RegExp;
     setSelectable(selectable:boolean):IDatePart;
@@ -18,6 +19,7 @@ class PlainText implements IDatePart {
     public decrement() {}
     public setValueFromPartial() { return false }
     public setValue() { return false }
+    public getLastValue():Date { return null }
     public getValue():Date { return null }
     public getRegEx():RegExp { return new RegExp(`[${this.text}]`); }
     public setSelectable(selectable:boolean):IDatePart { return this }
@@ -31,6 +33,9 @@ let formatBlocks = (function() {
     class DatePart extends Common {
         protected date:Date;
         protected selectable:boolean = true;
+        
+        private current:Date;
+        private last:Date;
         
         constructor(protected options:IOptions) {
             super();
@@ -48,6 +53,19 @@ let formatBlocks = (function() {
         public isSelectable() {
             return this.selectable;
         }
+        
+        protected setLast() {
+            if (this.current === void 0 ||
+                this.date === void 0 ||
+                this.date.valueOf() !== this.current.valueOf()) {
+                this.last = this.current;
+                this.current = this.date;
+            }
+        }
+        
+        public getLastValue() {
+            return this.last;
+        }
     }
     
     class FourDigitYear extends DatePart {
@@ -56,13 +74,15 @@ let formatBlocks = (function() {
         public increment() {
             do {
                 this.date.setFullYear(this.date.getFullYear() + 1);
-            } while (!this.options.yearSelectable(this.date));
+            } while (!this.options.isYearSelectable(this.date));
+            this.setLast();
         }
         
         public decrement() {
             do {
                 this.date.setFullYear(this.date.getFullYear() - 1);
-            } while (!this.options.yearSelectable(this.date));
+            } while (!this.options.isYearSelectable(this.date));
+            this.setLast();
         }
         
         public setValueFromPartial(partial:string) {
@@ -71,15 +91,12 @@ let formatBlocks = (function() {
         
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
-                let date = new Date(value.valueOf());
-                if (!this.options.yearSelectable(date)) return false;
-                this.date = date;
+                this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
-                let date = new Date(this.date.valueOf());
-                date.setFullYear(parseInt(value, 10));
-                if (!this.options.yearSelectable(date)) return false;
-                this.date = date;
+                this.date.setFullYear(parseInt(value, 10));
+                this.setLast();
                 return true;
             }
             return false;
@@ -112,10 +129,12 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 let base = Math.floor(super.getValue().getFullYear()/100)*100;
                 this.date.setFullYear(parseInt(<string>value, 10) + base);
+                this.setLast();
                 return true;
             }
             return false;
@@ -138,18 +157,24 @@ let formatBlocks = (function() {
         } 
         
         public increment() {
-            let num = this.date.getMonth() + 1;
-            if (num > 11) num = 0;
-            this.date.setMonth(num);
-            while (this.date.getMonth() > num) {
-                this.date.setDate(this.date.getDate() - 1);
-            }
+            do {
+                let num = this.date.getMonth() + 1;
+                if (num > 11) num = 0;
+                this.date.setMonth(num);
+                while (this.date.getMonth() > num) {
+                    this.date.setDate(this.date.getDate() - 1);
+                }
+            } while (!this.options.isMonthSelectable(this.date));
+            this.setLast();
         }
         
         public decrement() {
-            let num = this.date.getMonth() - 1;
-            if (num < 0) num = 11;
-            this.date.setMonth(num);
+            do {
+                let num = this.date.getMonth() - 1;
+                if (num < 0) num = 11;
+                this.date.setMonth(num);
+            } while (!this.options.isMonthSelectable(this.date));
+            this.setLast();
         }
         
         public setValueFromPartial(partial:string) {
@@ -165,10 +190,15 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 let num = this.getMonths().indexOf(value);
                 this.date.setMonth(num);
+                while (this.date.getMonth() > num) {
+                    this.date.setDate(this.date.getDate() - 1);
+                }
+                this.setLast();
                 return true;
             }
             return false;
@@ -217,9 +247,14 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 this.date.setMonth(parseInt(value, 10) - 1);
+                while (this.date.getMonth() > parseInt(value, 10) - 1) {
+                    this.date.setDate(this.date.getDate() - 1);
+                }
+                this.setLast();
                 return true;
             }
             return false;
@@ -258,15 +293,21 @@ let formatBlocks = (function() {
         constructor(options:IOptions) { super(options); }
         
         public increment() {
-            let num = this.date.getDate() + 1;
-            if (num > this.daysInMonth(this.date)) num = 1;
-            this.date.setDate(num);
+            do {
+                let num = this.date.getDate() + 1;
+                if (num > this.daysInMonth(this.date)) num = 1;
+                this.date.setDate(num);
+            } while (!this.options.isDateSelectable(this.date));
+            this.setLast();
         }
         
         public decrement() {
-            let num = this.date.getDate() - 1;
-            if (num < 1) num = this.daysInMonth(this.date);
-            this.date.setDate(num);
+            do {
+                let num = this.date.getDate() - 1;
+                if (num < 1) num = this.daysInMonth(this.date);
+                this.date.setDate(num);
+            } while (!this.options.isDateSelectable(this.date));
+            this.setLast();
         }
         
         public setValueFromPartial(partial:string) {
@@ -280,9 +321,11 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value) && parseInt(value, 10) < this.daysInMonth(this.date)) {
                 this.date.setDate(parseInt(value, 10));
+                this.setLast();
                 return true;
             }
             return false;
@@ -351,15 +394,21 @@ let formatBlocks = (function() {
         }
         
         public increment() {
-            let num = this.date.getDay() + 1;
-            if (num > 6) num = 0;
-            this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+            do {
+                let num = this.date.getDay() + 1;
+                if (num > 6) num = 0;
+                this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+            } while (!this.options.isDateSelectable(this.date));
+            this.setLast();
         }
         
         public decrement() {
-            let num = this.date.getDay() - 1;
-            if (num < 0) num = 6;
-            this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+            do {
+                let num = this.date.getDay() - 1;
+                if (num < 0) num = 6;
+                this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+            } while (!this.options.isDateSelectable(this.date));
+            this.setLast();
         }
         
         public setValueFromPartial(partial:string) {
@@ -375,10 +424,12 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 let num = this.getDays().indexOf(value);
                 this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+                this.setLast();
                 return true;
             }
             return false;
@@ -413,19 +464,25 @@ let formatBlocks = (function() {
         constructor(options:IOptions) { super(options); }
         
         public increment() {
-            let num = this.date.getHours() + 1;
-            if (num > 23) num = 0;
-            this.date.setHours(num);
+            do {
+                let num = this.date.getHours() + 1;
+                if (num > 23) num = 0;
+                this.date.setHours(num);
+            } while (!this.options.isHourSelectable(this.date));
+            this.setLast();
         }
         
         public decrement() {
-            let num = this.date.getHours() - 1;
-            if (num < 0) num = 23;
-            this.date.setHours(num);
-            // Day Light Savings Adjustment
-            if (this.date.getHours() !== num) {
-                this.date.setHours(num - 1);
-            }
+            do {
+                let num = this.date.getHours() - 1;
+                if (num < 0) num = 23;
+                this.date.setHours(num);
+                // Day Light Savings Adjustment
+                if (this.date.getHours() !== num) {
+                    this.date.setHours(num - 1);
+                }
+            } while (!this.options.isHourSelectable(this.date));
+            this.setLast();
         }
         
         public setValueFromPartial(partial:string) {
@@ -439,9 +496,11 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 this.date.setHours(parseInt(value, 10));
+                this.setLast();
                 return true;
             }
             return false;
@@ -495,12 +554,14 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 let num = parseInt(value, 10);
                 if (this.date.getHours() < 12 && num === 12) num = 0;
                 if (this.date.getHours() > 11 && num !== 12) num += 12;
                 this.date.setHours(num);
+                this.setLast();
                 return true;
             }
             return false;
@@ -540,15 +601,21 @@ let formatBlocks = (function() {
         constructor(options:IOptions) { super(options); }
         
         public increment() {
-            let num = this.date.getMinutes() + 1;
-            if (num > 59) num = 0;
-            this.date.setMinutes(num);
+            do {
+                let num = this.date.getMinutes() + 1;
+                if (num > 59) num = 0;
+                this.date.setMinutes(num);
+            } while (!this.options.isMinuteSelectable(this.date));
+            this.setLast();
         }
         
         public decrement() {
-            let num = this.date.getMinutes() - 1;
-            if (num < 0) num = 59;
-            this.date.setMinutes(num);
+            do {
+                let num = this.date.getMinutes() - 1;
+                if (num < 0) num = 59;
+                this.date.setMinutes(num);
+            } while (!this.options.isMinuteSelectable(this.date));
+            this.setLast();
         }
         
         public setValueFromPartial(partial:string) {
@@ -558,9 +625,11 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 this.date.setMinutes(parseInt(value, 10));
+                this.setLast();
                 return true;
             }
             return false;
@@ -603,15 +672,21 @@ let formatBlocks = (function() {
         constructor(options:IOptions) { super(options); }
         
         public increment() {
-            let num = this.date.getSeconds() + 1;
-            if (num > 59) num = 0;
-            this.date.setSeconds(num);
+            do {
+                let num = this.date.getSeconds() + 1;
+                if (num > 59) num = 0;
+                this.date.setSeconds(num);
+            } while (!this.options.isSecondSelectable(this.date));
+            this.setLast();
         }
         
         public decrement() {
-            let num = this.date.getSeconds() - 1;
-            if (num < 0) num = 59;
-            this.date.setSeconds(num);
+            do {
+                let num = this.date.getSeconds() - 1;
+                if (num < 0) num = 59;
+                this.date.setSeconds(num);                
+            } while (!this.options.isSecondSelectable(this.date));
+            this.setLast();
         }
         
         public setValueFromPartial(partial:string) {
@@ -621,9 +696,11 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 this.date.setSeconds(parseInt(value, 10));
+                this.setLast();
                 return true;
             }
             return false;
@@ -670,12 +747,22 @@ let formatBlocks = (function() {
             let num = this.date.getHours() + 12;
             if (num > 23) num -= 24;
             this.date.setHours(num);
+            if (this.options.isHourSelectable(this.date)) {
+                this.setLast();
+            } else {
+                this.decrement();
+            }
         }
         
         public decrement() {
             let num = this.date.getHours() - 12;
             if (num < 0) num += 24;
             this.date.setHours(num);
+            if (this.options.isHourSelectable(this.date)) {
+                this.setLast();
+            } else {
+                this.increment();
+            }
         }
         
         public setValueFromPartial(partial:string) {
@@ -688,6 +775,7 @@ let formatBlocks = (function() {
         public setValue(value:Date|string) {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
+                this.setLast();
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
                 if (value.toLowerCase() === 'am' && this.date.getHours() > 11) {
@@ -695,6 +783,7 @@ let formatBlocks = (function() {
                 } else if (value.toLowerCase() === 'pm' && this.date.getHours() < 12) {
                     this.date.setHours(this.date.getHours() + 12);
                 }
+                this.setLast();
                 return true;
             }
             return false;

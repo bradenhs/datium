@@ -64,6 +64,12 @@ namespace listen {
         });
     }
     
+    export function blur(element:Element|Document|Window, callback:(e?:FocusEvent) => void):IListenerReference[] {
+        return attachEvents(['blur'], element, (e) => {
+            callback(e);
+        });
+    }
+    
     export function down(element:Element|Document|Window, callback:(e?:MouseEvent|TouchEvent) => void):IListenerReference[];
     export function down(parent:Element|Document|Window, delegateSelector:string, callback:(e?:MouseEvent|TouchEvent) => void):IListenerReference[];
     export function down(...params:any[]) {

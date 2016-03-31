@@ -45,14 +45,23 @@ class MonthPicker extends Picker implements IPicker {
         this.transitionIn(transition, this.picker);
         
         do {
+            let next = new Date(iterator.valueOf());
+            next.setMonth(next.getMonth() + 1);
+            
             let monthElement = document.createElement('datium-month-element');
             
             monthElement.innerHTML = this.getShortMonths()[iterator.getMonth()];
-            monthElement.setAttribute('datium-data', iterator.toISOString());
+            
+            if (next.valueOf() > this.options.minDate.valueOf() &&
+                iterator.valueOf() < this.options.maxDate.valueOf() &&
+                this.options.isYearSelectable(iterator) &&
+                this.options.isMonthSelectable(iterator)) {
+                monthElement.setAttribute('datium-data', iterator.toISOString());
+            }
             
             this.picker.appendChild(monthElement);
             
-            iterator.setMonth(iterator.getMonth() + 1);
+            iterator = next;
         } while (iterator.valueOf() < this.max.valueOf());
         
         this.attach();

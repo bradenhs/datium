@@ -36,6 +36,15 @@ class MinutePicker extends TimePicker implements ITimePicker {
         if (minutes === void 0) {
             minutes = this.rotationToTime(this.rotation); 
         }
+        
+        let d = new Date(this.selectedDate.valueOf());
+        d.setMinutes(minutes);
+        if (d.valueOf() < this.options.minDate.valueOf()) {
+            minutes = this.options.minDate.getMinutes();
+        } else if (d.valueOf() > this.options.maxDate.valueOf()) {
+            minutes = this.options.maxDate.getMinutes();
+        }
+        
         return this.pad(minutes)+'m';
     }
     
@@ -130,6 +139,15 @@ class MinutePicker extends TimePicker implements ITimePicker {
             let d = new Date(label.getAttribute('datium-data'));
             
             label.setAttribute('datium-data', d.toISOString());
+            
+            let start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes());
+            let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 1);
+            if (end.valueOf() > this.options.minDate.valueOf() &&
+                start.valueOf() < this.options.maxDate.valueOf()) {
+                label.classList.remove('datium-inactive');
+            } else {
+                label.classList.add('datium-inactive');
+            }
             
             label.innerHTML = this.pad(time);
         }

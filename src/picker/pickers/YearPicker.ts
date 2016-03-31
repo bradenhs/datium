@@ -44,14 +44,22 @@ class YearPicker extends Picker implements IPicker {
         this.transitionIn(transition, this.picker);
         
         do {
+            let next = new Date(iterator.valueOf());
+            next.setFullYear(next.getFullYear() + 1);
+            
             let yearElement = document.createElement('datium-year-element');
             
             yearElement.innerHTML = iterator.getFullYear().toString();
-            yearElement.setAttribute('datium-data', iterator.toISOString());
+            
+            if (next.valueOf() > this.options.minDate.valueOf() &&
+                iterator.valueOf() < this.options.maxDate.valueOf() &&
+                this.options.isYearSelectable(iterator)) {
+                yearElement.setAttribute('datium-data', iterator.toISOString());
+            }
             
             this.picker.appendChild(yearElement);
             
-            iterator.setFullYear(iterator.getFullYear() + 1);
+            iterator = next;
         } while (iterator.valueOf() <= this.max.valueOf());
         
         this.attach();
