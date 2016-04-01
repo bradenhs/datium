@@ -23,7 +23,7 @@ class TimePicker extends Picker {
         trigger.openBubble(this.element, {
            x: -70 * Math.sin(this.rotation + minuteAdjust) + 140, 
            y: 70 * Math.cos(this.rotation + minuteAdjust) + 175,
-           text: this.getBubbleText() 
+           text: this.getBubbleText()
         });
         this.picker.classList.add('datium-dragging');
         this.dragging = true;
@@ -32,13 +32,6 @@ class TimePicker extends Picker {
     
     private moved:number = 0;
     protected dragMove(e:MouseEvent|TouchEvent) {
-        if (this.moved++ > 1) {
-            trigger.updateBubble(this.element, {
-                x: -70 * Math.sin(this.rotation) + 140, 
-                y: 70 * Math.cos(this.rotation) + 175,
-                text: this.getBubbleText()
-            });
-        }
         
         let point = {
             x: this.picker.getBoundingClientRect().left + 140 - this.getClientCoor(e).x,
@@ -49,19 +42,37 @@ class TimePicker extends Picker {
         this.rotation = this.normalizeRotation(r);
         
         let newDate = this.getElementDate(this.timeDrag);
+        
+        
+        
+        let goto = true;
         if (this.getLevel() === Level.HOUR) {
             newDate.setHours(this.rotationToTime(this.rotation));
+            goto = this.options.isHourSelectable(newDate);
         } else if (this.getLevel() === Level.MINUTE) {
-            newDate.setMinutes(this.rotationToTime(this.rotation));            
+            newDate.setMinutes(this.rotationToTime(this.rotation));  
+            goto = this.options.isMinuteSelectable(newDate);          
         } else if (this.getLevel() === Level.SECOND) {
             newDate.setSeconds(this.rotationToTime(this.rotation));
+            goto = this.options.isHourSelectable(newDate);
         }
+        
+        if (this.moved++ > 1) {
+            trigger.updateBubble(this.element, {
+                x: -70 * Math.sin(this.rotation) + 140, 
+                y: 70 * Math.cos(this.rotation) + 175,
+                text: this.getBubbleText()
+            });
+        }
+        
         this.updateLabels(newDate);
-        trigger.goto(this.element, {
-            date: newDate,
-            level: this.getLevel(),
-            update: false
-        });
+        if (goto) {
+            trigger.goto(this.element, {
+                date: newDate,
+                level: this.getLevel(),
+                update: false
+            });
+        }
         
         this.updateElements();
     }
@@ -70,18 +81,27 @@ class TimePicker extends Picker {
         this.picker.classList.remove('datium-dragging');
         
         let date = this.getElementDate(this.timeDrag);
+        let zoomIn = true;
         if (this.getLevel() === Level.HOUR) {
             date.setHours(this.rotationToTime(this.rotation));
+            date = this.round(date);
+            zoomIn = this.options.isHourSelectable(date);
         } else if (this.getLevel() === Level.MINUTE) {
             date.setMinutes(this.rotationToTime(this.rotation));
+            date = this.round(date);
+            zoomIn = this.options.isMinuteSelectable(date);
         } else if (this.getLevel() === Level.SECOND) {
             date.setSeconds(this.rotationToTime(this.rotation));
+            date = this.round(date);
+            zoomIn = this.options.isSecondSelectable(date);
         }
         
-        trigger.zoomIn(this.element, {
-            date: date,
-            currentLevel: this.getLevel()
-        });
+        if (zoomIn) {
+            trigger.zoomIn(this.element, {
+                date: date,
+                currentLevel: this.getLevel()
+            });
+        }
         
         this.dragging = false;
         
@@ -162,6 +182,9 @@ class TimePicker extends Picker {
         return 240;
     }
     
+    protected floor(date:Date):Date { throw 'unimplemented' }
+    protected ceil(date:Date):Date { throw 'unimplemented' }
+    protected round(date:Date):Date { throw 'unimplemented' }
     protected updateLabels(date:Date, forceUpdate:boolean = false) { throw 'unimplemented' }
     protected getElementDate(el:Element):Date { throw 'unimplemented' }
     protected getBubbleText():string { throw 'unimplemented' }

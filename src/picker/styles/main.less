@@ -59,5 +59,13 @@ datium-container._id {
             transition-duration: .2s;
             transition-delay: .2s;
         }
+        
+        &:not(.datium-bubble-visible) {
+            opacity: 0 !important;
+        }
+        
+        &.datium-bubble-inactive {
+            opacity: .5;
+        }
     }
 }

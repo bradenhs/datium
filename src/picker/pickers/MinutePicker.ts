@@ -32,6 +32,50 @@ class MinutePicker extends TimePicker implements ITimePicker {
         });
     }
     
+    protected ceil(date:Date):Date {
+        let ceiledDate = new Date(date.valueOf());
+        let upper = ceiledDate.getMinutes() + 1;
+        let orig = ceiledDate.getMinutes();
+        while (!this.options.isMinuteSelectable(ceiledDate)) {
+            if (upper > 59) upper = 0;
+            ceiledDate.setMinutes(upper++);
+            if (this.options.isMinuteSelectable(ceiledDate)) break;
+            if (upper === orig) break;
+        }
+        return ceiledDate;
+    }
+    
+    protected floor(date:Date):Date {
+        let flooredDate = new Date(date.valueOf());
+        let lower = flooredDate.getMinutes() - 1;
+        let orig = flooredDate.getMinutes();
+        while (!this.options.isMinuteSelectable(flooredDate)) {
+            if (lower < 0) lower = 59;
+            flooredDate.setMinutes(lower--);
+            if (this.options.isMinuteSelectable(flooredDate)) break;
+            if (lower === orig) break;
+        }
+        return flooredDate;
+    }
+    
+    protected round(date:Date):Date {
+        let roundedDate = new Date(date.valueOf());
+        let lower = roundedDate.getMinutes() - 1;
+        let upper = roundedDate.getMinutes() + 1;
+        while (!this.options.isMinuteSelectable(roundedDate)) {
+            
+            if (lower < 0) lower = 59;
+            roundedDate.setMinutes(lower--);
+            if (this.options.isMinuteSelectable(roundedDate)) break;
+            if (lower === upper) break;
+            
+            if (upper > 59) upper = 0;
+            roundedDate.setMinutes(upper++);
+            if (lower === upper) break;
+        }
+        return roundedDate;
+    }
+    
     protected getBubbleText(minutes?:number) {
         if (minutes === void 0) {
             minutes = this.rotationToTime(this.rotation); 
@@ -39,11 +83,8 @@ class MinutePicker extends TimePicker implements ITimePicker {
         
         let d = new Date(this.selectedDate.valueOf());
         d.setMinutes(minutes);
-        if (d.valueOf() < this.options.minDate.valueOf()) {
-            minutes = this.options.minDate.getMinutes();
-        } else if (d.valueOf() > this.options.maxDate.valueOf()) {
-            minutes = this.options.maxDate.getMinutes();
-        }
+        d = this.round(d);
+        minutes = d.getMinutes();
         
         return this.pad(minutes)+'m';
     }
@@ -140,10 +181,7 @@ class MinutePicker extends TimePicker implements ITimePicker {
             
             label.setAttribute('datium-data', d.toISOString());
             
-            let start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes());
-            let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 1);
-            if (end.valueOf() > this.options.minDate.valueOf() &&
-                start.valueOf() < this.options.maxDate.valueOf()) {
+            if (this.options.isMinuteSelectable(d)) {
                 label.classList.remove('datium-inactive');
             } else {
                 label.classList.add('datium-inactive');

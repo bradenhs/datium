@@ -63,26 +63,19 @@ class DatePicker extends Picker implements IPicker {
         
         let times = 0;
         
-        do {
-            let next = new Date(iterator.valueOf());
-            next.setDate(next.getDate() + 1);
-            
+        do {            
             let dateElement = document.createElement('datium-date-element');
             
             dateElement.innerHTML = iterator.getDate().toString();
             
             if (iterator.getMonth() === date.getMonth() &&
-                next.valueOf() > this.options.minDate.valueOf() &&
-                iterator.valueOf() < this.options.maxDate.valueOf() &&
-                this.options.isYearSelectable(iterator) &&
-                this.options.isMonthSelectable(iterator) &&
                 this.options.isDateSelectable(iterator)) {
                 dateElement.setAttribute('datium-data', iterator.toISOString());
             }
             
             this.picker.appendChild(dateElement);
             
-            iterator = next;
+            iterator.setDate(iterator.getDate() + 1);
             times++;
         } while (iterator.valueOf() < end.valueOf());
         

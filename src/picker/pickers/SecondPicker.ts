@@ -32,6 +32,50 @@ class SecondPicker extends TimePicker implements ITimePicker {
         });
     }
     
+    protected ceil(date:Date):Date {
+        let ceiledDate = new Date(date.valueOf());
+        let upper = ceiledDate.getSeconds() + 1;
+        let orig = ceiledDate.getSeconds();
+        while (!this.options.isSecondSelectable(ceiledDate)) {
+            if (upper > 59) upper = 0;
+            ceiledDate.setSeconds(upper++);
+            if (this.options.isSecondSelectable(ceiledDate)) break;
+            if (upper === orig) break;
+        }
+        return ceiledDate;
+    }
+    
+    protected floor(date:Date):Date {
+        let flooredDate = new Date(date.valueOf());
+        let lower = flooredDate.getSeconds() - 1;
+        let orig = flooredDate.getSeconds();
+        while (!this.options.isSecondSelectable(flooredDate)) {
+            if (lower < 0) lower = 59;
+            flooredDate.setSeconds(lower--);
+            if (this.options.isSecondSelectable(flooredDate)) break;
+            if (lower === orig) break;
+        }
+        return flooredDate;
+    }
+    
+    protected round(date:Date):Date {
+        let roundedDate = new Date(date.valueOf());
+        let lower = roundedDate.getSeconds() - 1;
+        let upper = roundedDate.getSeconds() + 1;
+        while (!this.options.isSecondSelectable(roundedDate)) {
+            
+            if (lower < 0) lower = 59;
+            roundedDate.setSeconds(lower--);
+            if (this.options.isSecondSelectable(roundedDate)) break;
+            if (lower === upper) break;
+            
+            if (upper > 59) upper = 0;
+            roundedDate.setSeconds(upper++);
+            if (lower === upper) break;
+        }
+        return roundedDate;
+    }
+    
     protected getBubbleText(seconds?:number) {
         if (seconds === void 0) {
             seconds = this.rotationToTime(this.rotation); 
@@ -39,11 +83,8 @@ class SecondPicker extends TimePicker implements ITimePicker {
         
         let d = new Date(this.selectedDate.valueOf());
         d.setSeconds(seconds);
-        if (d.valueOf() < this.options.minDate.valueOf()) {
-            seconds = this.options.minDate.getSeconds();
-        } else if (d.valueOf() > this.options.maxDate.valueOf()) {
-            seconds = this.options.maxDate.getSeconds();
-        }
+        d = this.round(d);
+        seconds = d.getSeconds();
         
         return this.pad(seconds)+'s';
     }
@@ -148,7 +189,8 @@ class SecondPicker extends TimePicker implements ITimePicker {
             let start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
             let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1);
             if (end.valueOf() > this.options.minDate.valueOf() &&
-                start.valueOf() < this.options.maxDate.valueOf()) {
+                start.valueOf() < this.options.maxDate.valueOf() &&
+                this.options.isSecondSelectable(d)) {
                 label.classList.remove('datium-inactive');
             } else {
                 label.classList.add('datium-inactive');
