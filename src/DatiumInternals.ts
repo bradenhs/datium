@@ -25,7 +25,8 @@ class DatiumInternals {
         listen.zoomOut(element, (e) => this.zoomOut(e.date, e.currentLevel, e.update));
         listen.zoomIn(element, (e) => this.zoomIn(e.date, e.currentLevel, e.update));
         
-        this.goto(this.options['defaultDate'], Level.NONE, true);
+        // TODO make sure initial goto is a valid date...
+        this.goto(this.options.defaultDate, Level.NONE, true);
     }
     
     public zoomOut(date:Date, currentLevel:Level, update:boolean = true) {

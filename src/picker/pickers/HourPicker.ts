@@ -32,6 +32,7 @@ class HourPicker extends TimePicker implements ITimePicker {
         });
         
         listen.tap(container, 'datium-meridiem-switcher', () => {
+            // TODO sort out bug with this one
             let newDate = new Date(this.lastLabelDate.valueOf());
             if (newDate.getHours() < 12) {
                 newDate.setHours(newDate.getHours() + 12);

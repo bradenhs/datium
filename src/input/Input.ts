@@ -130,6 +130,7 @@ class Input {
     }
     
     public blurDatePart(datePart:IDatePart) {
+        console.log('blur');
         /*
         if (datePart === void 0) return;
         let lastDate = datePart.getLastValue() || new Date();

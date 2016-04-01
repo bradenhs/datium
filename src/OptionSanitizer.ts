@@ -127,37 +127,37 @@ class OptionSanitizer {
         let secondSelectable = OptionSanitizer.sanitizeIsSecondSelectable(options['isSecondSelectable'], defaults.isSecondSelectable);
         
         let isYearSelectable = (d:Date) => {
-            if (new Date(d.getFullYear(), 0).valueOf() < maxDate.valueOf() ||
-                new Date(d.getFullYear() + 1, 0).valueOf() > minDate.valueOf()) return false;
+            if (new Date(d.getFullYear(), 0).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear() + 1, 0).valueOf() < minDate.valueOf()) return false;
             return yearSelectable(d);
         }
         let isMonthSelectable = (d:Date) => {
-            if (new Date(d.getFullYear(), d.getMonth()).valueOf() < maxDate.valueOf() ||
-                new Date(d.getFullYear(), d.getMonth() + 1).valueOf() > minDate.valueOf()) return false;
+            if (new Date(d.getFullYear(), d.getMonth()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth() + 1).valueOf() < minDate.valueOf()) return false;
             return isYearSelectable(d) &&
                    monthSelectable(d);
         }
         let isDateSelectable = (d:Date) => {
-            if (new Date(d.getFullYear(), d.getMonth(), d.getDate()).valueOf() < maxDate.valueOf() ||
-                new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).valueOf() > minDate.valueOf()) return false;
+            if (new Date(d.getFullYear(), d.getMonth(), d.getDate()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).valueOf() < minDate.valueOf()) return false;
             return isMonthSelectable(d) &&
                    dateSelectable(d);
         }
         let isHourSelectable = (d:Date) => {
-            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()).valueOf() < maxDate.valueOf() ||
-                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1).valueOf() > minDate.valueOf()) return false;
+            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1).valueOf() < minDate.valueOf()) return false;
             return isDateSelectable(d) &&
                    hourSelectable(d);
         }
         let isMinuteSelectable = (d:Date) => {
-            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes()).valueOf() < maxDate.valueOf() ||
-                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 1).valueOf() > minDate.valueOf()) return false;
+            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 1).valueOf() < minDate.valueOf()) return false;
             return isHourSelectable(d) &&
                    minuteSelectable(d);
         }
         let isSecondSelectable = (d:Date) => {
-            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()).valueOf() < maxDate.valueOf() ||
-                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1).valueOf() > minDate.valueOf()) return false;
+            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1).valueOf() < minDate.valueOf()) return false;
             return isMinuteSelectable(d) &&
                    secondSelectable(d);
         }
