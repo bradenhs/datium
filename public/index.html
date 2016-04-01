@@ -19,12 +19,12 @@
         </style>
     </head>
     <body>
-        <h4>Newest</h4>
-        <input id="test1" readonly/>
-        <script>            
+        <h4>Latest Again</h4>
+        <input id="test1"/>
+        <script>
             var picker = new Datium(document.querySelector('#test1'), {
-                displayAs: 'hh:mm:ssa MM/DD/YY',
-                militaryTime: false
+                displayAs: 'h:mm:ssa {ddd} MMMM Do, YYYY',
+                minDate: new Date()
             });
         </script>
     </body>

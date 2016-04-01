@@ -67,9 +67,10 @@ class Header extends Common {
     private stepDate(stepType:StepDirection):Date {
         let date = new Date(this.date.valueOf());
         let direction = stepType === StepDirection.UP ? 1 : -1;
+        
         switch (this.level) {
             case Level.YEAR:
-                date.setFullYear(date.getFullYear() + 10 * direction);
+                date.setFullYear(date.getFullYear() + 10 * direction);               
                 break;
             case Level.MONTH:
                 date.setFullYear(date.getFullYear() + direction);
@@ -87,6 +88,7 @@ class Header extends Common {
                 date.setMinutes(date.getMinutes() + direction);
                 break;
         }
+        
         return date;
     }
     

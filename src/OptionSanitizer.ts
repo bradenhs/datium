@@ -12,12 +12,12 @@ class OptionSanitizer {
         return displayAs;
     }
     
-    static sanitizeMinDate(minDate:any, dflt:Date = void 0) {
+    static sanitizeMinDate(minDate:any, dflt:Date = new Date(-8640000000000000)) {
         if (minDate === void 0) return dflt;
         return new Date(minDate); //TODO figure this out yes
     }
     
-    static sanitizeMaxDate(maxDate:any, dflt:Date = void 0) {
+    static sanitizeMaxDate(maxDate:any, dflt:Date = new Date(8640000000000000)) {
         if (maxDate === void 0) return dflt;
         return new Date(maxDate); //TODO figure this out 
     }
@@ -81,7 +81,31 @@ class OptionSanitizer {
         } else {
             throw OptionException('The "theme" option must be object or string');
         }
-    } 
+    }
+    
+    static sanitizeIsSecondSelectable(isSecondSelectable:any, dflt:any = (date:Date) => true) {
+        return dflt;
+    }
+    
+    static sanitizeIsMinuteSelectable(isMinuteSelectable:any, dflt:any = (date:Date) => true) {
+        return (date:Date) => date.getMinutes() % 15 === 0;
+    }
+    
+    static sanitizeIsHourSelectable(isHourSelectable:any, dflt:any = (date:Date) => true) {
+        return dflt;
+    }
+    
+    static sanitizeIsDateSelectable(isDateSelectable:any, dflt:any = (date:Date) => true) {
+        return (date:Date) => date.getDay() !== 0 && date.getDay() !== 6;
+    }
+    
+    static sanitizeIsMonthSelectable(isMonthSelectable:any, dflt:any = (date:Date) => true) {
+        return dflt;
+    }
+    
+    static sanitizeIsYearSelectable(isYearSelectable:any, dflt:any = (date:Date) => true) {
+        return dflt;
+    }
     
     static sanitizeMilitaryTime(militaryTime:any, dflt:boolean = false) {
         if (militaryTime === void 0) return dflt;
@@ -92,13 +116,65 @@ class OptionSanitizer {
     }
     
     static sanitize(options:IOptions, defaults:IOptions) {
+        let minDate = OptionSanitizer.sanitizeMinDate(options['minDate'], defaults.minDate);
+        let maxDate = OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate);
+        
+        let yearSelectable = OptionSanitizer.sanitizeIsYearSelectable(options['isYearSelectable'], defaults.isYearSelectable);
+        let monthSelectable = OptionSanitizer.sanitizeIsMonthSelectable(options['isMonthSelectable'], defaults.isMonthSelectable);
+        let dateSelectable = OptionSanitizer.sanitizeIsDateSelectable(options['isDateSelectable'], defaults.isDateSelectable);
+        let hourSelectable = OptionSanitizer.sanitizeIsHourSelectable(options['isHourSelectable'], defaults.isHourSelectable);
+        let minuteSelectable = OptionSanitizer.sanitizeIsMinuteSelectable(options['isMinuteSelectable'], defaults.isMinuteSelectable);
+        let secondSelectable = OptionSanitizer.sanitizeIsSecondSelectable(options['isSecondSelectable'], defaults.isSecondSelectable);
+        
+        let isYearSelectable = (d:Date) => {
+            if (new Date(d.getFullYear(), 0).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear() + 1, 0).valueOf() < minDate.valueOf()) return false;
+            return yearSelectable(d);
+        }
+        let isMonthSelectable = (d:Date) => {
+            if (new Date(d.getFullYear(), d.getMonth()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth() + 1).valueOf() < minDate.valueOf()) return false;
+            return isYearSelectable(d) &&
+                   monthSelectable(d);
+        }
+        let isDateSelectable = (d:Date) => {
+            if (new Date(d.getFullYear(), d.getMonth(), d.getDate()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).valueOf() < minDate.valueOf()) return false;
+            return isMonthSelectable(d) &&
+                   dateSelectable(d);
+        }
+        let isHourSelectable = (d:Date) => {
+            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1).valueOf() < minDate.valueOf()) return false;
+            return isDateSelectable(d) &&
+                   hourSelectable(d);
+        }
+        let isMinuteSelectable = (d:Date) => {
+            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 1).valueOf() < minDate.valueOf()) return false;
+            return isHourSelectable(d) &&
+                   minuteSelectable(d);
+        }
+        let isSecondSelectable = (d:Date) => {
+            if (new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds()).valueOf() > maxDate.valueOf() ||
+                new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1).valueOf() < minDate.valueOf()) return false;
+            return isMinuteSelectable(d) &&
+                   secondSelectable(d);
+        }
+        
         let opts:IOptions = {
             displayAs: OptionSanitizer.sanitizeDisplayAs(options['displayAs'], defaults.displayAs),
-            minDate: OptionSanitizer.sanitizeMinDate(options['minDate'], defaults.minDate),
-            maxDate: OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate),
+            minDate: minDate,
+            maxDate: maxDate,
             defaultDate: OptionSanitizer.sanitizeDefaultDate(options['defaultDate'], defaults.defaultDate),
             theme: OptionSanitizer.sanitizeTheme(options['theme'], defaults.theme),
-            militaryTime: OptionSanitizer.sanitizeMilitaryTime(options['militaryTime'], defaults.militaryTime)
+            militaryTime: OptionSanitizer.sanitizeMilitaryTime(options['militaryTime'], defaults.militaryTime),
+            isSecondSelectable: isSecondSelectable,
+            isMinuteSelectable: isMinuteSelectable,
+            isHourSelectable: isHourSelectable,
+            isDateSelectable: isDateSelectable,
+            isMonthSelectable: isMonthSelectable,
+            isYearSelectable: isYearSelectable
         }
         
         return opts;

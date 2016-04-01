@@ -1,5 +1,5 @@
 class Parser {
-    public static parse(format:string):IDatePart[] {
+    public static parse(options:IOptions):IDatePart[] {
         let textBuffer = '';
         let dateParts:IDatePart[] = [];
     
@@ -13,21 +13,21 @@ class Parser {
             }
         }
         
-        while (index < format.length) {     
-            if (!inEscapedSegment && format[index] === '[') {
+        while (index < options.displayAs.length) {     
+            if (!inEscapedSegment && options.displayAs[index] === '[') {
                 inEscapedSegment = true;
                 index++;
                 continue;
             }
             
-            if (inEscapedSegment && format[index] === ']') {
+            if (inEscapedSegment && options.displayAs[index] === ']') {
                 inEscapedSegment = false;
                 index++;
                 continue;
             }
             
             if (inEscapedSegment) {
-                textBuffer += format[index];
+                textBuffer += options.displayAs[index];
                 index++;
                 continue;
             }
@@ -35,15 +35,15 @@ class Parser {
             let found = false;
             
             for (let code in formatBlocks) {
-                if (Parser.findAt(format, index, `{${code}}`)) {
+                if (Parser.findAt(options.displayAs, index, `{${code}}`)) {
                     pushPlainText();
-                    dateParts.push(new formatBlocks[code]().setSelectable(false));
+                    dateParts.push(new formatBlocks[code](options).setSelectable(false));
                     index += code.length + 2;
                     found = true;
                     break;
-                } else if (Parser.findAt(format, index, code)) {
+                } else if (Parser.findAt(options.displayAs, index, code)) {
                     pushPlainText();
-                    dateParts.push(new formatBlocks[code]());
+                    dateParts.push(new formatBlocks[code](options));
                     index += code.length;
                     found = true;
                     break;
@@ -51,7 +51,7 @@ class Parser {
             }
             
             if (!found) {
-                textBuffer += format[index];
+                textBuffer += options.displayAs[index];
                 index++;
             }
             

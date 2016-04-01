@@ -13,6 +13,9 @@ class Input {
         new PasteEventHander(this);
         
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));
+        listen.blur(element, () => {
+            this.blurDatePart(this.selectedDatePart);
+        });
     }
     
     public getLevels():Level[] {
@@ -43,7 +46,8 @@ class Input {
             
             if (this.textBuffer.length >= this.selectedDatePart.getMaxBuffer()) {
                 this.textBuffer = '';
-                this.selectedDatePart = this.getNextSelectableDatePart();    
+                this.blurDatePart(this.selectedDatePart);
+                this.selectedDatePart = this.getNextSelectableDatePart();
             }
             
             trigger.goto(this.element, {
@@ -119,8 +123,46 @@ class Input {
     public setSelectedDatePart(datePart:IDatePart) {
         if (this.selectedDatePart !== datePart) {
             this.textBuffer = '';
+            let lastSelected = this.selectedDatePart;
             this.selectedDatePart = datePart;
+            this.blurDatePart(lastSelected);
         }
+    }
+    
+    public blurDatePart(datePart:IDatePart) {
+        console.log('blur');
+        /*
+        if (datePart === void 0) return;
+        let lastDate = datePart.getLastValue() || new Date();
+        let newDate = datePart.getValue();
+        let transformedDate = new Date(newDate.valueOf());
+        switch(datePart.getLevel()) {
+            case Level.YEAR:
+                transformedDate = this.options.isYearSelectable(newDate, lastDate);
+                break;
+            case Level.MONTH:
+                transformedDate = this.options.isMonthSelectable(newDate, lastDate);
+                break;
+            case Level.DATE:
+                transformedDate = this.options.isDateSelectable(newDate, lastDate);
+                break;
+            case Level.HOUR:
+                transformedDate = this.options.isHourSelectable(newDate, lastDate);
+                break;
+            case Level.MINUTE:
+                transformedDate = this.options.isMinuteSelectable(newDate, lastDate);
+                break;
+            case Level.SECOND:
+                transformedDate = this.options.isSecondSelectable(newDate, lastDate);
+                break;
+        }
+        if (newDate.valueOf() !== transformedDate.valueOf()) {
+            trigger.goto(this.element, {
+                level: this.selectedDatePart.getLevel(),
+                date: transformedDate
+            });
+        }
+        */
     }
     
     public getSelectedDatePart() {
@@ -130,7 +172,7 @@ class Input {
     public updateOptions(options:IOptions) {
         this.options = options;
         
-        this.dateParts = Parser.parse(options.displayAs);
+        this.dateParts = Parser.parse(options);
         this.selectedDatePart = void 0;
         
         let format:string = '^';
@@ -169,7 +211,8 @@ class Input {
         this.level = level;       
         this.dateParts.forEach((datePart) => {
             if (update) datePart.setValue(date);
-            if (datePart.getLevel() === level &&
+            if (datePart.isSelectable() &&
+                datePart.getLevel() === level &&
                 this.getSelectedDatePart() !== void 0 &&
                 level !== this.getSelectedDatePart().getLevel()) {
                 this.setSelectedDatePart(datePart);

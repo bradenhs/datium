@@ -16,44 +16,63 @@ class TimePicker extends Picker {
     protected rotation:number = 0;
     
     protected dragStart(e:MouseEvent|TouchEvent) {
+        let minuteAdjust = 0;
+        if (this.getLevel() === Level.HOUR) {
+            minuteAdjust = (Math.PI * this.selectedDate.getMinutes() / 30) / 12;
+        }
         trigger.openBubble(this.element, {
-           x: -70 * Math.sin(this.rotation) + 140, 
-           y: 70 * Math.cos(this.rotation) + 175,
-           text: this.getBubbleText() 
+           x: -70 * Math.sin(this.rotation + minuteAdjust) + 140, 
+           y: 70 * Math.cos(this.rotation + minuteAdjust) + 175,
+           text: this.getBubbleText()
         });
         this.picker.classList.add('datium-dragging');
         this.dragging = true;
+        this.moved = 0;
     }
     
+    private moved:number = 0;
     protected dragMove(e:MouseEvent|TouchEvent) {
-        trigger.updateBubble(this.element, {
-           x: -70 * Math.sin(this.rotation) + 140, 
-           y: 70 * Math.cos(this.rotation) + 175,
-           text: this.getBubbleText()
-        });
         
         let point = {
             x: this.picker.getBoundingClientRect().left + 140 - this.getClientCoor(e).x,
             y: this.getClientCoor(e).y - this.picker.getBoundingClientRect().top - 120
         }
         
-        let r = Math.atan2(point.x, point.y);        
+        let r = Math.atan2(point.x, point.y);
         this.rotation = this.normalizeRotation(r);
         
         let newDate = this.getElementDate(this.timeDrag);
+        
+        
+        
+        let goto = true;
         if (this.getLevel() === Level.HOUR) {
             newDate.setHours(this.rotationToTime(this.rotation));
+            goto = this.options.isHourSelectable(newDate);
         } else if (this.getLevel() === Level.MINUTE) {
-            newDate.setMinutes(this.rotationToTime(this.rotation));            
+            newDate.setMinutes(this.rotationToTime(this.rotation));  
+            goto = this.options.isMinuteSelectable(newDate);          
         } else if (this.getLevel() === Level.SECOND) {
             newDate.setSeconds(this.rotationToTime(this.rotation));
+            goto = this.options.isHourSelectable(newDate);
         }
+        
+        if (this.moved++ > 1) {
+            trigger.updateBubble(this.element, {
+                x: -70 * Math.sin(this.rotation) + 140, 
+                y: 70 * Math.cos(this.rotation) + 175,
+                text: this.getBubbleText()
+            });
+        }
+        
         this.updateLabels(newDate);
-        trigger.goto(this.element, {
-            date: newDate,
-            level: this.getLevel(),
-            update: false
-        });
+        if (goto) {
+            trigger.goto(this.element, {
+                date: newDate,
+                level: this.getLevel(),
+                update: false
+            });
+        }
         
         this.updateElements();
     }
@@ -62,26 +81,42 @@ class TimePicker extends Picker {
         this.picker.classList.remove('datium-dragging');
         
         let date = this.getElementDate(this.timeDrag);
+        let zoomIn = true;
         if (this.getLevel() === Level.HOUR) {
             date.setHours(this.rotationToTime(this.rotation));
+            date = this.round(date);
+            zoomIn = this.options.isHourSelectable(date);
         } else if (this.getLevel() === Level.MINUTE) {
             date.setMinutes(this.rotationToTime(this.rotation));
+            date = this.round(date);
+            zoomIn = this.options.isMinuteSelectable(date);
         } else if (this.getLevel() === Level.SECOND) {
             date.setSeconds(this.rotationToTime(this.rotation));
+            date = this.round(date);
+            zoomIn = this.options.isSecondSelectable(date);
         }
         
-        trigger.zoomIn(this.element, {
-            date: date,
-            currentLevel: this.getLevel()
-        });
+        if (zoomIn) {
+            trigger.zoomIn(this.element, {
+                date: date,
+                currentLevel: this.getLevel()
+            });
+        }
         
         this.dragging = false;
+        
+        this.updateElements();
     }
     
     protected updateElements() {
         this.timeDragArm.style.transform = `rotate(${this.rotation}rad)`;
         if (this.getLevel() == Level.HOUR) {
-            this.hourHand.style.transform = `rotate(${this.rotation}rad)`;
+            let minuteAdjust = 0;
+            if (!this.dragging) {
+                minuteAdjust = (Math.PI * this.selectedDate.getMinutes() / 30) / 12;
+            }
+            this.timeDragArm.style.transform = `rotate(${this.rotation + minuteAdjust}rad)`;
+            this.hourHand.style.transform = `rotate(${this.rotation + minuteAdjust}rad)`;
         } else if (this.getLevel() === Level.MINUTE) {
             
             let t = this.selectedDate.getHours();
@@ -147,6 +182,9 @@ class TimePicker extends Picker {
         return 240;
     }
     
+    protected floor(date:Date):Date { throw 'unimplemented' }
+    protected ceil(date:Date):Date { throw 'unimplemented' }
+    protected round(date:Date):Date { throw 'unimplemented' }
     protected updateLabels(date:Date, forceUpdate:boolean = false) { throw 'unimplemented' }
     protected getElementDate(el:Element):Date { throw 'unimplemented' }
     protected getBubbleText():string { throw 'unimplemented' }
