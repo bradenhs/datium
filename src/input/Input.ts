@@ -14,6 +14,7 @@ class Input {
         
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));
         listen.blur(element, () => {
+            this.textBuffer = '';
             this.blurDatePart(this.selectedDatePart);
         });
     }
@@ -43,17 +44,16 @@ class Input {
     public updateDateFromBuffer() {
         if (this.selectedDatePart.setValueFromPartial(this.textBuffer)) {
             let newDate = this.selectedDatePart.getValue();
-            
             if (this.textBuffer.length >= this.selectedDatePart.getMaxBuffer()) {
                 this.textBuffer = '';
-                this.blurDatePart(this.selectedDatePart);
+                let lastDatePart = this.selectedDatePart;
                 this.selectedDatePart = this.getNextSelectableDatePart();
-            }
-            
+                this.blurDatePart(lastDatePart);
+            } 
             trigger.goto(this.element, {
                 date: newDate,
                 level: this.selectedDatePart.getLevel()
-            });
+            }); 
         } else {
             this.textBuffer = this.textBuffer.slice(0, -1);
         }
@@ -130,38 +130,33 @@ class Input {
     }
     
     public blurDatePart(datePart:IDatePart) {
-        console.log('blur');
         /*
         if (datePart === void 0) return;
-        let lastDate = datePart.getLastValue() || new Date();
-        let newDate = datePart.getValue();
-        let transformedDate = new Date(newDate.valueOf());
+        let valid = false;
         switch(datePart.getLevel()) {
             case Level.YEAR:
-                transformedDate = this.options.isYearSelectable(newDate, lastDate);
+                valid = this.options.isYearSelectable(datePart.getValue());
                 break;
             case Level.MONTH:
-                transformedDate = this.options.isMonthSelectable(newDate, lastDate);
+                valid = this.options.isMonthSelectable(datePart.getValue());
                 break;
             case Level.DATE:
-                transformedDate = this.options.isDateSelectable(newDate, lastDate);
+                valid = this.options.isDateSelectable(datePart.getValue());
                 break;
             case Level.HOUR:
-                transformedDate = this.options.isHourSelectable(newDate, lastDate);
+                valid = this.options.isHourSelectable(datePart.getValue());
                 break;
             case Level.MINUTE:
-                transformedDate = this.options.isMinuteSelectable(newDate, lastDate);
+                valid = this.options.isMinuteSelectable(datePart.getValue());
                 break;
             case Level.SECOND:
-                transformedDate = this.options.isSecondSelectable(newDate, lastDate);
+                valid = this.options.isSecondSelectable(datePart.getValue());
                 break;
         }
-        if (newDate.valueOf() !== transformedDate.valueOf()) {
-            trigger.goto(this.element, {
-                level: this.selectedDatePart.getLevel(),
-                date: transformedDate
-            });
-        }
+        trigger.goto(this.element, {
+            level: this.selectedDatePart.getLevel(),
+            date: valid ? datePart.getValue() : datePart.getLastValue()
+        });
         */
     }
     
@@ -180,14 +175,13 @@ class Input {
             format += `(${datePart.getRegEx().source.slice(1,-1)})`;
         });
         this.format = new RegExp(format+'$', 'i');
-                
+        
         this.viewchanged(this.date, this.level, true);
     }
     
     public updateView() {
         let dateString = '';
         this.dateParts.forEach((datePart) => {
-            if (datePart.getValue() === void 0) return;
             dateString += datePart.toString(); 
         });
         this.element.value = dateString;
@@ -206,11 +200,18 @@ class Input {
         this.element.setSelectionRange(start, end);
     }
     
-    public viewchanged(date:Date, level:Level, update?:boolean) { 
-        this.date = date;
-        this.level = level;       
+    public viewchanged(date:Date, level:Level, update?:boolean) {
+        let defined = date !== void 0;
+        this.date = date || this.options.defaultDate;
+        this.level = level;
         this.dateParts.forEach((datePart) => {
-            if (update) datePart.setValue(date);
+            //let currentValid = datePart.isDefined();
+            if (update) datePart.setValue(this.date);
+            if (update && defined && level === datePart.getLevel()) {
+                datePart.setDefined(true);
+            } else if (!defined) {
+                datePart.setDefined(false);
+            }
             if (datePart.isSelectable() &&
                 datePart.getLevel() === level &&
                 this.getSelectedDatePart() !== void 0 &&
@@ -224,7 +225,8 @@ class Input {
     public triggerViewChange() {
         trigger.viewchanged(this.element, {
             date: this.getSelectedDatePart().getValue(),
-            level: this.getSelectedDatePart().getLevel()
+            level: this.getSelectedDatePart().getLevel(),
+            update: false
         });        
     }
     

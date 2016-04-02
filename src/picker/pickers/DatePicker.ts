@@ -69,7 +69,7 @@ class DatePicker extends Picker implements IPicker {
             dateElement.innerHTML = iterator.getDate().toString();
             
             if (iterator.getMonth() === date.getMonth() &&
-                this.options.isDateSelectable(iterator)) {
+                this.options.isDateValid(iterator)) {
                 dateElement.setAttribute('datium-data', iterator.toISOString());
             }
             
@@ -88,6 +88,7 @@ class DatePicker extends Picker implements IPicker {
     }
     
     public setSelectedDate(selectedDate:Date) {
+        if (selectedDate === void 0) return;
         this.selectedDate = new Date(selectedDate.valueOf());
         
         let dateElements = this.pickerContainer.querySelectorAll('datium-date-element');

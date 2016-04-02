@@ -7,7 +7,7 @@ class DatiumInternals {
     private options:IOptions = <any>{};
     
     private input:Input;
-    private pickerManager:PickerManager;
+    //private pickerManager:PickerManager;
     
     private levels:Level[];
     private date:Date;
@@ -17,7 +17,7 @@ class DatiumInternals {
         element.setAttribute('spellcheck', 'false');
         
         this.input = new Input(element);
-        this.pickerManager = new PickerManager(element);
+        //this.pickerManager = new PickerManager(element);
         
         this.updateOptions(options);
         
@@ -50,18 +50,24 @@ class DatiumInternals {
     }
     
     public goto(date:Date, level:Level, update:boolean = true) {
-        if (date === void 0) date = new Date();
-        
-        if (date.valueOf() < this.options.minDate.valueOf()) {
-            date = new Date(this.options.minDate.valueOf());
+        if (date !== void 0) {
+            if (date.valueOf() < this.options.minDate.valueOf()) {
+                date = new Date(this.options.minDate.valueOf());
+            }
+            
+            if (date.valueOf() > this.options.maxDate.valueOf()) {
+                date = new Date(this.options.maxDate.valueOf());
+            }
         }
         
-        if (date.valueOf() > this.options.maxDate.valueOf()) {
-            date = new Date(this.options.maxDate.valueOf());
+        if (date === void 0 && update === false) {
+            this.date = new Date();
+            level = this.input.getLevels().slice().sort()[0];
+        } else {
+            this.date = date;
         }
-        this.date = date;
         trigger.viewchanged(this.element, {
-            date: date,
+            date: this.date,
             level: level,
             update: update
         });
@@ -74,6 +80,7 @@ class DatiumInternals {
         this.levels = this.input.getLevels().slice();
         this.levels.sort();
         
+        /*
         if (this.pickerManager.currentPicker !== void 0) {
             let curLevel = this.pickerManager.currentPicker.getLevel();
             
@@ -86,5 +93,6 @@ class DatiumInternals {
         }
         
         this.pickerManager.updateOptions(this.options);
+        */
     }
 }

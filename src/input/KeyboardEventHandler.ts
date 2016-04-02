@@ -84,6 +84,10 @@ class KeyboardEventHandler {
         } else if (code === KEY.BACKSPACE) {
             let textBuffer = this.input.getTextBuffer();
             this.input.setTextBuffer(textBuffer.slice(0, -1));
+            if (textBuffer.length < 2) {
+                this.input.getSelectedDatePart().setDefined(false);
+                this.input.triggerViewChange();
+            }
         } else if (!e.shiftKey) {
             this.input.setTextBuffer('');
         }

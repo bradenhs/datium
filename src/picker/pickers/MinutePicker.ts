@@ -36,10 +36,10 @@ class MinutePicker extends TimePicker implements ITimePicker {
         let ceiledDate = new Date(date.valueOf());
         let upper = ceiledDate.getMinutes() + 1;
         let orig = ceiledDate.getMinutes();
-        while (!this.options.isMinuteSelectable(ceiledDate)) {
+        while (!this.options.isMinuteValid(ceiledDate)) {
             if (upper > 59) upper = 0;
             ceiledDate.setMinutes(upper++);
-            if (this.options.isMinuteSelectable(ceiledDate)) break;
+            if (this.options.isMinuteValid(ceiledDate)) break;
             if (upper === orig) break;
         }
         return ceiledDate;
@@ -49,10 +49,10 @@ class MinutePicker extends TimePicker implements ITimePicker {
         let flooredDate = new Date(date.valueOf());
         let lower = flooredDate.getMinutes() - 1;
         let orig = flooredDate.getMinutes();
-        while (!this.options.isMinuteSelectable(flooredDate)) {
+        while (!this.options.isMinuteValid(flooredDate)) {
             if (lower < 0) lower = 59;
             flooredDate.setMinutes(lower--);
-            if (this.options.isMinuteSelectable(flooredDate)) break;
+            if (this.options.isMinuteValid(flooredDate)) break;
             if (lower === orig) break;
         }
         return flooredDate;
@@ -62,11 +62,11 @@ class MinutePicker extends TimePicker implements ITimePicker {
         let roundedDate = new Date(date.valueOf());
         let lower = roundedDate.getMinutes() - 1;
         let upper = roundedDate.getMinutes() + 1;
-        while (!this.options.isMinuteSelectable(roundedDate)) {
+        while (!this.options.isMinuteValid(roundedDate)) {
             
             if (lower < 0) lower = 59;
             roundedDate.setMinutes(lower--);
-            if (this.options.isMinuteSelectable(roundedDate)) break;
+            if (this.options.isMinuteValid(roundedDate)) break;
             if (lower === upper) break;
             
             if (upper > 59) upper = 0;
@@ -181,7 +181,7 @@ class MinutePicker extends TimePicker implements ITimePicker {
             
             label.setAttribute('datium-data', d.toISOString());
             
-            if (this.options.isMinuteSelectable(d)) {
+            if (this.options.isMinuteValid(d)) {
                 label.classList.remove('datium-inactive');
             } else {
                 label.classList.add('datium-inactive');

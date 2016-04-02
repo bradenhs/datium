@@ -49,7 +49,7 @@ class YearPicker extends Picker implements IPicker {
             
             yearElement.innerHTML = iterator.getFullYear().toString();
             
-            if (this.options.isYearSelectable(iterator)) {
+            if (this.options.isYearValid(iterator)) {
                 yearElement.setAttribute('datium-data', iterator.toISOString());
             }
             
@@ -64,6 +64,7 @@ class YearPicker extends Picker implements IPicker {
     }
     
     public setSelectedDate(selectedDate:Date) {
+        if (selectedDate === void 0) return;
         this.selectedDate = new Date(selectedDate.valueOf());
         
         let yearElements = this.pickerContainer.querySelectorAll('datium-year-element');

@@ -48,13 +48,13 @@ class TimePicker extends Picker {
         let goto = true;
         if (this.getLevel() === Level.HOUR) {
             newDate.setHours(this.rotationToTime(this.rotation));
-            goto = this.options.isHourSelectable(newDate);
+            goto = this.options.isHourValid(newDate);
         } else if (this.getLevel() === Level.MINUTE) {
             newDate.setMinutes(this.rotationToTime(this.rotation));  
-            goto = this.options.isMinuteSelectable(newDate);          
+            goto = this.options.isMinuteValid(newDate);          
         } else if (this.getLevel() === Level.SECOND) {
             newDate.setSeconds(this.rotationToTime(this.rotation));
-            goto = this.options.isHourSelectable(newDate);
+            goto = this.options.isHourValid(newDate);
         }
         
         if (this.moved++ > 1) {
@@ -85,15 +85,15 @@ class TimePicker extends Picker {
         if (this.getLevel() === Level.HOUR) {
             date.setHours(this.rotationToTime(this.rotation));
             date = this.round(date);
-            zoomIn = this.options.isHourSelectable(date);
+            zoomIn = this.options.isHourValid(date);
         } else if (this.getLevel() === Level.MINUTE) {
             date.setMinutes(this.rotationToTime(this.rotation));
             date = this.round(date);
-            zoomIn = this.options.isMinuteSelectable(date);
+            zoomIn = this.options.isMinuteValid(date);
         } else if (this.getLevel() === Level.SECOND) {
             date.setSeconds(this.rotationToTime(this.rotation));
             date = this.round(date);
-            zoomIn = this.options.isSecondSelectable(date);
+            zoomIn = this.options.isSecondValid(date);
         }
         
         if (zoomIn) {
@@ -159,6 +159,7 @@ class TimePicker extends Picker {
     }
     
     public setSelectedDate(date:Date) {
+        if (date === void 0) return;
         this.selectedDate = new Date(date.valueOf());
         
         if (this.getLevel() === Level.HOUR) {

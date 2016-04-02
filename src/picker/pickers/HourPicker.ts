@@ -56,10 +56,10 @@ class HourPicker extends TimePicker implements ITimePicker {
         let ceiledDate = new Date(date.valueOf());
         let upper = ceiledDate.getHours() + 1;
         let orig = ceiledDate.getHours();
-        while (!this.options.isHourSelectable(ceiledDate)) {
+        while (!this.options.isHourValid(ceiledDate)) {
             if (upper > 23) upper = 0;
             ceiledDate.setHours(upper++);
-            if (this.options.isHourSelectable(ceiledDate)) break;
+            if (this.options.isHourValid(ceiledDate)) break;
             if (upper === orig) break;
         }
         return ceiledDate;
@@ -69,10 +69,10 @@ class HourPicker extends TimePicker implements ITimePicker {
         let flooredDate = new Date(date.valueOf());
         let lower = flooredDate.getHours() - 1;
         let orig = flooredDate.getHours();
-        while (!this.options.isHourSelectable(flooredDate)) {
+        while (!this.options.isHourValid(flooredDate)) {
             if (lower < 0) lower = 23;
             flooredDate.setHours(lower--);
-            if (this.options.isHourSelectable(flooredDate)) break;
+            if (this.options.isHourValid(flooredDate)) break;
             if (lower === orig) break;
         }
         return flooredDate;
@@ -82,11 +82,11 @@ class HourPicker extends TimePicker implements ITimePicker {
         let roundedDate = new Date(date.valueOf());
         let lower = roundedDate.getHours() - 1;
         let upper = roundedDate.getHours() + 1;
-        while (!this.options.isHourSelectable(roundedDate)) {
+        while (!this.options.isHourValid(roundedDate)) {
             
             if (lower < 0) lower = 23;
             roundedDate.setHours(lower--);
-            if (this.options.isHourSelectable(roundedDate)) break;
+            if (this.options.isHourValid(roundedDate)) break;
             if (lower === upper) break;
             
             if (upper > 23) upper = 0;
@@ -246,7 +246,7 @@ class HourPicker extends TimePicker implements ITimePicker {
             
             label.setAttribute('datium-data', d.toISOString());
             
-            if (this.options.isHourSelectable(d)) {
+            if (this.options.isHourValid(d)) {
                 label.classList.remove('datium-inactive');
             } else {
                 label.classList.add('datium-inactive');

@@ -49,7 +49,7 @@ class MonthPicker extends Picker implements IPicker {
             
             monthElement.innerHTML = this.getShortMonths()[iterator.getMonth()];
             
-            if (this.options.isMonthSelectable(iterator)) {
+            if (this.options.isMonthValid(iterator)) {
                 monthElement.setAttribute('datium-data', iterator.toISOString());
             }
             
@@ -64,6 +64,7 @@ class MonthPicker extends Picker implements IPicker {
     }
     
     public setSelectedDate(selectedDate:Date) {
+        if (selectedDate === void 0) return;
         this.selectedDate = new Date(selectedDate.valueOf());
         
         let monthElements = this.pickerContainer.querySelectorAll('datium-month-element');
