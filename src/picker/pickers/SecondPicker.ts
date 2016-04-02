@@ -36,10 +36,10 @@ class SecondPicker extends TimePicker implements ITimePicker {
         let ceiledDate = new Date(date.valueOf());
         let upper = ceiledDate.getSeconds() + 1;
         let orig = ceiledDate.getSeconds();
-        while (!this.options.isSecondSelectable(ceiledDate)) {
+        while (!this.options.isSecondValid(ceiledDate)) {
             if (upper > 59) upper = 0;
             ceiledDate.setSeconds(upper++);
-            if (this.options.isSecondSelectable(ceiledDate)) break;
+            if (this.options.isSecondValid(ceiledDate)) break;
             if (upper === orig) break;
         }
         return ceiledDate;
@@ -49,10 +49,10 @@ class SecondPicker extends TimePicker implements ITimePicker {
         let flooredDate = new Date(date.valueOf());
         let lower = flooredDate.getSeconds() - 1;
         let orig = flooredDate.getSeconds();
-        while (!this.options.isSecondSelectable(flooredDate)) {
+        while (!this.options.isSecondValid(flooredDate)) {
             if (lower < 0) lower = 59;
             flooredDate.setSeconds(lower--);
-            if (this.options.isSecondSelectable(flooredDate)) break;
+            if (this.options.isSecondValid(flooredDate)) break;
             if (lower === orig) break;
         }
         return flooredDate;
@@ -62,11 +62,11 @@ class SecondPicker extends TimePicker implements ITimePicker {
         let roundedDate = new Date(date.valueOf());
         let lower = roundedDate.getSeconds() - 1;
         let upper = roundedDate.getSeconds() + 1;
-        while (!this.options.isSecondSelectable(roundedDate)) {
+        while (!this.options.isSecondValid(roundedDate)) {
             
             if (lower < 0) lower = 59;
             roundedDate.setSeconds(lower--);
-            if (this.options.isSecondSelectable(roundedDate)) break;
+            if (this.options.isSecondValid(roundedDate)) break;
             if (lower === upper) break;
             
             if (upper > 59) upper = 0;
@@ -190,7 +190,7 @@ class SecondPicker extends TimePicker implements ITimePicker {
             let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1);
             if (end.valueOf() > this.options.minDate.valueOf() &&
                 start.valueOf() < this.options.maxDate.valueOf() &&
-                this.options.isSecondSelectable(d)) {
+                this.options.isSecondValid(d)) {
                 label.classList.remove('datium-inactive');
             } else {
                 label.classList.add('datium-inactive');

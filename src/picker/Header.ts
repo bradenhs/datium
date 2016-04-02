@@ -93,6 +93,7 @@ class Header extends Common {
     }
     
     private viewchanged(date:Date, level:Level) {
+        // TODO think about making a "viewDate" and a "selectedDate"
         this.date = date;
         this.level = level;
         this.labels.forEach((label, labelLevel) => {
@@ -102,10 +103,10 @@ class Header extends Common {
                         
             if (labelLevel < level) {
                 label.classList.add('datium-top');
-                label.innerHTML = this.getHeaderTopText(date, labelLevel);
+                label.innerHTML = this.getHeaderTopText(this.date, labelLevel);
             } else {
                 label.classList.add('datium-bottom');
-                label.innerHTML = this.getHeaderBottomText(date, labelLevel);
+                label.innerHTML = this.getHeaderBottomText(this.date, labelLevel);
             }
             
             if (labelLevel < level - 1 || labelLevel > level) {
