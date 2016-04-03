@@ -83,27 +83,27 @@ class OptionSanitizer {
         }
     }
     
-    static sanitizeIsSecondValid(isSecondSelectable:any, dflt:any = (date:Date) => true) {
+    static sanitizeIsSecondValid(isSecondSelectable:any, dflt:any = () => true) {
         return dflt;
     }
     
-    static sanitizeIsMinuteValid(isMinuteSelectable:any, dflt:any = (date:Date) => true) {
-        return (date:Date) => date.getMinutes() % 15 === 0;
-    }
-    
-    static sanitizeIsHourValid(isHourSelectable:any, dflt:any = (date:Date) => true) {
+    static sanitizeIsMinuteValid(isMinuteSelectable:any, dflt:any = () => true) {
         return dflt;
     }
     
-    static sanitizeIsDateValid(isDateSelectable:any, dflt:any = (date:Date) => true) {
+    static sanitizeIsHourValid(isHourSelectable:any, dflt:any = () => true) {
+        return dflt;
+    }
+    
+    static sanitizeIsDateValid(isDateSelectable:any, dflt:any = () => true) {
         return (date:Date) => date.getDay() !== 0 && date.getDay() !== 6;
     }
     
-    static sanitizeIsMonthValid(isMonthSelectable:any, dflt:any = (date:Date) => true) {
+    static sanitizeIsMonthValid(isMonthSelectable:any, dflt:any = () => true) {
         return dflt;
     }
     
-    static sanitizeIsYearValid(isYearSelectable:any, dflt:any = (date:Date) => true) {
+    static sanitizeIsYearValid(isYearSelectable:any, dflt:any = () => true) {
         return dflt;
     }
     

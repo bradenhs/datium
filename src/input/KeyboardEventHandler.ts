@@ -9,6 +9,7 @@ class KeyboardEventHandler {
     private tabDown = false;
     
     constructor(private input:Input) {
+        // TODO handle these things in events
         input.element.addEventListener("keydown", (e) => this.keydown(e));
         input.element.addEventListener("focus", () => this.focus());
         document.addEventListener("keydown", (e) => this.documentKeydown(e));
@@ -85,7 +86,14 @@ class KeyboardEventHandler {
             let textBuffer = this.input.getTextBuffer();
             this.input.setTextBuffer(textBuffer.slice(0, -1));
             if (textBuffer.length < 2) {
-                this.input.getSelectedDatePart().setDefined(false);
+                let undefinedLevel:Level = this.input.getSelectedDatePart().getLevel();
+                
+                this.input.dateParts.forEach((datePart) => {
+                   if (datePart.getLevel() === undefinedLevel) {
+                       datePart.setDefined(false);
+                   } 
+                });
+                
                 this.input.triggerViewChange();
             }
         } else if (!e.shiftKey) {
@@ -142,6 +150,12 @@ class KeyboardEventHandler {
     private up() {
         this.input.getSelectedDatePart().increment();
         
+        this.input.dateParts.forEach((datePart) => {
+            if (datePart.getLevel() === this.input.getSelectedDatePart().getLevel()) {
+                datePart.setDefined(true);
+            }
+        });
+        
         let level = this.input.getSelectedDatePart().getLevel();
         let date = this.input.getSelectedDatePart().getValue();
         
@@ -153,6 +167,12 @@ class KeyboardEventHandler {
     
     private down() {
         this.input.getSelectedDatePart().decrement();
+        
+        this.input.dateParts.forEach((datePart) => {
+            if (datePart.getLevel() === this.input.getSelectedDatePart().getLevel()) {
+                datePart.setDefined(true);
+            }
+        });
         
         let level = this.input.getSelectedDatePart().getLevel();
         let date = this.input.getSelectedDatePart().getValue();

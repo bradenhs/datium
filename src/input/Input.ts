@@ -46,6 +46,7 @@ class Input {
             let newDate = this.selectedDatePart.getValue();
             if (this.textBuffer.length >= this.selectedDatePart.getMaxBuffer()) {
                 this.textBuffer = '';
+                this.selectedDatePart.setDefined(true);
                 let lastDatePart = this.selectedDatePart;
                 this.selectedDatePart = this.getNextSelectableDatePart();
                 this.blurDatePart(lastDatePart);
@@ -53,7 +54,7 @@ class Input {
             trigger.goto(this.element, {
                 date: newDate,
                 level: this.selectedDatePart.getLevel()
-            }); 
+            });
         } else {
             this.textBuffer = this.textBuffer.slice(0, -1);
         }
@@ -129,35 +130,31 @@ class Input {
         }
     }
     
-    public blurDatePart(datePart:IDatePart) {
-        /*
-        if (datePart === void 0) return;
-        let valid = false;
-        switch(datePart.getLevel()) {
-            case Level.YEAR:
-                valid = this.options.isYearSelectable(datePart.getValue());
-                break;
-            case Level.MONTH:
-                valid = this.options.isMonthSelectable(datePart.getValue());
-                break;
-            case Level.DATE:
-                valid = this.options.isDateSelectable(datePart.getValue());
-                break;
-            case Level.HOUR:
-                valid = this.options.isHourSelectable(datePart.getValue());
-                break;
-            case Level.MINUTE:
-                valid = this.options.isMinuteSelectable(datePart.getValue());
-                break;
-            case Level.SECOND:
-                valid = this.options.isSecondSelectable(datePart.getValue());
-                break;
+    public blurDatePart(blurredDatePart:IDatePart) {
+        if (blurredDatePart === void 0) return;
+        
+        let date = blurredDatePart.getValue();
+        let level = blurredDatePart.getLevel();
+        
+        if (level === Level.YEAR) {
+            if (this.options.isYearValid(date)) return;
+        } else if (level === Level.MONTH) {
+            if (this.options.isMonthValid(date)) return;
+        } else if (level === Level.DATE) {
+            if (this.options.isDateValid(date)) return;
+        } else if (level === Level.HOUR) {
+            if (this.options.isHourValid(date)) return;
+        } else if (level === Level.MINUTE) {
+            if (this.options.isMinuteValid(date)) return;
+        } else if (level === Level.SECOND) {
+            if (this.options.isSecondValid(date)) return;
         }
-        trigger.goto(this.element, {
-            level: this.selectedDatePart.getLevel(),
-            date: valid ? datePart.getValue() : datePart.getLastValue()
+        
+        this.dateParts.forEach((datePart) => {
+            if (datePart.getLevel() === level) {
+                datePart.setDefined(false);
+            }
         });
-        */
     }
     
     public getSelectedDatePart() {
@@ -181,6 +178,7 @@ class Input {
     
     public updateView() {
         let dateString = '';
+        let currentLevel:Level = this.selectedDatePart !== void 0 ? this.selectedDatePart.getLevel() : Level.NONE;
         this.dateParts.forEach((datePart) => {
             dateString += datePart.toString(); 
         });
@@ -192,7 +190,8 @@ class Input {
         
         let i = 0;
         while (this.dateParts[i] !== this.selectedDatePart) {
-            start += this.dateParts[i++].toString().length;
+            let datePart = this.dateParts[i++];
+            start += datePart.toString().length;
         }
         
         let end = start + this.selectedDatePart.toString().length;
@@ -201,16 +200,12 @@ class Input {
     }
     
     public viewchanged(date:Date, level:Level, update?:boolean) {
-        let defined = date !== void 0;
-        this.date = date || this.options.defaultDate;
+        this.date = date;
         this.level = level;
         this.dateParts.forEach((datePart) => {
-            //let currentValid = datePart.isDefined();
             if (update) datePart.setValue(this.date);
-            if (update && defined && level === datePart.getLevel()) {
+            if (update && level === datePart.getLevel() && this.textBuffer.length > 0) {
                 datePart.setDefined(true);
-            } else if (!defined) {
-                datePart.setDefined(false);
             }
             if (datePart.isSelectable() &&
                 datePart.getLevel() === level &&
