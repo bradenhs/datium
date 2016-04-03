@@ -27,7 +27,6 @@ class PasteEventHander {
                
                datePart.setValue(newDate);
                if (datePart.setValue(val)) {
-                   this.input.blurDatePart(datePart);
                    newDate = datePart.getValue();
                } else {
                    // TODO set all dateparts back to original value

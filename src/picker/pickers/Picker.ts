@@ -6,6 +6,7 @@ class Picker extends Common {
     protected picker:HTMLElement;
     protected selectedDate:Date;
     protected options:IOptions;
+    protected defined:boolean = false;
     
     constructor(protected element:HTMLElement, protected container:HTMLElement) {
         super();
@@ -13,6 +14,11 @@ class Picker extends Common {
     }
     
     public create(date:Date, transition:Transition) {
+    }
+    
+    public setDefined(defined:boolean) {
+        this.defined = defined;
+        this.setSelectedDate(this.selectedDate);
     }
     
     public remove(transition:Transition) {

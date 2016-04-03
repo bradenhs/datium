@@ -71,6 +71,29 @@ class PickerManager {
                 this.hourPicker.isDragging()) return;
             this.header.previous(); 
         });
+        
+        listen.updateDefinedState(element, (e) => {
+            switch(e.level) {
+                case Level.YEAR:
+                    this.yearPicker.setDefined(e.defined);
+                    break;
+                case Level.MONTH:
+                    this.monthPicker.setDefined(e.defined);
+                    break;
+                case Level.DATE:
+                    this.datePicker.setDefined(e.defined);
+                    break;
+                case Level.HOUR:
+                    this.hourPicker.setDefined(e.defined);
+                    break;
+                case Level.MINUTE:
+                    this.minutePicker.setDefined(e.defined);
+                    break;
+                case Level.SECOND:
+                    this.secondPicker.setDefined(e.defined);
+                    break;
+            }
+        });
     }
     
     public closeBubble() {

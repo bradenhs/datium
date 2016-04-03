@@ -72,7 +72,8 @@ class MonthPicker extends Picker implements IPicker {
             let el = monthElements.item(i);
             let date = new Date(el.getAttribute('datium-data'));
             if (date.getFullYear() === selectedDate.getFullYear() &&
-                date.getMonth() === selectedDate.getMonth()) {
+                date.getMonth() === selectedDate.getMonth() &&
+                this.defined) {
                 el.classList.add('datium-selected');
             } else {
                 el.classList.remove('datium-selected');

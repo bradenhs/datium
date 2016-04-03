@@ -140,6 +140,7 @@ let formatBlocks = (function() {
         }
         
         public setValue(value:Date|string) {
+            // TODO goto closest 50 years
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
                 return true;
@@ -173,7 +174,7 @@ let formatBlocks = (function() {
             let num = this.date.getMonth() + 1;
             if (num > 11) num = 0;
             this.date.setMonth(num);
-            while (this.date.getMonth() > num) {
+            while (this.date.getMonth() !== num) {
                 this.date.setDate(this.date.getDate() - 1);
             }
         }
@@ -182,6 +183,9 @@ let formatBlocks = (function() {
             let num = this.date.getMonth() - 1;
             if (num < 0) num = 11;
             this.date.setMonth(num);
+            while (this.date.getMonth() !== num) {
+                this.date.setDate(this.date.getDate() - 1);
+            }
         }
         
         public setValueFromPartial(partial:string) {
@@ -331,7 +335,7 @@ let formatBlocks = (function() {
             if (typeof value === 'object') {
                 this.date = new Date(value.valueOf());
                 return true;
-            } else if (typeof value === 'string' && this.getRegEx().test(value) && parseInt(value, 10) < this.daysInMonth(this.date)) {
+            } else if (typeof value === 'string' && this.getRegEx().test(value) && parseInt(value, 10) <= this.daysInMonth(this.date)) {
                 this.date.setDate(parseInt(value, 10));
                 return true;
             }

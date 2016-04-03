@@ -90,7 +90,7 @@ class KeyboardEventHandler {
                 
                 this.input.dateParts.forEach((datePart) => {
                    if (datePart.getLevel() === undefinedLevel) {
-                       datePart.setDefined(false);
+                       this.input.setDefined(datePart, false);
                    } 
                 });
                 
@@ -152,7 +152,7 @@ class KeyboardEventHandler {
         
         this.input.dateParts.forEach((datePart) => {
             if (datePart.getLevel() === this.input.getSelectedDatePart().getLevel()) {
-                datePart.setDefined(true);
+                this.input.setDefined(datePart, true);
             }
         });
         
@@ -170,7 +170,7 @@ class KeyboardEventHandler {
         
         this.input.dateParts.forEach((datePart) => {
             if (datePart.getLevel() === this.input.getSelectedDatePart().getLevel()) {
-                datePart.setDefined(true);
+                this.input.setDefined(datePart, true);
             }
         });
         

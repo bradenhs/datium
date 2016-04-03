@@ -7,6 +7,7 @@ interface IPicker {
     getMin():Date;
     getMax():Date;
     setSelectedDate(date:Date):void;
+    setDefined(defined:boolean):void;
 }
 
 interface ITimePicker extends IPicker {

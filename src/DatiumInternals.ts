@@ -7,7 +7,7 @@ class DatiumInternals {
     private options:IOptions = <any>{};
     
     private input:Input;
-    //private pickerManager:PickerManager;
+    private pickerManager:PickerManager;
     
     private levels:Level[];
     private date:Date;
@@ -17,7 +17,7 @@ class DatiumInternals {
         element.setAttribute('spellcheck', 'false');
         
         this.input = new Input(element);
-        //this.pickerManager = new PickerManager(element);
+        this.pickerManager = new PickerManager(element);
         
         this.updateOptions(options);
         
@@ -41,6 +41,15 @@ class DatiumInternals {
     public zoomIn(date:Date, currentLevel:Level, update:boolean = true) {
         let newLevel:Level = this.levels[this.levels.indexOf(currentLevel) + 1];
         if (newLevel === void 0) newLevel = currentLevel;
+        this.input.dateParts.forEach((datePart) => {
+            if (datePart.getLevel() <= currentLevel) {
+                datePart.setDefined(true);
+                trigger.updateDefinedState(this.element, {
+                    defined: true,
+                    level: datePart.getLevel()
+                });
+            } 
+        });
         trigger.goto(this.element, {
            date: date,
            level: newLevel,
@@ -79,7 +88,6 @@ class DatiumInternals {
         this.levels = this.input.getLevels().slice();
         this.levels.sort();
         
-        /*
         if (this.pickerManager.currentPicker !== void 0) {
             let curLevel = this.pickerManager.currentPicker.getLevel();
             
@@ -92,6 +100,5 @@ class DatiumInternals {
         }
         
         this.pickerManager.updateOptions(this.options);
-        */
     }
 }

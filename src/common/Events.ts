@@ -280,6 +280,14 @@ namespace listen {
         });
     }
     
+    
+    
+    export function updateDefinedState(element:Element, callback:(e:{defined:boolean, level:Level}) => void):IListenerReference[] {
+        return attachEvents(['datium-update-defined-state'], element, (e:CustomEvent) => {
+            callback(e.detail);
+        })
+    }
+    
     export function removeListeners(listeners:IListenerReference[]) {
         listeners.forEach((listener) => {
            listener.element.removeEventListener(listener.event, listener.reference); 
@@ -330,6 +338,14 @@ namespace trigger {
     
     export function updateBubble(element:Element, data:{x:number, y:number, text:string}) {
         element.dispatchEvent(new CustomEvent('datium-update-bubble', {
+            bubbles: false,
+            cancelable: true,
+            detail: data
+        }));
+    }
+    
+    export function updateDefinedState(element:Element, data:{defined:boolean, level:Level}) {
+        element.dispatchEvent(new CustomEvent('datium-update-defined-state', {
             bubbles: false,
             cancelable: true,
             detail: data

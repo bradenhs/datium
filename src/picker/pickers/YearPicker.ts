@@ -30,8 +30,16 @@ class YearPicker extends Picker implements IPicker {
     }
     
     public create(date:Date, transition:Transition) {
-        this.min = new Date(Math.floor(date.getFullYear()/10)*10, 0);
+        
+        let minYear = Math.floor(date.getFullYear()/10)*10;
+        this.min = new Date(minYear, 0);
+        this.min.setFullYear(minYear);
+        
+        let maxYear = Math.ceil(date.getFullYear()/10)*10;
         this.max = new Date(Math.ceil(date.getFullYear()/10)*10, 0);
+        this.max.setFullYear(maxYear);
+        
+        console.log(this.min.getFullYear(), this.max.getFullYear());
         
         if (this.min.valueOf() === this.max.valueOf()) {
             this.max.setFullYear(this.max.getFullYear() + 10);
@@ -71,7 +79,7 @@ class YearPicker extends Picker implements IPicker {
         for (let i = 0; i < yearElements.length; i++) {
             let el = yearElements.item(i);
             let date = new Date(el.getAttribute('datium-data'));
-            if (date.getFullYear() === selectedDate.getFullYear()) {
+            if (date.getFullYear() === selectedDate.getFullYear() && this.defined) {
                 el.classList.add('datium-selected');
             } else {
                 el.classList.remove('datium-selected');

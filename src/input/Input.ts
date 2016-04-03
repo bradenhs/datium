@@ -15,7 +15,6 @@ class Input {
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));
         listen.blur(element, () => {
             this.textBuffer = '';
-            this.blurDatePart(this.selectedDatePart);
         });
     }
     
@@ -41,15 +40,29 @@ class Input {
         }
     }
     
+    public isValid() {
+        return this.dateParts.every((datePart) => {
+            return !datePart.isSelectable() ||
+                   (datePart.isDefined() &&
+                   datePart.isValid());
+        });
+    }
+    
+    public setDefined(datePart:IDatePart, defined:boolean) {
+        datePart.setDefined(defined);
+        trigger.updateDefinedState(this.element, {
+            defined: defined,
+            level: datePart.getLevel()
+        });
+    }
+    
     public updateDateFromBuffer() {
         if (this.selectedDatePart.setValueFromPartial(this.textBuffer)) {
             let newDate = this.selectedDatePart.getValue();
             if (this.textBuffer.length >= this.selectedDatePart.getMaxBuffer()) {
                 this.textBuffer = '';
-                this.selectedDatePart.setDefined(true);
-                let lastDatePart = this.selectedDatePart;
+                this.setDefined(this.selectedDatePart, true);
                 this.selectedDatePart = this.getNextSelectableDatePart();
-                this.blurDatePart(lastDatePart);
             } 
             trigger.goto(this.element, {
                 date: newDate,
@@ -124,37 +137,8 @@ class Input {
     public setSelectedDatePart(datePart:IDatePart) {
         if (this.selectedDatePart !== datePart) {
             this.textBuffer = '';
-            let lastSelected = this.selectedDatePart;
             this.selectedDatePart = datePart;
-            this.blurDatePart(lastSelected);
         }
-    }
-    
-    public blurDatePart(blurredDatePart:IDatePart) {
-        if (blurredDatePart === void 0) return;
-        
-        let date = blurredDatePart.getValue();
-        let level = blurredDatePart.getLevel();
-        
-        if (level === Level.YEAR) {
-            if (this.options.isYearValid(date)) return;
-        } else if (level === Level.MONTH) {
-            if (this.options.isMonthValid(date)) return;
-        } else if (level === Level.DATE) {
-            if (this.options.isDateValid(date)) return;
-        } else if (level === Level.HOUR) {
-            if (this.options.isHourValid(date)) return;
-        } else if (level === Level.MINUTE) {
-            if (this.options.isMinuteValid(date)) return;
-        } else if (level === Level.SECOND) {
-            if (this.options.isSecondValid(date)) return;
-        }
-        
-        this.dateParts.forEach((datePart) => {
-            if (datePart.getLevel() === level) {
-                datePart.setDefined(false);
-            }
-        });
     }
     
     public getSelectedDatePart() {
@@ -205,7 +189,7 @@ class Input {
         this.dateParts.forEach((datePart) => {
             if (update) datePart.setValue(this.date);
             if (update && level === datePart.getLevel() && this.textBuffer.length > 0) {
-                datePart.setDefined(true);
+                this.setDefined(datePart, true);
             }
             if (datePart.isSelectable() &&
                 datePart.getLevel() === level &&

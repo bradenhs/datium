@@ -97,7 +97,8 @@ class DatePicker extends Picker implements IPicker {
             let date = new Date(el.getAttribute('datium-data'));
             if (date.getFullYear() === selectedDate.getFullYear() &&
                 date.getMonth() === selectedDate.getMonth() &&
-                date.getDate() === selectedDate.getDate()) {
+                date.getDate() === selectedDate.getDate() &&
+                this.defined) {
                 el.classList.add('datium-selected');
             } else {
                 el.classList.remove('datium-selected');
