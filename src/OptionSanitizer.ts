@@ -4,8 +4,6 @@ function OptionException(msg:string) {
 
 class OptionSanitizer {
     
-    static dfltDate:Date = new Date();
-    
     static sanitizeDisplayAs(displayAs:any, dflt:string = 'h:mma MMM D, YYYY') {
         if (displayAs === void 0) return dflt;
         if (typeof displayAs !== 'string') throw OptionException('The "displayAs" option must be a string');
@@ -22,9 +20,9 @@ class OptionSanitizer {
         return new Date(maxDate); //TODO figure this out 
     }
     
-    static sanitizeDefaultDate(defaultDate:any, dflt:Date = this.dfltDate) {
-        if (defaultDate === void 0) return dflt;
-        return new Date(defaultDate); //TODO figure this out
+    static sanitizeInitialDate(initialDate:any, dflt:Date = void 0) {
+        if (initialDate === void 0) return dflt;
+        return new Date(initialDate); //TODO figure this out
     }
         
     static sanitizeColor(color:any) {
@@ -83,28 +81,46 @@ class OptionSanitizer {
         }
     }
     
-    static sanitizeIsSecondValid(isSecondSelectable:any, dflt:any = () => true) {
-        return dflt;
+    static sanitizeIsSecondValid(isSecondValid:any, dflt:any = () => true) {
+        if (isSecondValid === void 0) return dflt;
+        if (typeof isSecondValid !== 'function')
+            throw OptionException('The "isSecondValid" option should be a function with signature (date:Date) => boolean');
+        return isSecondValid;
     }
     
-    static sanitizeIsMinuteValid(isMinuteSelectable:any, dflt:any = () => true) {
-        return dflt;
+    static sanitizeIsMinuteValid(isMinuteValid:any, dflt:any = () => true) {
+        if (isMinuteValid === void 0) return dflt;
+        if (typeof isMinuteValid !== 'function')
+            throw OptionException('The "isMinuteValid" option should be a function with signature (date:Date) => boolean');
+        return isMinuteValid;
     }
     
-    static sanitizeIsHourValid(isHourSelectable:any, dflt:any = () => true) {
-        return dflt;
+    static sanitizeIsHourValid(isHourValid:any, dflt:any = () => true) {
+        if (isHourValid === void 0) return dflt;
+        if (typeof isHourValid !== 'function')
+            throw OptionException('The "isHourValid" option should be a function with signature (date:Date) => boolean');
+        return isHourValid;
     }
     
-    static sanitizeIsDateValid(isDateSelectable:any, dflt:any = () => true) {
-        return (date:Date) => date.getDay() !== 0 && date.getDay() !== 6;
+    static sanitizeIsDateValid(isDateValid:any, dflt:any = () => true) {
+        if (isDateValid === void 0) return dflt;
+        if (typeof isDateValid !== 'function')
+            throw OptionException('The "isDateValid" option should be a function with signature (date:Date) => boolean');
+        return isDateValid;
     }
     
-    static sanitizeIsMonthValid(isMonthSelectable:any, dflt:any = () => true) {
-        return (date:Date) => date.getFullYear() !== 2016;
+    static sanitizeIsMonthValid(isMonthValid:any, dflt:any = () => true) {
+        if (isMonthValid === void 0) return dflt;
+        if (typeof isMonthValid !== 'function')
+            throw OptionException('The "isMonthValid" option should be a function with signature (date:Date) => boolean');
+        return isMonthValid;
     }
     
-    static sanitizeIsYearValid(isYearSelectable:any, dflt:any = () => true) {
-        return dflt;
+    static sanitizeIsYearValid(isYearValid:any, dflt:any = () => true) {
+        if (isYearValid === void 0) return dflt;
+        if (typeof isYearValid !== 'function')
+            throw OptionException('The "isYearValid" option should be a function with signature (date:Date) => boolean');
+        return isYearValid;
     }
     
     static sanitizeMilitaryTime(militaryTime:any, dflt:boolean = false) {
@@ -115,15 +131,28 @@ class OptionSanitizer {
         return <boolean>militaryTime;
     }
     
+    static sanitizeInvalidClass(invalidClass:any, dflt:string = 'datium-invalid') {
+        if (invalidClass === null) return null;
+        if (invalidClass === void 0) return dflt;
+        if (typeof invalidClass !== 'string') {
+            throw OptionException('The "invalidClass" option must be a string');
+        }
+        return invalidClass;
+    }
+    
     static sanitize(options:IOptions, defaults:IOptions) {
         let minDate = OptionSanitizer.sanitizeMinDate(options['minDate'], defaults.minDate);
         let maxDate = OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate);
+        
+        if (minDate.valueOf() > maxDate.valueOf()) {
+            throw OptionException('"minDate" must be before "maxDate"');
+        }
         
         let opts:IOptions = {
             displayAs: OptionSanitizer.sanitizeDisplayAs(options['displayAs'], defaults.displayAs),
             minDate: minDate,
             maxDate: maxDate,
-            defaultDate: OptionSanitizer.sanitizeDefaultDate(options['defaultDate'], defaults.defaultDate),
+            initialDate: OptionSanitizer.sanitizeInitialDate(options['initialDate'], defaults.initialDate),
             theme: OptionSanitizer.sanitizeTheme(options['theme'], defaults.theme),
             militaryTime: OptionSanitizer.sanitizeMilitaryTime(options['militaryTime'], defaults.militaryTime),
             isSecondValid: OptionSanitizer.sanitizeIsSecondValid(options['isSecondValid'], defaults.isSecondValid),
@@ -131,7 +160,8 @@ class OptionSanitizer {
             isHourValid: OptionSanitizer.sanitizeIsHourValid(options['isHourValid'], defaults.isHourValid),
             isDateValid: OptionSanitizer.sanitizeIsDateValid(options['isDateValid'], defaults.isDateValid),
             isMonthValid: OptionSanitizer.sanitizeIsMonthValid(options['isMonthValid'], defaults.isMonthValid),
-            isYearValid: OptionSanitizer.sanitizeIsYearValid(options['isYearValid'], defaults.isYearValid)
+            isYearValid: OptionSanitizer.sanitizeIsYearValid(options['isYearValid'], defaults.isYearValid),
+            invalidClass: OptionSanitizer.sanitizeInvalidClass(options['invalidClass'], defaults.invalidClass)
         }
         
         return opts;

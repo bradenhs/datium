@@ -1,5 +1,22 @@
 @import 'global.less';
 datium-container._id {
+    
+    transition: all ease .3s;
+    transform-origin: 140px 10px;
+    
+    &.datium-closed {
+        opacity: 0;
+        transform: scale(.9);
+        &, & * {
+            pointer-events: none !important;
+        }
+        & datium-picker-container {
+            transform: translateY(-270px) !important;
+            transition: all ease .2s;
+            transition-delay: 0s;
+        }
+    }
+    
     datium-picker-container-wrapper {
         overflow: hidden;
         position: absolute;
@@ -72,7 +89,7 @@ datium-container._id {
         text-align: center;
         position: relative;
         transition: .2s ease all;
-        &.datium-selected:after {
+        &:not(.datium-invalid).datium-selected:after {
             content: '';
             position: absolute;
             left: 20px;
@@ -87,7 +104,7 @@ datium-container._id {
             transform: scale(.9);
             transition: none;
         }
-        &:not([datium-data]) {
+        &.datium-invalid {
             opacity: .4;
             pointer-events: none;
         }
@@ -113,7 +130,7 @@ datium-container._id {
         text-align: center;
         position: relative;
         transition: .2s ease all;
-        &.datium-selected:after {
+         &:not(.datium-invalid).datium-selected:after {
             content: '';
             position: absolute;
             left: 12px;
@@ -128,7 +145,7 @@ datium-container._id {
             transform: scale(.9);
             transition: none;
         }
-        &:not([datium-data]) {
+        &.datium-invalid {
             opacity: .4;
             pointer-events: none;
         }

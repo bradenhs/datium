@@ -37,7 +37,8 @@ class PickerManager {
         this.minutePicker = new MinutePicker(element, this.container);
         this.secondPicker = new SecondPicker(element, this.container);
                 
-        listen.down(this.container, '*', (e) => this.addActiveClasses(e));
+        listen.down(this.container, '*', (e) => { this.addActiveClasses(e) });
+        
         listen.up(document, () => {
             this.closeBubble();
             this.removeActiveClasses();
@@ -72,6 +73,10 @@ class PickerManager {
             this.header.previous(); 
         });
         
+        listen.blur(this.element, () => {
+            this.closePicker();
+        });
+        
         listen.updateDefinedState(element, (e) => {
             switch(e.level) {
                 case Level.YEAR:
@@ -94,6 +99,14 @@ class PickerManager {
                     break;
             }
         });
+    }
+    
+    public openPicker() {
+        this.container.classList.remove('datium-closed');
+    }
+    
+    public closePicker() {
+        this.container.classList.add('datium-closed');
     }
     
     public closeBubble() {
@@ -127,13 +140,12 @@ class PickerManager {
     
     private viewchanged(date:Date, level:Level, update:boolean) {
         if (level === Level.NONE) {
-            if (this.currentPicker !== void 0) {
-                this.currentPicker.remove(Transition.ZOOM_OUT);
-            }
-            this.adjustHeight(10);
             if (update) this.updateSelectedDate(date);
+            this.closePicker();
             return;
         }
+        
+        this.openPicker();
         
         let transition:Transition;
         if (this.currentPicker === void 0) {
@@ -223,7 +235,7 @@ class PickerManager {
         <datium-picker-container-wrapper>
             <datium-picker-container></datium-picker-container>
         </datium-picker-container-wrapper>`;
-        
+        el.classList.add('datium-closed');
         return el;
     }
     

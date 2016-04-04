@@ -54,10 +54,7 @@ class YearPicker extends Picker implements IPicker {
             let yearElement = document.createElement('datium-year-element');
             
             yearElement.innerHTML = iterator.getFullYear().toString();
-            
-            if (this.options.isYearValid(iterator)) {
-                yearElement.setAttribute('datium-data', iterator.toISOString());
-            }
+            yearElement.setAttribute('datium-data', iterator.toISOString());
             
             this.picker.appendChild(yearElement);
             
@@ -67,6 +64,28 @@ class YearPicker extends Picker implements IPicker {
         this.attach();
         
         this.setSelectedDate(this.selectedDate);
+        this.setValid();
+    }
+    
+    public updateOptions(options:IOptions) {
+        this.options = options;
+        this.setValid();
+    }
+    
+    private setValid() {
+        let yearElements = this.pickerContainer.querySelectorAll('datium-year-element');
+        for (let i = 0; i < yearElements.length; i++) {
+            let el = yearElements.item(i);
+            let date = new Date(el.getAttribute('datium-data'));
+            let next = new Date(date.getFullYear() + 1, 0);
+            if (date.valueOf() < this.options.maxDate.valueOf() &&
+                next.valueOf() > this.options.minDate.valueOf() &&
+                this.options.isYearValid(date)) {
+                el.classList.remove('datium-invalid');
+            } else {
+                el.classList.add('datium-invalid');
+            }
+        }
     }
     
     public setSelectedDate(selectedDate:Date) {

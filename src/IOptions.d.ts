@@ -10,7 +10,7 @@ interface IOptions {
     displayAs:string;
     minDate:Date;
     maxDate:Date;
-    defaultDate:Date;
+    initialDate:Date;
     theme:ITheme;
     militaryTime:boolean;
     isSecondValid:(date:Date) => boolean;
@@ -19,4 +19,5 @@ interface IOptions {
     isDateValid:(date:Date) => boolean;
     isMonthValid:(date:Date) => boolean;
     isYearValid:(date:Date) => boolean;
+    invalidClass:string;
 }

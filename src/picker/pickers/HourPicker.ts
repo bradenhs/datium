@@ -106,6 +106,14 @@ class HourPicker extends TimePicker implements ITimePicker {
         d = this.round(d);
         hours = d.getHours();
         
+        let start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours());
+        let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1);
+        
+        if (start.valueOf() > this.options.maxDate.valueOf() ||
+            end.valueOf() < this.options.minDate.valueOf()) {
+            return '--';
+        }
+        
         if (this.options.militaryTime) {
             return this.pad(hours)+'hr';
         } else if (hours === 12) {
@@ -213,6 +221,7 @@ class HourPicker extends TimePicker implements ITimePicker {
     private meridiem:string;
     private lastLabelDate:Date;
     protected updateLabels(date:Date, forceUpdate:boolean = false) {
+        if (date === void 0 || this.picker === void 0) return;
         this.lastLabelDate = date;
         
         if (this.meridiem !== void 0 &&
@@ -246,7 +255,12 @@ class HourPicker extends TimePicker implements ITimePicker {
             
             label.setAttribute('datium-data', d.toISOString());
             
-            if (this.options.isHourValid(d)) {
+            let start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours());
+            let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1);
+           
+            if (start.valueOf() < this.options.maxDate.valueOf() &&
+                end.valueOf() > this.options.minDate.valueOf() &&
+                this.options.isHourValid(d)) {
                 label.classList.remove('datium-inactive');
             } else {
                 label.classList.add('datium-inactive');
@@ -264,11 +278,12 @@ class HourPicker extends TimePicker implements ITimePicker {
     }
     
     public updateOptions(options:IOptions) {
-        if (this.options !== void 0 && this.options.militaryTime !== options.militaryTime) {
+        if (this.options !== void 0) {
             this.options = options;
             this.updateLabels(this.lastLabelDate, true);
+        } else {
+            this.options = options;
         }
-        this.options = options;
         
         if (this.meridiemSwitcher !== void 0) {
             if (this.options.militaryTime) {

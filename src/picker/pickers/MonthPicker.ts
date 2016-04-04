@@ -48,10 +48,7 @@ class MonthPicker extends Picker implements IPicker {
             let monthElement = document.createElement('datium-month-element');
             
             monthElement.innerHTML = this.getShortMonths()[iterator.getMonth()];
-            
-            if (this.options.isMonthValid(iterator)) {
-                monthElement.setAttribute('datium-data', iterator.toISOString());
-            }
+            monthElement.setAttribute('datium-data', iterator.toISOString());
             
             this.picker.appendChild(monthElement);
             
@@ -59,8 +56,29 @@ class MonthPicker extends Picker implements IPicker {
         } while (iterator.valueOf() < this.max.valueOf());
         
         this.attach();
-        
         this.setSelectedDate(this.selectedDate);
+        this.setValid();
+    }
+    
+    private setValid() {
+        let monthElements = this.pickerContainer.querySelectorAll('datium-month-element');
+        for (let i = 0; i < monthElements.length; i++) {
+            let el = monthElements.item(i);
+            let date = new Date(el.getAttribute('datium-data'));
+            let next = new Date(date.getFullYear(), date.getMonth() + 1);
+            if (date.valueOf() < this.options.maxDate.valueOf() &&
+                next.valueOf() > this.options.minDate.valueOf() &&
+                this.options.isMonthValid(date)) {
+                el.classList.remove('datium-invalid');
+            } else {
+                el.classList.add('datium-invalid');
+            }
+        }
+    }
+    
+    public updateOptions(options:IOptions) {
+        this.options = options;
+        this.setValid();
     }
     
     public setSelectedDate(selectedDate:Date) {

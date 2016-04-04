@@ -80,25 +80,37 @@ class TimePicker extends Picker {
     protected dragEnd(e:MouseEvent|TouchEvent) {
         this.picker.classList.remove('datium-dragging');
         
-        let date = this.getElementDate(this.timeDrag);
+        let d = this.getElementDate(this.timeDrag);
         let zoomIn = true;
+        let start:Date, end:Date;
         if (this.getLevel() === Level.HOUR) {
-            date.setHours(this.rotationToTime(this.rotation));
-            date = this.round(date);
-            zoomIn = this.options.isHourValid(date);
+            d.setHours(this.rotationToTime(this.rotation));
+            d = this.round(d);
+            zoomIn = this.options.isHourValid(d);
+            
+            start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours());
+            end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours() + 1);
         } else if (this.getLevel() === Level.MINUTE) {
-            date.setMinutes(this.rotationToTime(this.rotation));
-            date = this.round(date);
-            zoomIn = this.options.isMinuteValid(date);
+            d.setMinutes(this.rotationToTime(this.rotation));
+            d = this.round(d);
+            zoomIn = this.options.isMinuteValid(d);
+            
+            start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes());
+            end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 1);
         } else if (this.getLevel() === Level.SECOND) {
-            date.setSeconds(this.rotationToTime(this.rotation));
-            date = this.round(date);
-            zoomIn = this.options.isSecondValid(date);
+            d.setSeconds(this.rotationToTime(this.rotation));
+            d = this.round(d);
+            zoomIn = this.options.isSecondValid(d);
+            
+            start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+            end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1);
         }
         
-        if (zoomIn) {
+        if (start.valueOf() < this.options.maxDate.valueOf() &&
+            end.valueOf() > this.options.minDate.valueOf() &&
+            zoomIn) {
             trigger.zoomIn(this.element, {
-                date: date,
+                date: d,
                 currentLevel: this.getLevel()
             });
         }

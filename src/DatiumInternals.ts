@@ -25,7 +25,27 @@ class DatiumInternals {
         listen.zoomOut(element, (e) => this.zoomOut(e.date, e.currentLevel, e.update));
         listen.zoomIn(element, (e) => this.zoomIn(e.date, e.currentLevel, e.update));
         
-        this.goto(this.options['defaultDate'], Level.NONE, true);
+        let initialDate = this.options['initialDate'];
+        
+        if (initialDate === void 0) {
+            initialDate = new Date();
+            if (initialDate.valueOf() < this.options['minDate'].valueOf()) {
+                initialDate = new Date(this.options['minDate'].valueOf());
+            }
+            if (initialDate.valueOf() > this.options['maxDate'].valueOf()) {
+                initialDate = new Date(this.options['maxDate'].valueOf());
+            }
+        } else {
+            this.input.dateParts.forEach((datePart) => {
+                datePart.setDefined(true);
+            })
+        }
+        
+        this.goto(initialDate, Level.NONE, true);
+    }
+    
+    public setDate(date:Date) {
+        // TODO implement this
     }
     
     public zoomOut(date:Date, currentLevel:Level, update:boolean = true) {
@@ -40,7 +60,12 @@ class DatiumInternals {
     
     public zoomIn(date:Date, currentLevel:Level, update:boolean = true) {
         let newLevel:Level = this.levels[this.levels.indexOf(currentLevel) + 1];
-        if (newLevel === void 0) newLevel = currentLevel;
+        
+        if (newLevel === void 0) {
+            newLevel = Level.NONE;
+            this.pickerManager.closePicker();
+        }
+        
         this.input.dateParts.forEach((datePart) => {
             if (datePart.getLevel() <= currentLevel) {
                 datePart.setDefined(true);
@@ -57,17 +82,15 @@ class DatiumInternals {
         });
     }
     
+    public isValid() {
+        return this.input.isValid();
+    }
+    
+    public getDate() {
+        return this.input.getDate();
+    }
+    
     public goto(date:Date, level:Level, update:boolean = true) {
-        if (date !== void 0) {
-            if (date.valueOf() < this.options.minDate.valueOf()) {
-                date = new Date(this.options.minDate.valueOf());
-            }
-            
-            if (date.valueOf() > this.options.maxDate.valueOf()) {
-                date = new Date(this.options.maxDate.valueOf());
-            }
-        }
-        
         if (date === void 0 && update === false) {
             this.date = new Date();
             level = this.input.getLevels().slice().sort()[0];

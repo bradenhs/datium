@@ -86,6 +86,14 @@ class SecondPicker extends TimePicker implements ITimePicker {
         d = this.round(d);
         seconds = d.getSeconds();
         
+        let start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
+        let end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1);
+        
+        if (start.valueOf() > this.options.maxDate.valueOf() ||
+            end.valueOf() < this.options.minDate.valueOf()) {
+            return '--';
+        }
+        
         return this.pad(seconds)+'s';
     }
     
@@ -174,7 +182,11 @@ class SecondPicker extends TimePicker implements ITimePicker {
         this.setSelectedDate(this.selectedDate);
     }
     
+    private lastLabelDate:Date;
+    
     protected updateLabels(date:Date, forceUpdate:boolean = false) {
+        if (date === void 0) return;
+        this.lastLabelDate = date;
         
         let labels = this.picker.querySelectorAll('[datium-clock-pos]');
         for (let i = 0; i < labels.length; i++) {
@@ -202,6 +214,10 @@ class SecondPicker extends TimePicker implements ITimePicker {
     }
     
     public updateOptions(options:IOptions) {
+        if (this.options !== void 0) {
+            this.options = options;
+            this.updateLabels(this.lastLabelDate, true);
+        }
         this.options = options;
     }
     

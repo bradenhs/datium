@@ -6,6 +6,7 @@ class Input {
     public format: RegExp;
     private date:Date;
     private level:Level;
+    private hasBlurred:boolean = false;
     
     constructor(public element: HTMLInputElement) {
         new KeyboardEventHandler(this);
@@ -15,6 +16,8 @@ class Input {
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));
         listen.blur(element, () => {
             this.textBuffer = '';
+            this.hasBlurred = true;
+            this.manageValidClass();
         });
     }
     
@@ -41,11 +44,21 @@ class Input {
     }
     
     public isValid() {
+        if (this.date.valueOf() < this.options.minDate.valueOf() ||
+            this.date.valueOf() > this.options.maxDate.valueOf()) {
+            return false;
+        }
         return this.dateParts.every((datePart) => {
             return !datePart.isSelectable() ||
                    (datePart.isDefined() &&
                    datePart.isValid());
         });
+    }
+    
+    public getDate() {
+        if (this.date === void 0 ||
+            !this.isValid()) return null;
+        return this.date;
     }
     
     public setDefined(datePart:IDatePart, defined:boolean) {
@@ -62,7 +75,9 @@ class Input {
             if (this.textBuffer.length >= this.selectedDatePart.getMaxBuffer()) {
                 this.textBuffer = '';
                 this.setDefined(this.selectedDatePart, true);
-                this.selectedDatePart = this.getNextSelectableDatePart();
+                if (this.selectedDatePart.isValid()) {
+                    this.selectedDatePart = this.getNextSelectableDatePart();
+                }
             } 
             trigger.goto(this.element, {
                 date: newDate,
@@ -148,12 +163,25 @@ class Input {
     public updateOptions(options:IOptions) {
         this.options = options;
         
+        let definedLevels:Level[] = [];
+        if (this.dateParts !== void 0) {
+            this.dateParts.forEach((datePart) => {
+                if (datePart.isDefined() &&
+                    definedLevels.indexOf(datePart.getLevel()) === -1) {
+                    definedLevels.push(datePart.getLevel());
+                }
+            })
+        }
+        
         this.dateParts = Parser.parse(options);
         this.selectedDatePart = void 0;
         
         let format:string = '^';
         this.dateParts.forEach((datePart) => {
             format += `(${datePart.getRegEx().source.slice(1,-1)})`;
+            if (definedLevels.indexOf(datePart.getLevel()) !== -1) {
+                datePart.setDefined(true);
+            }
         });
         this.format = new RegExp(format+'$', 'i');
         
@@ -198,7 +226,18 @@ class Input {
                 this.setSelectedDatePart(datePart);
             }
         });
+        this.manageValidClass();
         this.updateView();
+    }
+    
+    public manageValidClass() {
+        if (this.date !== void 0 && this.options.invalidClass !== null && this.hasBlurred) {
+            if (this.isValid()) {
+                this.element.classList.remove(this.options.invalidClass);
+            } else {
+                this.element.classList.add(this.options.invalidClass);
+            }
+        }
     }
     
     public triggerViewChange() {
