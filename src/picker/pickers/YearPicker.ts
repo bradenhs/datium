@@ -39,8 +39,6 @@ class YearPicker extends Picker implements IPicker {
         this.max = new Date(Math.ceil(date.getFullYear()/10)*10, 0);
         this.max.setFullYear(maxYear);
         
-        console.log(this.min.getFullYear(), this.max.getFullYear());
-        
         if (this.min.valueOf() === this.max.valueOf()) {
             this.max.setFullYear(this.max.getFullYear() + 10);
         }

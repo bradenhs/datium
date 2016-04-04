@@ -12,7 +12,7 @@ class OptionSanitizer {
         return displayAs;
     }
     
-    static sanitizeMinDate(minDate:any, dflt:Date = new Date(-8640000000000000)) {
+    static sanitizeMinDate(minDate:any, dflt:Date = new Date(-62135658000000)) {
         if (minDate === void 0) return dflt;
         return new Date(minDate); //TODO figure this out yes
     }
@@ -100,7 +100,7 @@ class OptionSanitizer {
     }
     
     static sanitizeIsMonthValid(isMonthSelectable:any, dflt:any = () => true) {
-        return dflt;
+        return (date:Date) => date.getFullYear() !== 2016;
     }
     
     static sanitizeIsYearValid(isYearSelectable:any, dflt:any = () => true) {

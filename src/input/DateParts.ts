@@ -171,21 +171,27 @@ let formatBlocks = (function() {
         } 
         
         public increment() {
-            let num = this.date.getMonth() + 1;
-            if (num > 11) num = 0;
-            this.date.setMonth(num);
-            while (this.date.getMonth() !== num) {
-                this.date.setDate(this.date.getDate() - 1);
-            }
+            let i = 0;
+            do {
+                let num = this.date.getMonth() + 1;
+                if (num > 11) num = 0;
+                this.date.setMonth(num);
+                while (this.date.getMonth() !== num) {
+                    this.date.setDate(this.date.getDate() - 1);
+                }
+            } while (!this.isValid() && i++ < 12);
         }
         
         public decrement() {
-            let num = this.date.getMonth() - 1;
-            if (num < 0) num = 11;
-            this.date.setMonth(num);
-            while (this.date.getMonth() !== num) {
-                this.date.setDate(this.date.getDate() - 1);
-            }
+            let i = 0;
+            do {
+                let num = this.date.getMonth() - 1;
+                if (num < 0) num = 11;
+                this.date.setMonth(num);
+                while (this.date.getMonth() !== num) {
+                    this.date.setDate(this.date.getDate() - 1);
+                }
+            } while (!this.isValid() && i++ < 12);
         }
         
         public setValueFromPartial(partial:string) {
@@ -312,15 +318,21 @@ let formatBlocks = (function() {
         constructor(options:IOptions) { super(options); }
         
         public increment() {
-            let num = this.date.getDate() + 1;
-            if (num > this.daysInMonth(this.date)) num = 1;
-            this.date.setDate(num);
+            let i = 0;
+            do {
+                let num = this.date.getDate() + 1;
+                if (num > this.daysInMonth(this.date)) num = 1;
+                this.date.setDate(num);
+            } while (!this.isValid() && i++ < this.daysInMonth(this.date));
         }
         
         public decrement() {
-            let num = this.date.getDate() - 1;
-            if (num < 1) num = this.daysInMonth(this.date);
-            this.date.setDate(num);
+            let i = 0;
+            do {
+                let num = this.date.getDate() - 1;
+                if (num < 1) num = this.daysInMonth(this.date);
+                this.date.setDate(num);
+            } while (!this.isValid() && i++ < this.daysInMonth(this.date));
         }
         
         public setValueFromPartial(partial:string) {
@@ -412,15 +424,21 @@ let formatBlocks = (function() {
         }
         
         public increment() {
-            let num = this.date.getDay() + 1;
-            if (num > 6) num = 0;
-            this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+            let i = 0;
+            do {
+                let num = this.date.getDay() + 1;
+                if (num > 6) num = 0;
+                this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+            } while (!this.isValid() && i++ < 7);
         }
         
         public decrement() {
-            let num = this.date.getDay() - 1;
-            if (num < 0) num = 6;
-            this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+            let i = 0;
+            do {
+                let num = this.date.getDay() - 1;
+                if (num < 0) num = 6;
+                this.date.setDate(this.date.getDate() - this.date.getDay() + num);
+            } while (!this.isValid() && i++ < 7);
         }
         
         public setValueFromPartial(partial:string) {
@@ -476,19 +494,26 @@ let formatBlocks = (function() {
         constructor(options:IOptions) { super(options); }
         
         public increment() {
-            let num = this.date.getHours() + 1;
-            if (num > 23) num = 0;
-            this.date.setHours(num);
+            let i = 0;
+            do {
+                let num = this.date.getHours() + 1;
+                if (num > 23) num = 0;
+                this.date.setHours(num);
+            } while (!this.isValid() && i++ < 24);
         }
         
         public decrement() {
-            let num = this.date.getHours() - 1;
-            if (num < 0) num = 23;
-            this.date.setHours(num);
-            // Day Light Savings Adjustment
-            if (this.date.getHours() !== num) {
-                this.date.setHours(num - 1);
-            }
+            let i = 0;
+            do {
+                let num = this.date.getHours() - 1;
+                if (num < 0) num = 23;
+                this.date.setHours(num);
+                // Day Light Savings Adjustment
+                if (this.date.getHours() !== num) {
+                    this.date.setHours(num - 1);
+                    i++;
+                }
+            } while (!this.isValid() && i++ < 24);
         }
         
         public setValueFromPartial(partial:string) {
@@ -611,15 +636,21 @@ let formatBlocks = (function() {
         constructor(options:IOptions) { super(options); }
         
         public increment() {
-            let num = this.date.getMinutes() + 1;
-            if (num > 59) num = 0;
-            this.date.setMinutes(num);
+            let i = 0;
+            do {
+                let num = this.date.getMinutes() + 1;
+                if (num > 59) num = 0;
+                this.date.setMinutes(num);
+            } while (!this.isValid() && i++ < 60);
         }
         
         public decrement() {
-            let num = this.date.getMinutes() - 1;
-            if (num < 0) num = 59;
-            this.date.setMinutes(num);
+            let i = 0;
+            do {
+                let num = this.date.getMinutes() - 1;
+                if (num < 0) num = 59;
+                this.date.setMinutes(num);
+            } while (!this.isValid() && i++ < 60);
         }
         
         public setValueFromPartial(partial:string) {
@@ -678,15 +709,21 @@ let formatBlocks = (function() {
         constructor(options:IOptions) { super(options); }
         
         public increment() {
-            let num = this.date.getSeconds() + 1;
-            if (num > 59) num = 0;
-            this.date.setSeconds(num);
+            let i = 0;
+            do {
+                let num = this.date.getSeconds() + 1;
+                if (num > 59) num = 0;
+                this.date.setSeconds(num);
+            } while (!this.isValid() && i++ < 60);
         }
         
         public decrement() {
-            let num = this.date.getSeconds() - 1;
-            if (num < 0) num = 59;
-            this.date.setSeconds(num);
+            let i = 0;
+            do {
+                let num = this.date.getSeconds() - 1;
+                if (num < 0) num = 59;
+                this.date.setSeconds(num);
+            } while (!this.isValid() && i++ < 60);
         }
         
         public setValueFromPartial(partial:string) {

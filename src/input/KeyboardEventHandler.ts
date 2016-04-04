@@ -1,7 +1,7 @@
 const enum KEY {
     RIGHT = 39, LEFT = 37, TAB = 9, UP = 38,
     DOWN = 40, V = 86, C = 67, A = 65, HOME = 36,
-    END = 35, BACKSPACE = 8
+    END = 35, BACKSPACE = 8, DELETE = 46
 }
 
 class KeyboardEventHandler {
@@ -82,20 +82,27 @@ class KeyboardEventHandler {
         if (/^[0-9]|[A-z]$/.test(keyPressed)) {
             let textBuffer = this.input.getTextBuffer();
             this.input.setTextBuffer(textBuffer + keyPressed);
-        } else if (code === KEY.BACKSPACE) {
+        } else if (code === KEY.BACKSPACE) { // delete key too
             let textBuffer = this.input.getTextBuffer();
             this.input.setTextBuffer(textBuffer.slice(0, -1));
             if (textBuffer.length < 2) {
+                //TODO triger defined change
                 let undefinedLevel:Level = this.input.getSelectedDatePart().getLevel();
-                
                 this.input.dateParts.forEach((datePart) => {
                    if (datePart.getLevel() === undefinedLevel) {
                        this.input.setDefined(datePart, false);
                    } 
                 });
-                
                 this.input.triggerViewChange();
             }
+        } else if (code === KEY.DELETE) {
+            //TODO triger defined change
+            let undefinedLevel:Level = this.input.getSelectedDatePart().getLevel(); 
+            this.input.dateParts.forEach((datePart) => {
+                if (datePart.getLevel() === undefinedLevel) {
+                    this.input.setDefined(datePart, false);
+                } 
+            });
         } else if (!e.shiftKey) {
             this.input.setTextBuffer('');
         }
