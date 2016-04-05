@@ -76,9 +76,10 @@ class Input {
                 this.textBuffer = '';
                 this.setDefined(this.selectedDatePart, true);
                 if (this.selectedDatePart.isValid()) {
+                    let lastSelected = this.selectedDatePart;
                     this.selectedDatePart = this.getNextSelectableDatePart();
                 }
-            } 
+            }
             trigger.goto(this.element, {
                 date: newDate,
                 level: this.selectedDatePart.getLevel()

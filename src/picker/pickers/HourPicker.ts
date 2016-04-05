@@ -158,6 +158,7 @@ class HourPicker extends TimePicker implements ITimePicker {
     }
     
     public create(date:Date, transition:Transition) {
+        this.dragging = false;
         this.min = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         this.max = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1);
         

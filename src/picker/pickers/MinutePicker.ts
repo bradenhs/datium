@@ -129,6 +129,7 @@ class MinutePicker extends TimePicker implements ITimePicker {
     }
     
     public create(date:Date, transition:Transition) {
+        this.dragging = false;
         this.min = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours());
         this.max = new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours() + 1);
         
