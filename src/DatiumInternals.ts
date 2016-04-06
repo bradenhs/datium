@@ -24,16 +24,20 @@ class DatiumInternals {
         listen.goto(element, (e) => this.goto(e.date, e.level, e.update));
         listen.zoomOut(element, (e) => this.zoomOut(e.date, e.currentLevel, e.update));
         listen.zoomIn(element, (e) => this.zoomIn(e.date, e.currentLevel, e.update));
-        
-        let initialDate = this.options['initialDate'];
+    }
+    
+    public first:boolean = true;
+    
+    public init() {
+        let initialDate = this.options.initialDate;
         
         if (initialDate === void 0) {
             initialDate = new Date();
-            if (initialDate.valueOf() < this.options['minDate'].valueOf()) {
-                initialDate = new Date(this.options['minDate'].valueOf());
+            if (initialDate.valueOf() < this.options.minDate.valueOf()) {
+                initialDate = new Date(this.options.minDate.valueOf());
             }
-            if (initialDate.valueOf() > this.options['maxDate'].valueOf()) {
-                initialDate = new Date(this.options['maxDate'].valueOf());
+            if (initialDate.valueOf() > this.options.maxDate.valueOf()) {
+                initialDate = new Date(this.options.maxDate.valueOf());
             }
         } else {
             this.input.dateParts.forEach((datePart) => {
@@ -105,7 +109,8 @@ class DatiumInternals {
     }
     
     public updateOptions(newOptions:IOptions = <any>{}) {
-        this.options = OptionSanitizer.sanitize(newOptions, this.options);        
+        this.options = OptionSanitizer.sanitize(newOptions, this.options);
+             
         this.input.updateOptions(this.options);
         
         this.levels = this.input.getLevels().slice();
@@ -123,5 +128,10 @@ class DatiumInternals {
         }
         
         this.pickerManager.updateOptions(this.options);
+        
+        if (this.first) {
+            this.first = false;
+            this.init();
+        }
     }
 }

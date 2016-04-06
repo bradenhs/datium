@@ -145,8 +145,14 @@ let formatBlocks = (function() {
                 this.date = new Date(value.valueOf());
                 return true;
             } else if (typeof value === 'string' && this.getRegEx().test(value)) {
-                let base = Math.floor(super.getValue().getFullYear()/100)*100;
-                this.date.setFullYear(parseInt(<string>value, 10) + base);
+                let base = Math.floor(this.date.getFullYear()/100)*100;
+                let year = parseInt(<string>value, 10) + base;
+                if (year - this.date.getFullYear() > 50) {
+                    year -= 100;
+                } else if (year - this.date.getFullYear() < -50) {
+                    year += 100;   
+                }
+                this.date.setFullYear(year);
                 return true;
             }
             return false;
