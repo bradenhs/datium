@@ -48,8 +48,15 @@ class DatiumInternals {
         this.goto(initialDate, Level.NONE, true);
     }
     
-    public setDate(date:Date) {
-        // TODO implement this
+    public setDate(date:Date|string) {
+        if (typeof date === 'string') {
+            this.input.setDateFromString(date);
+        } else {
+            trigger.goto(this.element, {
+                date: date,
+                level: this.input.getSelectedDatePart().getLevel()
+            });
+        }
     }
     
     public zoomOut(date:Date, currentLevel:Level, update:boolean = true) {
@@ -95,12 +102,7 @@ class DatiumInternals {
     }
     
     public goto(date:Date, level:Level, update:boolean = true) {
-        if (date === void 0 && update === false) {
-            this.date = new Date();
-            level = this.input.getLevels().slice().sort()[0];
-        } else {
-            this.date = date;
-        }
+        this.date = date;
         trigger.viewchanged(this.element, {
             date: this.date,
             level: level,

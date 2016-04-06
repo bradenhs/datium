@@ -4,41 +4,13 @@ class PasteEventHander {
     }
     
     private paste() {
-        //TODO fix this cause it's not working
         let originalValue = this.input.element.value;
+        let start = this.input.element.selectionStart;
+        let end = this.input.element.selectionEnd;
         setTimeout(() => {
-           if (!this.input.format.test(this.input.element.value)) {
-               this.input.element.value = originalValue;
-               return;
-           } 
-           
-           let newDate = this.input.getSelectedDatePart().getValue();
-           
-           let strPrefix = '';
-           for (let i = 0; i < this.input.dateParts.length; i++) {
-               let datePart = this.input.dateParts[i];
-               
-               let regExp = new RegExp(datePart.getRegEx().source.slice(1, -1), 'i');
-               
-               let val = this.input.element.value.replace(strPrefix, '').match(regExp)[0];
-               strPrefix += val;
-               
-               if (!datePart.isSelectable()) continue;
-               
-               datePart.setValue(newDate);
-               if (datePart.setValue(val)) {
-                   newDate = datePart.getValue();
-               } else {
-                   // TODO set all dateparts back to original value
-                   this.input.element.value = originalValue;
-                   return;
-               }
-           }
-           
-           trigger.goto(this.input.element, {
-               date: newDate,
-               level: this.input.getSelectedDatePart().getLevel()
-           });
+            if (!this.input.setDateFromString(this.input.element.value, start, end)) {
+                this.input.element.value = originalValue;
+            }
         });
     }
 }

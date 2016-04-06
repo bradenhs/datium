@@ -6,7 +6,9 @@
         
         <meta name="viewport" content="width=device-width, initial-scale=1">   
         
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular.min.js"></script>
         <script src="datium.js"></script>
+        <script src="angular-wrapper.js"></script>
         
         <style>
             body {
@@ -27,7 +29,13 @@
     </head>
     <body>
         <h4>Latest Again</h4>
-        <input id="test1" readonly/>
+        
+        <div ng-app="myApp" ng-controller="myController">
+            <input datium-picker datium-options="options" ng-model="date"/>
+            <input ng-model="options.displayAs"/>
+            <input ng-model="date"/>
+        </div>
+        
         
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed lacus elit, viverra ut gravida nec, feugiat ut ex. Donec placerat ut dui id tristique. Proin auctor nulla ante, non dictum nulla pretium a. Nulla a diam sed tellus tristique consequat. Aenean vehicula eu sapien a egestas. Duis ac turpis at metus semper blandit. Praesent cursus et sem in porta. Duis auctor porttitor leo non suscipit. Praesent at est velit. Duis at imperdiet risus, ut aliquam eros. Cras hendrerit sollicitudin nulla, non dignissim odio ultrices eu. Nulla facilisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla ut lobortis orci, at consequat libero.</p>
         
@@ -42,11 +50,7 @@
         <p>Fusce volutpat libero vitae lacus interdum, ac maximus justo consectetur. Nullam luctus feugiat ipsum in gravida. Mauris et tellus ut est facilisis ornare a et elit. Nunc sit amet ipsum sed nisl ultrices sagittis. Proin sed elementum nulla. Pellentesque maximus, metus posuere pulvinar lobortis, urna sem euismod ex, quis bibendum orci arcu nec arcu. Ut rutrum libero non sapien commodo, eu bibendum urna congue. Morbi nunc risus, tristique et quam sit amet, condimentum viverra libero. Vivamus id massa rutrum, interdum tortor eget, ultrices metus. Etiam nisi massa, blandit efficitur metus ut, varius hendrerit ligula. Quisque lobortis tellus sed justo imperdiet, id eleifend massa consectetur.</p> 
         
         <script>
-            var picker = new Datium(document.querySelector('#test1'), {
-                displayAs: 'MM/DD/YY',
-                theme: 'dark'
-            });
-            new Datium(document.querySelector('#test2'));
+            //new Datium(document.querySelector('#test2'));
         </script>
     </body>
 </html>

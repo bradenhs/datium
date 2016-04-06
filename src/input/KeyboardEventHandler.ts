@@ -103,6 +103,7 @@ class KeyboardEventHandler {
                     this.input.setDefined(datePart, false);
                 } 
             });
+            this.input.triggerViewChange();
         } else if (!e.shiftKey) {
             this.input.setTextBuffer('');
         }

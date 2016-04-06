@@ -21,6 +21,62 @@ class Input {
         });
     }
     
+    public setDateFromString(str:string, start:number = 0, end:number = Number.MAX_VALUE):boolean {
+        if (!this.format.test(str)) {
+            return false;
+        }
+        
+        let newDate = new Date(this.date.valueOf());
+        
+        let strPrefix = '';
+        let levelsUpdated:Level[] = [];
+        
+        for (let i = 0; i < this.dateParts.length; i++) {
+            let datePart = this.dateParts[i];
+            
+            let regExp = new RegExp(datePart.getRegEx().source.slice(1, -1), 'i');
+            
+            let match = str.replace(strPrefix, '').match(regExp);
+            if (match === null) {
+                datePart.setDefined(false);
+                strPrefix += datePart.toString();
+                continue;
+            }
+            
+            if (levelsUpdated.indexOf(datePart.getLevel()) !== -1) {
+                strPrefix += datePart.toString();
+                continue;
+            }
+                        
+            let val = match[0];
+            strPrefix += val;
+            if (strPrefix.length >= start && strPrefix.length - val.length <= end) {
+                
+                levelsUpdated.push(datePart.getLevel());
+                
+                if (!datePart.isSelectable()) continue;
+                datePart.setDefined(true);
+                
+                datePart.setValue(newDate);
+                if (datePart.setValue(val)) {
+                    newDate = datePart.getValue();
+                } else {
+                    return false;
+                }
+                
+            }
+        }
+        
+        let level:Level = this.selectedDatePart === void 0 ? this.getFirstSelectableDatePart().getLevel() : this.selectedDatePart.getLevel(); 
+        
+        trigger.goto(this.element, {
+            date: newDate,
+            level: level
+        });
+        
+        return true;
+    }
+    
     public getLevels():Level[] {
         let levels:Level[] = [];
         this.dateParts.forEach((datePart) => {
@@ -57,7 +113,7 @@ class Input {
     
     public getDate() {
         if (this.date === void 0 ||
-            !this.isValid()) return null;
+            !this.isValid()) return void 0;
         return this.date;
     }
     
@@ -179,7 +235,7 @@ class Input {
         
         let format:string = '^';
         this.dateParts.forEach((datePart) => {
-            format += `(${datePart.getRegEx().source.slice(1,-1)})`;
+            format += `((${datePart.getRegEx().source.slice(1,-1)})|(${new RegExp(datePart.toString()).source}))`;
             if (definedLevels.indexOf(datePart.getLevel()) !== -1) {
                 datePart.setDefined(true);
             }
@@ -214,6 +270,7 @@ class Input {
     
     public viewchanged(date:Date, level:Level, update?:boolean) {
         this.date = date;
+        this.element.dispatchEvent(new Event('input'));
         this.level = level;
         this.dateParts.forEach((datePart) => {
             if (update) datePart.setValue(this.date);

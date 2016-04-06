@@ -139,7 +139,7 @@ class PickerManager {
     }
     
     private viewchanged(date:Date, level:Level, update:boolean) {
-        if (level === Level.NONE) {
+        if (level === Level.NONE || this.element !== document.activeElement) {
             if (update) this.updateSelectedDate(date);
             this.closePicker();
             return;
