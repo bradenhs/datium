@@ -25,15 +25,34 @@
                 border-color: red;
                 background: rgba(255,0,0,.1);
             }
+            label {
+                display: block;
+                width: 200px;
+                padding-top: 10px;
+                font-family: Roboto;
+            }
         </style>
     </head>
     <body>
         <h4>Latest Again</h4>
         
         <div ng-app="myApp" ng-controller="myController">
-            <input datium-picker datium-options="options" ng-model="date"/>
-            <input ng-model="options.displayAs"/>
-            <input ng-model="date"/>
+            <label>
+                Datium
+                <input datium-picker datium-options="options" ng-model="date"/>
+            </label>
+            <label>
+                options.displayAs
+                <input ng-model="options.displayAs"/>
+            </label>
+            <label>
+                options.theme
+                <input ng-model="options.theme"/>
+            </label>
+            <label>
+                ngModel
+                <input ng-model="date"/>
+            </label>
         </div>
         
         

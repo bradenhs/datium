@@ -93,6 +93,10 @@ class DatiumInternals {
         });
     }
     
+    public toString() {
+        return this.input.toString();
+    }
+    
     public isValid() {
         return this.input.isValid();
     }

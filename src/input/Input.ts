@@ -245,13 +245,17 @@ class Input {
         this.viewchanged(this.date, this.level, true);
     }
     
-    public updateView() {
+    public toString() {
         let dateString = '';
-        let currentLevel:Level = this.selectedDatePart !== void 0 ? this.selectedDatePart.getLevel() : Level.NONE;
         this.dateParts.forEach((datePart) => {
-            dateString += datePart.toString(); 
+            dateString += datePart.toString();
         });
-        this.element.value = dateString;
+        return dateString;
+    }
+    
+    public updateView() {
+        let currentLevel:Level = this.selectedDatePart !== void 0 ? this.selectedDatePart.getLevel() : Level.NONE;
+        this.element.value = this.toString();
         
         if (this.selectedDatePart === void 0) return;
         

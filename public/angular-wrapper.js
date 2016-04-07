@@ -28,7 +28,7 @@ app.directive("datiumPicker", function($timeout) {
             ngModel.$formatters.unshift(function(value) { // To view
                 var d = new Date(value);
                 if (d.toString() !== 'Invalid Date') {
-                    picker.goto(d);
+                    picker.setDate(d);
                 }
                 return picker.toString();
             });
