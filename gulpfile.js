@@ -104,6 +104,7 @@ function typescript() {
 function deploy() {
     shell.cp('-rf', 'public/datium.js', 'deploy');
     shell.cp('-rf', 'public/index.html', 'deploy');
+    shell.cp('-rf', 'public/angular-wrapper.js', 'deploy');
 
     shell.cd('deploy');
 

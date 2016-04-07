@@ -2,7 +2,8 @@ var app = angular.module("myApp", []);
 
 app.controller("myController", function($scope) {
     $scope.options = {
-        displayAs: "MM/DD/YY"
+        displayAs: "MM/DD/YY",
+        theme: "material"
     }
 });
 
