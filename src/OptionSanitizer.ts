@@ -131,15 +131,6 @@ class OptionSanitizer {
         return <boolean>militaryTime;
     }
     
-    static sanitizeInvalidClass(invalidClass:any, dflt:string = 'datium-invalid') {
-        if (invalidClass === null) return null;
-        if (invalidClass === void 0) return dflt;
-        if (typeof invalidClass !== 'string') {
-            throw OptionException('The "invalidClass" option must be a string');
-        }
-        return invalidClass;
-    }
-    
     static sanitize(options:IOptions, defaults:IOptions) {
         let minDate = OptionSanitizer.sanitizeMinDate(options['minDate'], defaults.minDate);
         let maxDate = OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate);
@@ -160,8 +151,7 @@ class OptionSanitizer {
             isHourValid: OptionSanitizer.sanitizeIsHourValid(options['isHourValid'], defaults.isHourValid),
             isDateValid: OptionSanitizer.sanitizeIsDateValid(options['isDateValid'], defaults.isDateValid),
             isMonthValid: OptionSanitizer.sanitizeIsMonthValid(options['isMonthValid'], defaults.isMonthValid),
-            isYearValid: OptionSanitizer.sanitizeIsYearValid(options['isYearValid'], defaults.isYearValid),
-            invalidClass: OptionSanitizer.sanitizeInvalidClass(options['invalidClass'], defaults.invalidClass)
+            isYearValid: OptionSanitizer.sanitizeIsYearValid(options['isYearValid'], defaults.isYearValid)
         }
         
         return opts;

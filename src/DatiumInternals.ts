@@ -42,21 +42,30 @@ class DatiumInternals {
         } else {
             this.input.dateParts.forEach((datePart) => {
                 datePart.setDefined(true);
-            })
+            });
         }
         
         this.goto(initialDate, Level.NONE, true);
     }
-    
     public setDate(date:Date|string) {
         if (typeof date === 'string') {
             this.input.setDateFromString(date);
         } else {
             trigger.goto(this.element, {
                 date: date,
-                level: this.input.getSelectedDatePart().getLevel()
+                level: this.input.getSelectedDatePart() === void 0 ? Level.NONE : this.input.getSelectedDatePart().getLevel()
             });
         }
+    }
+    
+    public setDefined() {
+        this.input.dateParts.forEach((datePart) => {
+            datePart.setDefined(true);
+        });
+        trigger.goto(this.element, {
+            date: this.input.getDate(),
+            level: this.input.getSelectedDatePart() === void 0 ? Level.NONE : this.input.getSelectedDatePart().getLevel()
+        });
     }
     
     public zoomOut(date:Date, currentLevel:Level, update:boolean = true) {
@@ -86,6 +95,7 @@ class DatiumInternals {
                 });
             } 
         });
+        
         trigger.goto(this.element, {
            date: date,
            level: newLevel,

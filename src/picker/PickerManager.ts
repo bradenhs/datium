@@ -107,6 +107,8 @@ class PickerManager {
     
     public closePicker() {
         this.container.classList.add('datium-closed');
+        this.element.selectionStart = void 0;
+        this.element.selectionEnd = void 0;
     }
     
     public closeBubble() {

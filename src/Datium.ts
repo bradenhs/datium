@@ -4,12 +4,14 @@
     public getDate:() => Date;
     public setDate:(d:Date) => void;
     public toString:() => string;
+    public setDefined:() => void;
     constructor(element:HTMLInputElement, options:IOptions) {
         let internals = new DatiumInternals(element, options);
         this['updateOptions'] = (options:IOptions) => internals.updateOptions(options);
         this['isValid'] = () => internals.isValid();
         this['getDate'] = () => internals.getDate();
         this['setDate'] = (d:Date) => internals.setDate(d);
+        this['setDefined'] = () => internals.setDefined();
         this['toString'] = () => internals.toString();
     }
 }

@@ -1,9 +1,16 @@
 var app = angular.module("myApp", []);
 
 app.controller("myController", function($scope) {
+    $scope.date = new Date();
     $scope.options = {
         displayAs: "MM/DD/YY",
-        theme: "material"
+        theme: {
+            primary: '#990000',
+            primary_text: '#ffffff',
+            secondary: '#ffffff',
+            secondary_text: '#444444',
+            secondary_accent: '#990000'
+        }
     }
 });
 
@@ -11,7 +18,8 @@ app.directive("datiumPicker", function($timeout) {
     return {
         restrict: 'A',
         scope: {
-            options: '=datiumOptions'
+            options: '=datiumOptions',
+            ngModel: '='
         },
         require: '?ngModel',
         link: function(scope, element, attrs, ngModel) {
@@ -24,22 +32,32 @@ app.directive("datiumPicker", function($timeout) {
             
             if (ngModel === null) return;
             
-            ngModel.$setViewValue(picker.getDate());
             
-            ngModel.$formatters.unshift(function(value) { // To view
-                var d = new Date(value);
-                if (d.toString() !== 'Invalid Date') {
-                    picker.setDate(d);
+            var date = new Date(scope.ngModel);
+            $timeout(function() {
+                if (date.toString() === 'Invalid Date') {
+                    scope.ngModel = void 0;
+                } else {
+                    picker.setDate(date); 
+                    picker.setDefined();
+                }   
+            });
+            
+            ngModel.$options = {
+                updateOn: 'datium-viewchanged',
+                updateOnDefault: false
+            };
+            
+            ngModel.$formatters.unshift(function(value) {
+                var date = new Date(value);
+                if (date.toString() !== 'Invalid Date') {
+                    picker.setDate(date);
                 }
                 return picker.toString();
             });
             
-            ngModel.$parsers.unshift(function(value) { // To model
+            ngModel.$parsers.unshift(function(value) {
                 return picker.getDate();
-            });
-            
-            element.on('datium-viewchanged', function() {
-                element[0].dispatchEvent(new Event('input'));
             });
         }
     }

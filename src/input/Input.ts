@@ -17,7 +17,6 @@ class Input {
         listen.blur(element, () => {
             this.textBuffer = '';
             this.hasBlurred = true;
-            this.manageValidClass();
         });
     }
     
@@ -274,7 +273,6 @@ class Input {
     
     public viewchanged(date:Date, level:Level, update?:boolean) {
         this.date = date;
-        this.element.dispatchEvent(new Event('input'));
         this.level = level;
         this.dateParts.forEach((datePart) => {
             if (update) datePart.setValue(this.date);
@@ -288,18 +286,8 @@ class Input {
                 this.setSelectedDatePart(datePart);
             }
         });
-        this.manageValidClass();
         this.updateView();
-    }
-    
-    public manageValidClass() {
-        if (this.date !== void 0 && this.options.invalidClass !== null && this.hasBlurred) {
-            if (this.isValid()) {
-                this.element.classList.remove(this.options.invalidClass);
-            } else {
-                this.element.classList.add(this.options.invalidClass);
-            }
-        }
+        this.element.dispatchEvent(new Event('input'));
     }
     
     public triggerViewChange() {

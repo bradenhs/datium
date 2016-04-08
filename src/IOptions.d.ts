@@ -19,5 +19,4 @@ interface IOptions {
     isDateValid:(date:Date) => boolean;
     isMonthValid:(date:Date) => boolean;
     isYearValid:(date:Date) => boolean;
-    invalidClass:string;
 }
