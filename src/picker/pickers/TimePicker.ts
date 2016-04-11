@@ -109,7 +109,7 @@ class TimePicker extends Picker {
         if (start.valueOf() < this.options.maxDate.valueOf() &&
             end.valueOf() > this.options.minDate.valueOf() &&
             zoomIn) {
-            trigger.zoomIn(this.element, {
+            trigger.confirmPick(this.element, {
                 date: d,
                 currentLevel: this.getLevel()
             });
@@ -117,7 +117,7 @@ class TimePicker extends Picker {
         
         this.dragging = false;
         
-        this.updateElements();
+        //this.updateElements();
     }
     
     protected updateElements() {
