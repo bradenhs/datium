@@ -15,6 +15,7 @@ class DatiumInternals {
     constructor(private element:HTMLInputElement, options:IOptions) {
         if (element === void 0) throw 'element is required';
         element.setAttribute('spellcheck', 'false');
+        element.setAttribute('readonly', 'readonly');
         
         this.input = new Input(element);
         this.pickerManager = new PickerManager(element);
@@ -24,6 +25,19 @@ class DatiumInternals {
         listen.goto(element, (e) => this.goto(e.date, e.level, e.update));
         listen.zoomOut(element, (e) => this.zoomOut(e.date, e.currentLevel, e.update));
         listen.zoomIn(element, (e) => this.zoomIn(e.date, e.currentLevel, e.update));
+        
+        listen.down(document, (e) => {
+            let matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
+            var target = e.srcElement || <Element>e.target;
+            if (element !== document.activeElement) return;
+            while(target !== null) {
+                if (target === element || target === this.pickerManager.container) {
+                    return;
+                }
+                target = target.parentElement;
+            }
+            element.blur();
+        });
     }
     
     public first:boolean = true;

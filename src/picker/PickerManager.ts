@@ -77,6 +77,10 @@ class PickerManager {
             this.closePicker();
         });
         
+        listen.confirmPick(this.element, (e) => {
+            this.confirmPick(e.date, e.currentLevel);
+        })
+        
         listen.updateDefinedState(element, (e) => {
             switch(e.level) {
                 case Level.YEAR:
@@ -107,14 +111,22 @@ class PickerManager {
     
     public closePicker() {
         this.container.classList.add('datium-closed');
-        this.element.selectionStart = void 0;
-        this.element.selectionEnd = void 0;
+    }
+    
+    private bubbleRemove:number;
+    
+    public confirmPick() {
+        this.bubble = <HTMLElement>this.container.querySelector('datium-bubble');
+        if (this.bubble === void 0) return;
+        clearTimeout(this.bubbleRemove);
+        this.bubble.classList.add('datium-bubble-visible');
+        this.bubble.classList.add('datium-bubble-confirm-pick');  
     }
     
     public closeBubble() {
         if (this.bubble === void 0) return;
         this.bubble.classList.remove('datium-bubble-visible');
-        setTimeout((bubble:HTMLElement) => {
+        this.bubbleRemove = setTimeout((bubble:HTMLElement) => {
             bubble.remove();
         }, 200, this.bubble);
         this.bubble = void 0;

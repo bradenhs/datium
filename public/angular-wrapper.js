@@ -3,14 +3,8 @@ var app = angular.module("myApp", []);
 app.controller("myController", function($scope) {
     $scope.date = new Date();
     $scope.options = {
-        displayAs: "MM/DD/YY",
-        theme: {
-            primary: '#e10019',
-            primary_text: '#ffffff',
-            secondary: '#ffffff',
-            secondary_text: '#000',
-            secondary_accent: '#e10019'
-        }
+        displayAs: "h:mma MM/DD/YYYY",
+        theme: 'dark'
     }
 });
 
@@ -31,7 +25,6 @@ app.directive("datiumPicker", function($timeout) {
             }, true);
             
             if (ngModel === null) return;
-            
             
             var date = new Date(scope.ngModel);
             $timeout(function() {

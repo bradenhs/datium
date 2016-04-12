@@ -41,7 +41,6 @@ class MonthPicker extends Picker implements IPicker {
         let iterator = new Date(this.min.valueOf());
         
         this.picker = document.createElement('datium-picker');
-        
         this.transitionIn(transition, this.picker);
         
         do {            
