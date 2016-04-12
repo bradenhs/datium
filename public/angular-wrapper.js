@@ -5,11 +5,11 @@ app.controller("myController", function($scope) {
     $scope.options = {
         displayAs: "MM/DD/YY",
         theme: {
-            primary: '#990000',
+            primary: '#e10019',
             primary_text: '#ffffff',
             secondary: '#ffffff',
-            secondary_text: '#444444',
-            secondary_accent: '#990000'
+            secondary_text: '#000',
+            secondary_accent: '#e10019'
         }
     }
 });
