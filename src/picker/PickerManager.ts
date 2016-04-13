@@ -19,6 +19,8 @@ class PickerManager {
     
     public currentPicker:IPicker;
     
+    public startLevel:Level;
+    
     private pickerContainer:HTMLElement;
     
     constructor(private element:HTMLInputElement) {
@@ -73,13 +75,30 @@ class PickerManager {
             this.header.previous(); 
         });
         
+        let md = new MouseDetector((hasMouse) => {
+            if (hasMouse) return;
+            listen.focus(this.element, () => {
+                trigger.goto(element, {
+                    date: this.date,
+                    level: this.startLevel,
+                    update: false
+                });
+            });
+        });
+        
         listen.blur(this.element, () => {
             this.closePicker();
         });
         
-        listen.confirmPick(this.element, (e) => {
-            this.confirmPick(e.date, e.currentLevel);
-        })
+        listen.down(this.element, () => {
+            if (this.currentPicker === void 0 ||
+                md.hasMouse()) return;
+            trigger.goto(element, {
+                date: this.date,
+                level: this.startLevel,
+                update: false
+            }); 
+        });
         
         listen.updateDefinedState(element, (e) => {
             switch(e.level) {
@@ -113,20 +132,10 @@ class PickerManager {
         this.container.classList.add('datium-closed');
     }
     
-    private bubbleRemove:number;
-    
-    public confirmPick() {
-        this.bubble = <HTMLElement>this.container.querySelector('datium-bubble');
-        if (this.bubble === void 0) return;
-        clearTimeout(this.bubbleRemove);
-        this.bubble.classList.add('datium-bubble-visible');
-        this.bubble.classList.add('datium-bubble-confirm-pick');  
-    }
-    
     public closeBubble() {
         if (this.bubble === void 0) return;
         this.bubble.classList.remove('datium-bubble-visible');
-        this.bubbleRemove = setTimeout((bubble:HTMLElement) => {
+        setTimeout((bubble:HTMLElement) => {
             bubble.remove();
         }, 200, this.bubble);
         this.bubble = void 0;
@@ -176,7 +185,9 @@ class PickerManager {
         this.adjustHeight(this.currentPicker.getHeight());
     }
     
+    private date:Date;
     private updateSelectedDate(date:Date) {
+        this.date = date;
         this.yearPicker.setSelectedDate(date);
         this.monthPicker.setSelectedDate(date);
         this.datePicker.setSelectedDate(date);
@@ -219,6 +230,8 @@ class PickerManager {
     }
     
     public updateOptions(options:IOptions) {
+        this.header.updateMaxLevel(this.startLevel);
+        
         let themeUpdated = this.options === void 0 ||
             this.options.theme === void 0 ||
             this.options.theme.primary !== options.theme.primary ||

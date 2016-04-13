@@ -102,6 +102,12 @@ namespace listen {
         });
     }
     
+    export function touchstart(element:Element|Document|Window, callback:(e?:MouseEvent) => void):IListenerReference[] {
+        return attachEvents(['touchstart'], element, (e) => {
+            callback(e);
+        });
+    }
+    
     export function mouseup(element:Element|Document|Window, callback:(e?:MouseEvent) => void):IListenerReference[] {
         return attachEvents(['mouseup'], element, (e) => {
             callback(e);
@@ -286,12 +292,6 @@ namespace listen {
         });
     }
     
-    export function confirmPick(element:Element, callback:(e?:{date:Date, currentLevel:Level}) => void):IListenerReference[] {
-        return attachEvents(['datium-confirm-pick'], element, (e:CustomEvent) => {
-            callback(e.detail);
-        });
-    }
-    
     export function updateDefinedState(element:Element, callback:(e:{defined:boolean, level:Level}) => void):IListenerReference[] {
         return attachEvents(['datium-update-defined-state'], element, (e:CustomEvent) => {
             callback(e.detail);
@@ -324,14 +324,6 @@ namespace trigger {
     
     export function zoomIn(element:Element, data?:{date:Date, currentLevel:Level, update?:boolean}) {
         element.dispatchEvent(new CustomEvent('datium-zoom-in', {
-            bubbles: false, 
-            cancelable: true,
-            detail: data
-        }));
-    }
-    
-    export function confirmPick(element:Element, data?:{date:Date, currentLevel:Level}) {
-        element.dispatchEvent(new CustomEvent('datium-confirm-pick', {
             bubbles: false, 
             cancelable: true,
             detail: data

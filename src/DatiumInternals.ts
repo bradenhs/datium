@@ -38,6 +38,14 @@ class DatiumInternals {
             }
             element.blur();
         });
+        
+        let md = new MouseDetector();
+        listen.focus(element, () => {
+            if (md.hasMouse()) element.removeAttribute('readonly');
+        });        
+        listen.blur(element, () => {
+            element.setAttribute('readonly', 'readonly');
+        });
     }
     
     public first:boolean = true;
@@ -157,6 +165,7 @@ class DatiumInternals {
             }
         }
         
+        this.pickerManager.startLevel = this.levels[0];
         this.pickerManager.updateOptions(this.options);
         
         if (this.first) {

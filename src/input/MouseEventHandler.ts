@@ -1,7 +1,15 @@
 class MouseEventHandler {
+    private md:MouseDetector;
     constructor(private input:Input) {
-        listen.mousedown(input.element, () => this.mousedown());
-        listen.mouseup(document, () => this.mouseup());
+        let listeners = listen.mousedown(input.element, () => this.mousedown());
+        
+        this.md = new MouseDetector((hasMouse:boolean) => {
+            if (hasMouse) {
+                listen.mouseup(document, () => this.mouseup());
+            } else {
+                listen.removeListeners(listeners);
+            }
+        });
         
         // Stop default
         input.element.addEventListener("dragenter", (e) => e.preventDefault());
@@ -15,7 +23,11 @@ class MouseEventHandler {
     
     private mousedown() {
         this.down = true;
-        this.input.element.setSelectionRange(void 0, void 0);
+        
+        if (this.md.hasMouse()) {
+            this.input.element.setSelectionRange(void 0, void 0);
+        }
+        
         setTimeout(() => {
            this.caretStart = this.input.element.selectionStart; 
         });

@@ -7,11 +7,14 @@ class Input {
     private date:Date;
     private level:Level;
     private hasBlurred:boolean = false;
+    private mouseDetector:MouseDetector;
     
     constructor(public element: HTMLInputElement) {
         new KeyboardEventHandler(this);
         new MouseEventHandler(this);
         new PasteEventHander(this);
+        
+        this.mouseDetector = new MouseDetector();
         
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));
         listen.blur(element, () => {
@@ -268,7 +271,9 @@ class Input {
         
         let end = start + this.selectedDatePart.toString().length;
         
-        this.element.setSelectionRange(start, end);
+        if (this.mouseDetector.hasMouse()) {
+            this.element.setSelectionRange(start, end);
+        }
     }
     
     public viewchanged(date:Date, level:Level, update?:boolean) {
