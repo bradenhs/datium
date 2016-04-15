@@ -1,15 +1,9 @@
 class MouseEventHandler {
-    private md:MouseDetector;
     constructor(private input:Input) {
-        let listeners = listen.mousedown(input.element, () => this.mousedown());
-        
-        this.md = new MouseDetector((hasMouse:boolean) => {
-            if (hasMouse) {
-                listen.mouseup(document, () => this.mouseup());
-            } else {
-                listen.removeListeners(listeners);
-            }
-        });
+        //listen.mousedown(input.element, () => this.selectionStart());
+        listen.select(input.element, () => {
+            alert('selection end');   
+        });//this.selectionEnd());
         
         // Stop default
         input.element.addEventListener("dragenter", (e) => e.preventDefault());
@@ -18,34 +12,23 @@ class MouseEventHandler {
         input.element.addEventListener("cut", (e) => e.preventDefault());
     }
     
-    private down:boolean;
-    private caretStart:number;
-    
-    private mousedown() {
-        this.down = true;
-        
-        if (this.md.hasMouse()) {
-            this.input.element.setSelectionRange(void 0, void 0);
-        }
-        
-        setTimeout(() => {
-           this.caretStart = this.input.element.selectionStart; 
-        });
+    private selectionStart() {
+        this.input.element.setSelectionRange(void 0, void 0);
     }
     
-    private mouseup = () => {
-        if (!this.down) return;
-        this.down = false;
-        
-        let pos:number;
-        
-        if (this.input.element.selectionStart === this.caretStart) {
-            pos = this.input.element.selectionEnd;
-        } else {
-            pos = this.input.element.selectionStart;
+    private lastSelectionStart:number;
+    private lastSelectionEnd:number;
+    
+    private selectionEnd = () => {
+        if (this.input.element.selectionStart === this.lastSelectionStart &&
+            this.input.element.selectionEnd === this.lastSelectionEnd) {
+            return;
         }
         
-        let block = this.input.getNearestSelectableDatePart(pos);
+        this.lastSelectionStart = this.input.element.selectionStart;
+        this.lastSelectionEnd = this.input.element.selectionEnd;
+        
+        let block = this.input.getNearestSelectableDatePart(this.input.element.selectionStart);
         
         this.input.setSelectedDatePart(block);
         

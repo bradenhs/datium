@@ -39,9 +39,8 @@ class DatiumInternals {
             element.blur();
         });
         
-        let md = new MouseDetector();
         listen.focus(element, () => {
-            if (md.hasMouse()) element.removeAttribute('readonly');
+            element.removeAttribute('readonly');
         });        
         listen.blur(element, () => {
             element.setAttribute('readonly', 'readonly');

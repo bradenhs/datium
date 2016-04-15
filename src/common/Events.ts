@@ -10,6 +10,12 @@ interface IDragCallbacks {
     dragEnd?:(e?:MouseEvent|TouchEvent) => void;
 }
 
+interface ISelectionCallbacks {
+    selectionStart?:(e?:MouseEvent|TouchEvent) => void;
+    selectionMove?:(e?:MouseEvent|TouchEvent) => void;
+    selectionEnd?:(e?:MouseEvent|TouchEvent) => void;
+}
+
 namespace listen {
     let matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
     
@@ -104,6 +110,12 @@ namespace listen {
     
     export function touchstart(element:Element|Document|Window, callback:(e?:MouseEvent) => void):IListenerReference[] {
         return attachEvents(['touchstart'], element, (e) => {
+            callback(e);
+        });
+    }
+    
+    export function touchend(element:Element|Document|Window, callback:(e?:MouseEvent) => void):IListenerReference[] {
+        return attachEvents(['touchend'], element, (e) => {
             callback(e);
         });
     }
@@ -213,6 +225,29 @@ namespace listen {
 
     export function swipeRight(element:Element, callback:(e?:Event) => void) {
         swipe(element, 'right', callback);
+    }
+    
+    export function select(element:HTMLInputElement, callback:(e?:Event) => void):void {
+        let start:number, end:number;
+        let isDown = false, lastDown = false;
+        listen.down(element, () => {
+            isDown = true;
+        });
+        listen.up(document, () => {
+            isDown = false;
+        });
+        setInterval(() => {
+            if (start === element.selectionStart &&
+                end === element.selectionEnd &&
+                lastDown === isDown) return;
+            start = element.selectionStart;
+            end = element.selectionEnd;
+            lastDown = isDown;
+            console.log(start, end, isDown);
+            if (!isDown) {
+                alert('up');
+            }
+        });
     }
     
     export function drag(element:Element, callbacks:IDragCallbacks):void;

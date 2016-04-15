@@ -41,11 +41,6 @@ class PickerManager {
                 
         listen.down(this.container, '*', (e) => { this.addActiveClasses(e) });
         
-        listen.up(document, () => {
-            this.closeBubble();
-            this.removeActiveClasses();
-        });
-        
         listen.mousedown(this.container, (e) => {
            e.preventDefault();
            e.stopPropagation();
@@ -75,29 +70,12 @@ class PickerManager {
             this.header.previous(); 
         });
         
-        let md = new MouseDetector((hasMouse) => {
-            if (hasMouse) return;
-            listen.focus(this.element, () => {
-                trigger.goto(element, {
-                    date: this.date,
-                    level: this.startLevel,
-                    update: false
-                });
-            });
-        });
-        
         listen.blur(this.element, () => {
             this.closePicker();
         });
         
-        listen.down(this.element, () => {
-            if (this.currentPicker === void 0 ||
-                md.hasMouse()) return;
-            trigger.goto(element, {
-                date: this.date,
-                level: this.startLevel,
-                update: false
-            }); 
+        listen.up(document, () => {
+            this.closeBubble();
         });
         
         listen.updateDefinedState(element, (e) => {
@@ -123,7 +101,6 @@ class PickerManager {
             }
         });
     }
-    
     public openPicker() {
         this.container.classList.remove('datium-closed');
     }
@@ -167,7 +144,6 @@ class PickerManager {
             this.closePicker();
             return;
         }
-        
         this.openPicker();
         
         let transition:Transition;

@@ -3,9 +3,11 @@ var app = angular.module("myApp", []);
 app.controller("myController", function($scope) {
     $scope.date = new Date();
     $scope.options = {
-        displayAs: "h:mma MM/DD/YYYY",
+        displayAs: "h:mma [this is a cow] MM/DD/YYYY",
         theme: 'dark'
     }
+    
+    
 });
 
 app.directive("datiumPicker", function($timeout) {
@@ -19,6 +21,10 @@ app.directive("datiumPicker", function($timeout) {
         link: function(scope, element, attrs, ngModel) {
             
             var picker = new Datium(element[0], scope.options);
+            
+            setTimeout(function() {
+                element[0].focus();
+            }, 2000);
             
             scope.$watch('options', function(options) {
                 picker.updateOptions(options); 
