@@ -10,6 +10,12 @@ interface IDragCallbacks {
     dragEnd?:(e?:MouseEvent|TouchEvent) => void;
 }
 
+interface ISelectionCallbacks {
+    selectionStart?:(e?:MouseEvent|TouchEvent) => void;
+    selectionMove?:(e?:MouseEvent|TouchEvent) => void;
+    selectionEnd?:(e?:MouseEvent|TouchEvent) => void;
+}
+
 namespace listen {
     let matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
     
@@ -98,6 +104,18 @@ namespace listen {
     
     export function mousedown(element:Element|Document|Window, callback:(e?:MouseEvent) => void):IListenerReference[] {
         return attachEvents(['mousedown'], element, (e) => {
+            callback(e);
+        });
+    }
+    
+    export function touchstart(element:Element|Document|Window, callback:(e?:MouseEvent) => void):IListenerReference[] {
+        return attachEvents(['touchstart'], element, (e) => {
+            callback(e);
+        });
+    }
+    
+    export function touchend(element:Element|Document|Window, callback:(e?:MouseEvent) => void):IListenerReference[] {
+        return attachEvents(['touchend'], element, (e) => {
             callback(e);
         });
     }
@@ -209,6 +227,29 @@ namespace listen {
         swipe(element, 'right', callback);
     }
     
+    export function select(element:HTMLInputElement, callback:(e?:Event) => void):void {
+        let start:number, end:number;
+        let isDown = false, lastDown = false;
+        listen.down(element, () => {
+            isDown = true;
+        });
+        listen.up(document, () => {
+            isDown = false;
+        });
+        setInterval(() => {
+            if (start === element.selectionStart &&
+                end === element.selectionEnd &&
+                lastDown === isDown) return;
+            start = element.selectionStart;
+            end = element.selectionEnd;
+            lastDown = isDown;
+            console.log(start, end, isDown);
+            if (!isDown) {
+                alert('up');
+            }
+        });
+    }
+    
     export function drag(element:Element, callbacks:IDragCallbacks):void;
     export function drag(parent:Element, delegateSelector:string, callbacks:IDragCallbacks):void;
     export function drag(...params:any[]):void {
@@ -286,12 +327,6 @@ namespace listen {
         });
     }
     
-    export function confirmPick(element:Element, callback:(e?:{date:Date, currentLevel:Level}) => void):IListenerReference[] {
-        return attachEvents(['datium-confirm-pick'], element, (e:CustomEvent) => {
-            callback(e.detail);
-        });
-    }
-    
     export function updateDefinedState(element:Element, callback:(e:{defined:boolean, level:Level}) => void):IListenerReference[] {
         return attachEvents(['datium-update-defined-state'], element, (e:CustomEvent) => {
             callback(e.detail);
@@ -324,14 +359,6 @@ namespace trigger {
     
     export function zoomIn(element:Element, data?:{date:Date, currentLevel:Level, update?:boolean}) {
         element.dispatchEvent(new CustomEvent('datium-zoom-in', {
-            bubbles: false, 
-            cancelable: true,
-            detail: data
-        }));
-    }
-    
-    export function confirmPick(element:Element, data?:{date:Date, currentLevel:Level}) {
-        element.dispatchEvent(new CustomEvent('datium-confirm-pick', {
             bubbles: false, 
             cancelable: true,
             detail: data

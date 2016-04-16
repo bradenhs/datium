@@ -105,11 +105,11 @@ class TimePicker extends Picker {
             start = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds());
             end = new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds() + 1);
         }
-        
+
         if (start.valueOf() < this.options.maxDate.valueOf() &&
             end.valueOf() > this.options.minDate.valueOf() &&
             zoomIn) {
-            trigger.confirmPick(this.element, {
+            trigger.zoomIn(this.element, {
                 date: d,
                 currentLevel: this.getLevel()
             });
@@ -117,7 +117,7 @@ class TimePicker extends Picker {
         
         this.dragging = false;
         
-        //this.updateElements();
+        this.updateElements();
     }
     
     protected updateElements() {

@@ -38,6 +38,13 @@ class DatiumInternals {
             }
             element.blur();
         });
+        
+        listen.focus(element, () => {
+            element.removeAttribute('readonly');
+        });        
+        listen.blur(element, () => {
+            element.setAttribute('readonly', 'readonly');
+        });
     }
     
     public first:boolean = true;
@@ -157,6 +164,7 @@ class DatiumInternals {
             }
         }
         
+        this.pickerManager.startLevel = this.levels[0];
         this.pickerManager.updateOptions(this.options);
         
         if (this.first) {

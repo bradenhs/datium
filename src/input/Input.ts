@@ -291,9 +291,10 @@ class Input {
     }
     
     public triggerViewChange() {
+        if (this.selectedDatePart === void 0) this.selectedDatePart = this.dateParts[0];
         trigger.viewchanged(this.element, {
-            date: this.getSelectedDatePart().getValue(),
-            level: this.getSelectedDatePart().getLevel(),
+            date: this.selectedDatePart.getValue(),
+            level: this.selectedDatePart.getLevel(),
             update: false
         });        
     }

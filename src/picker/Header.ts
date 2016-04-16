@@ -40,6 +40,32 @@ class Header extends Common {
         listen.tap(spanLabelContainer, () => this.zoomOut());
     }
     
+    public updateMaxLevel(level:Level) {
+        this.yearLabel.classList.remove('datium-max-level');
+        this.monthLabel.classList.remove('datium-max-level');
+        this.dateLabel.classList.remove('datium-max-level');
+        this.hourLabel.classList.remove('datium-max-level');
+        this.minuteLabel.classList.remove('datium-max-level');
+        
+        switch (level) {
+            case Level.MONTH:
+                this.yearLabel.classList.add('datium-max-level');
+                break;
+            case Level.DATE:
+                this.monthLabel.classList.add('datium-max-level');
+                break;
+            case Level.HOUR:
+                this.dateLabel.classList.add('datium-max-level');
+                break;
+            case Level.MINUTE:
+                this.hourLabel.classList.add('datium-max-level');
+                break;
+            case Level.SECOND:
+                this.minuteLabel.classList.add('datium-max-level');
+                break;
+        }
+    }
+    
     public previous() {
         trigger.goto(this.element, {
            date: this.stepDate(StepDirection.DOWN),

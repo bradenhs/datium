@@ -1,7 +1,9 @@
 class MouseEventHandler {
     constructor(private input:Input) {
-        listen.mousedown(input.element, () => this.mousedown());
-        listen.mouseup(document, () => this.mouseup());
+        //listen.mousedown(input.element, () => this.selectionStart());
+        listen.select(input.element, () => {
+            alert('selection end');   
+        });//this.selectionEnd());
         
         // Stop default
         input.element.addEventListener("dragenter", (e) => e.preventDefault());
@@ -10,30 +12,23 @@ class MouseEventHandler {
         input.element.addEventListener("cut", (e) => e.preventDefault());
     }
     
-    private down:boolean;
-    private caretStart:number;
-    
-    private mousedown() {
-        this.down = true;
+    private selectionStart() {
         this.input.element.setSelectionRange(void 0, void 0);
-        setTimeout(() => {
-           this.caretStart = this.input.element.selectionStart; 
-        });
     }
     
-    private mouseup = () => {
-        if (!this.down) return;
-        this.down = false;
-        
-        let pos:number;
-        
-        if (this.input.element.selectionStart === this.caretStart) {
-            pos = this.input.element.selectionEnd;
-        } else {
-            pos = this.input.element.selectionStart;
+    private lastSelectionStart:number;
+    private lastSelectionEnd:number;
+    
+    private selectionEnd = () => {
+        if (this.input.element.selectionStart === this.lastSelectionStart &&
+            this.input.element.selectionEnd === this.lastSelectionEnd) {
+            return;
         }
         
-        let block = this.input.getNearestSelectableDatePart(pos);
+        this.lastSelectionStart = this.input.element.selectionStart;
+        this.lastSelectionEnd = this.input.element.selectionEnd;
+        
+        let block = this.input.getNearestSelectableDatePart(this.input.element.selectionStart);
         
         this.input.setSelectedDatePart(block);
         
