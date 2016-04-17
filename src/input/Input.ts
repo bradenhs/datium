@@ -10,7 +10,7 @@ class Input {
     
     constructor(public element: HTMLInputElement) {
         new KeyboardEventHandler(this);
-        new MouseEventHandler(this);
+        new PointerEventHandler(this);
         new PasteEventHander(this);
         
         listen.viewchanged(element, (e) => this.viewchanged(e.date, e.level, e.update));

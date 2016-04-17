@@ -227,29 +227,6 @@ namespace listen {
         swipe(element, 'right', callback);
     }
     
-    export function select(element:HTMLInputElement, callback:(e?:Event) => void):void {
-        let start:number, end:number;
-        let isDown = false, lastDown = false;
-        listen.down(element, () => {
-            isDown = true;
-        });
-        listen.up(document, () => {
-            isDown = false;
-        });
-        setInterval(() => {
-            if (start === element.selectionStart &&
-                end === element.selectionEnd &&
-                lastDown === isDown) return;
-            start = element.selectionStart;
-            end = element.selectionEnd;
-            lastDown = isDown;
-            console.log(start, end, isDown);
-            if (!isDown) {
-                alert('up');
-            }
-        });
-    }
-    
     export function drag(element:Element, callbacks:IDragCallbacks):void;
     export function drag(parent:Element, delegateSelector:string, callbacks:IDragCallbacks):void;
     export function drag(...params:any[]):void {

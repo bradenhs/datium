@@ -22,10 +22,6 @@ app.directive("datiumPicker", function($timeout) {
             
             var picker = new Datium(element[0], scope.options);
             
-            setTimeout(function() {
-                element[0].focus();
-            }, 2000);
-            
             scope.$watch('options', function(options) {
                 picker.updateOptions(options); 
             }, true);
