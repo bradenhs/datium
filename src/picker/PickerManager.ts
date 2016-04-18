@@ -41,6 +41,11 @@ class PickerManager {
                 
         listen.down(this.container, '*', (e) => { this.addActiveClasses(e) });
         
+        listen.up(document, () => {
+            this.closeBubble();
+            this.removeActiveClasses();
+        });
+        
         listen.mousedown(this.container, (e) => {
            e.preventDefault();
            e.stopPropagation();
@@ -181,6 +186,8 @@ class PickerManager {
     }
     
     private adjustHeight(height:number) {
+        //let inputHeight = this.element.getBoundingClientRect().bottom - this.element.getBoundingClientRect().top; 
+        //this.container.style.transform = `translateY(${-(85+inputHeight) - height}px)`;
         this.pickerContainer.style.transform = `translateY(${height - 280}px)`;
     }
     
