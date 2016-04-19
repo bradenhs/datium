@@ -26,24 +26,13 @@ class DatiumInternals {
         listen.zoomOut(element, (e) => this.zoomOut(e.date, e.currentLevel, e.update));
         listen.zoomIn(element, (e) => this.zoomIn(e.date, e.currentLevel, e.update));
         
-        listen.down(document, (e) => {
-            let matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
-            var target = e.srcElement || <Element>e.target;
-            if (element !== document.activeElement) return;
-            while(target !== null) {
-                if (target === element || target === this.pickerManager.container) {
-                    return;
-                }
-                target = target.parentElement;
-            }
-            element.blur();
-        });
-        
-        listen.focus(element, () => {
+        listen.focus(element, (e) => {
             element.removeAttribute('readonly');
         });        
         listen.blur(element, () => {
-            element.setAttribute('readonly', 'readonly');
+            if (this.options.showPicker) {
+                element.setAttribute('readonly', 'readonly');
+            }
         });
     }
     
@@ -105,6 +94,7 @@ class DatiumInternals {
         if (newLevel === void 0) {
             newLevel = Level.NONE;
             this.pickerManager.closePicker();
+            this.element.blur();
         }
         
         this.input.dateParts.forEach((datePart) => {
@@ -152,6 +142,18 @@ class DatiumInternals {
         
         this.levels = this.input.getLevels().slice();
         this.levels.sort();
+        
+        if (this.options.transition) {
+            this.pickerManager.container.classList.remove('datium-no-transition');
+        } else {
+            this.pickerManager.container.classList.add('datium-no-transition');
+        }
+        
+        if (this.options.showPicker) {
+            this.element.setAttribute('readonly', 'readonly');
+        } else {
+            this.element.removeAttribute('readonly');
+        }
         
         if (this.pickerManager.currentPicker !== void 0) {
             let curLevel = this.pickerManager.currentPicker.getLevel();

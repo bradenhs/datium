@@ -106,12 +106,25 @@ class PickerManager {
             }
         });
     }
+    
+    private openingTimeout:number;
+    
     public openPicker() {
-        this.container.classList.remove('datium-closed');
+        clearTimeout(this.openingTimeout);
+        this.openingTimeout = setTimeout(() => {
+            this.container.classList.remove('datium-closed');
+            this.isOpen = true;
+            this.adjustHeight(this.currentPicker.getHeight());
+        }, 25);
     }
     
+    private isOpen = false;
+    
     public closePicker() {
+        clearTimeout(this.openingTimeout);
+        this.isOpen = false;
         this.container.classList.add('datium-closed');
+        this.adjustHeight(0);
     }
     
     public closeBubble() {
@@ -119,7 +132,7 @@ class PickerManager {
         this.bubble.classList.remove('datium-bubble-visible');
         setTimeout((bubble:HTMLElement) => {
             bubble.remove();
-        }, 200, this.bubble);
+        }, this.options.transition ? 200 : 0, this.bubble);
         this.bubble = void 0;
     }
     
@@ -144,12 +157,11 @@ class PickerManager {
     }
     
     private viewchanged(date:Date, level:Level, update:boolean) {
-        if (level === Level.NONE || this.element !== document.activeElement) {
+        if (level === Level.NONE || this.element !== document.activeElement || !this.options.showPicker) {
             if (update) this.updateSelectedDate(date);
             this.closePicker();
             return;
         }
-        this.openPicker();
         
         let transition:Transition;
         if (this.currentPicker === void 0) {
@@ -162,8 +174,8 @@ class PickerManager {
         }
         
         if (update) this.updateSelectedDate(date);
-        
-        this.adjustHeight(this.currentPicker.getHeight());
+        if (this.isOpen) this.adjustHeight(this.currentPicker.getHeight());
+        this.openPicker();
     }
     
     private date:Date;
@@ -186,8 +198,33 @@ class PickerManager {
     }
     
     private adjustHeight(height:number) {
-        //let inputHeight = this.element.getBoundingClientRect().bottom - this.element.getBoundingClientRect().top; 
-        //this.container.style.transform = `translateY(${-(85+inputHeight) - height}px)`;
+        
+        let topSpace = this.element.getBoundingClientRect().top;
+        let bottomSpace = window.innerHeight - this.element.getBoundingClientRect().bottom;
+        
+        let inputHeight = this.element.getBoundingClientRect().bottom - this.element.getBoundingClientRect().top;
+        let marginTop = parseInt(getComputedStyle(this.element).getPropertyValue('margin-top'), 10);
+        let marginBottom = parseInt(getComputedStyle(this.element).getPropertyValue('margin-bottom'), 10);
+        let origin:number;
+        let topAdjust:number;
+        if (bottomSpace < 325 && topSpace > 325) {
+            topAdjust = -inputHeight - 85 - marginTop;
+            if (this.isOpen) {
+                topAdjust -= height;
+            }
+            origin = 130;
+        } else {
+            topAdjust = -marginBottom;
+            origin = 5;
+        }
+        
+        let marginLeft = parseInt(getComputedStyle(this.element).getPropertyValue('margin-left'), 10);
+        
+        let scale = this.isOpen ? 'scale(1)' : 'scale(.01)';
+        
+        this.container.style.transform = `translate(${marginLeft}px, ${topAdjust}px) ${scale}`;
+        this.container.style.transformOrigin = `10px ${origin}px`;
+        
         this.pickerContainer.style.transform = `translateY(${height - 280}px)`;
     }
     

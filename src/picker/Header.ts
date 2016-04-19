@@ -120,6 +120,7 @@ class Header extends Common {
     
     private viewchanged(date:Date, level:Level) {
         // TODO think about making a "viewDate" and a "selectedDate"
+        
         this.date = date;
         this.level = level;
         this.labels.forEach((label, labelLevel) => {
@@ -142,6 +143,7 @@ class Header extends Common {
     }
     
     private getHeaderTopText(date:Date, level:Level):string {
+        if (date === void 0) return;
         switch(level) {
             case Level.YEAR:
                 return this.getDecade(date);
@@ -156,6 +158,7 @@ class Header extends Common {
     }
     
     private getHeaderBottomText(date:Date, level:Level):string {
+        if (date === void 0) return;
         switch(level) {
             case Level.YEAR:
                 return this.getDecade(date);

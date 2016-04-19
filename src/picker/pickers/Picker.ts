@@ -27,7 +27,7 @@ class Picker extends Common {
         this.transitionOut(transition, this.picker);
         setTimeout((picker:HTMLElement) => {
             picker.remove();
-        }, 500, this.picker);        
+        }, this.options.transition ? 500 : 0, this.picker);        
     }
     
     protected getOffset(el:HTMLElement):{x:number, y:number} {
@@ -85,6 +85,6 @@ class Picker extends Common {
         clearTimeout(this.transitionInTimeout);
         this.transitionInTimeout = setTimeout((p:HTMLElement) => {
             p.classList.remove(cls);
-        }, 100, picker);
+        }, this.options.transition ? 100 : 0, picker);
     }
 }

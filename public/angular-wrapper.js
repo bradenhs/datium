@@ -3,11 +3,13 @@ var app = angular.module("myApp", []);
 app.controller("myController", function($scope) {
     $scope.date = new Date();
     $scope.options = {
-        displayAs: "h:mma [this is a cow] MM/DD/YYYY",
-        theme: 'dark'
+        displayAs: "h:mma MM/DD/YYYY",
+        theme: 'material',
+        small: true,
+        isMinuteValid: function(date) {
+            return date.getMinutes() % 5 === 0;
+        }
     }
-    
-    
 });
 
 app.directive("datiumPicker", function($timeout) {

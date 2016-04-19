@@ -6,9 +6,18 @@ datium-container._id {
     display: block;
     position: absolute;
     width: 280px;
-    font-family: Roboto, Arial;
+    font-family: Roboto, Arial, sans-serif;
     margin-top: 2px;
     font-size: 16px;
+    
+    
+    
+    &.datium-no-transition,
+    &.datium-no-transition *,
+    &.datium-no-transition *:before,
+    &.datium-no-transition *:after {
+        transition: none !important;
+    }
     
     &, & * {
         -webkit-touch-callout:none;

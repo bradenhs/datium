@@ -3,11 +3,11 @@ datium-container._id {
     z-index: 2147483647;
     transition: all ease .4s;
     transition-delay: .1s;
-    transform-origin: 140px 10px;
-    
+    transform: scale(.01);
     &.datium-closed {
         opacity: 0;
-        transform: scale(.9);
+        transition: all ease .3s;
+        transition-delay: 0s;
         &, & * {
             pointer-events: none !important;
         }

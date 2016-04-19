@@ -12,17 +12,23 @@ class OptionSanitizer {
     
     static sanitizeMinDate(minDate:any, dflt:Date = new Date(-62135658000000)) {
         if (minDate === void 0) return dflt;
-        return new Date(minDate); //TODO figure this out yes
+        let date = new Date(minDate);
+        if (date.toString() === 'Invalid Date') throw OptionException("Min date is invalid.");
+        return date;
     }
     
     static sanitizeMaxDate(maxDate:any, dflt:Date = new Date(8640000000000000)) {
         if (maxDate === void 0) return dflt;
-        return new Date(maxDate); //TODO figure this out 
+        let date = new Date(maxDate);
+        if (date.toString() === 'Invalid Date') throw OptionException("Max date is invalid.");
+        return date;
     }
     
     static sanitizeInitialDate(initialDate:any, dflt:Date = void 0) {
         if (initialDate === void 0) return dflt;
-        return new Date(initialDate); //TODO figure this out
+        let date = new Date(initialDate);
+        if (date.toString() === 'Invalid Date') throw OptionException("Initial date is invalid.");
+        return date;
     }
         
     static sanitizeColor(color:any) {
@@ -131,6 +137,22 @@ class OptionSanitizer {
         return <boolean>militaryTime;
     }
     
+    static sanitizeShowPicker(showPicker:any, dflt:boolean = true) {
+        if (showPicker === void 0) return dflt;
+        if (typeof showPicker !== 'boolean') {
+            throw OptionException('The "showPicker" option must be a boolean');
+        }
+        return <boolean>showPicker;
+    }
+    
+    static sanitizeTransition(transition:any, dflt:boolean = true) {
+        if (transition === void 0) return dflt;
+        if (typeof transition !== 'boolean') {
+            throw OptionException('The "transition" option must be a boolean');
+        }
+        return <boolean>transition;
+    }
+    
     static sanitize(options:IOptions, defaults:IOptions) {
         let minDate = OptionSanitizer.sanitizeMinDate(options['minDate'], defaults.minDate);
         let maxDate = OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate);
@@ -151,7 +173,9 @@ class OptionSanitizer {
             isHourValid: OptionSanitizer.sanitizeIsHourValid(options['isHourValid'], defaults.isHourValid),
             isDateValid: OptionSanitizer.sanitizeIsDateValid(options['isDateValid'], defaults.isDateValid),
             isMonthValid: OptionSanitizer.sanitizeIsMonthValid(options['isMonthValid'], defaults.isMonthValid),
-            isYearValid: OptionSanitizer.sanitizeIsYearValid(options['isYearValid'], defaults.isYearValid)
+            isYearValid: OptionSanitizer.sanitizeIsYearValid(options['isYearValid'], defaults.isYearValid),
+            showPicker: OptionSanitizer.sanitizeShowPicker(options['showPicker'], defaults.showPicker),
+            transition: OptionSanitizer.sanitizeTransition(options['transition'], defaults.transition)
         }
         
         return opts;

@@ -32,7 +32,7 @@ class TimePicker extends Picker {
     
     private moved:number = 0;
     protected dragMove(e:MouseEvent|TouchEvent) {
-        
+        // TODO reproduce dragging bug
         let point = {
             x: this.picker.getBoundingClientRect().left + 140 - this.getClientCoor(e).x,
             y: this.getClientCoor(e).y - this.picker.getBoundingClientRect().top - 120

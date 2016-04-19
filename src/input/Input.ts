@@ -41,7 +41,6 @@ class Input {
                 strPrefix += datePart.toString();
                 continue;
             }
-            
             if (levelsUpdated.indexOf(datePart.getLevel()) !== -1) {
                 strPrefix += datePart.toString();
                 continue;
@@ -267,6 +266,10 @@ class Input {
         }
         
         let end = start + this.selectedDatePart.toString().length;
+        
+        if (start === this.element.selectionStart &&
+            end === this.element.selectionEnd)
+            return;
         
         this.element.setSelectionRange(start, end);
     }
