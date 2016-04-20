@@ -8,7 +8,12 @@ class Input {
     private level:Level;
     private hasBlurred:boolean = false;
     
+    public isInput:boolean;
+    
     constructor(public element: HTMLInputElement) {
+        
+        this.isInput = element.setSelectionRange !== void 0;
+        
         new KeyboardEventHandler(this);
         new PointerEventHandler(this);
         new PasteEventHander(this);
@@ -97,6 +102,41 @@ class Input {
         }
     }
     
+    public beforeMinDate() {
+        return this.date.valueOf() < this.options.minDate.valueOf();
+    }
+    
+    public afterMaxDate() {
+        return this.date.valueOf() > this.options.maxDate.valueOf();
+    }
+    
+    public getInvalidReasons():string[] {
+        let reasons:string[] = [];
+        if (this.date.valueOf() < this.options.minDate.valueOf()) {
+            reasons.push('datium-before-min');
+        }
+        if (this.date.valueOf() > this.options.maxDate.valueOf()) {
+            reasons.push('datium-after-max');
+        }
+        this.dateParts.forEach((datePart) => {
+            let level:string = ['year', 'month', 'day', 'hour', 'minute', 'second'][datePart.getLevel()];
+            if (!datePart.isSelectable()) return;
+            if (!datePart.isDefined()) {
+                if (reasons.indexOf('datium-undefined') === -1)
+                    reasons.push('datium-undefined');
+                if (reasons.indexOf(`datium-${level}-undefined`) === -1)
+                    reasons.push(`datium-${level}-undefined`);
+            }
+            if (!datePart.isValid()) {
+                if (reasons.indexOf('datium-bad-selection') === -1)
+                    reasons.push('datium-bad-selection');
+                if (reasons.indexOf(`datium-bad-${level}-selection`) === -1)
+                    reasons.push(`datium-bad-${level}-selection`);
+            }
+        });
+        return reasons;
+    }
+    
     public isValid() {
         if (this.date.valueOf() < this.options.minDate.valueOf() ||
             this.date.valueOf() > this.options.maxDate.valueOf()) {
@@ -110,8 +150,6 @@ class Input {
     }
     
     public getDate() {
-        if (this.date === void 0 ||
-            !this.isValid()) return void 0;
         return this.date;
     }
     
@@ -254,6 +292,8 @@ class Input {
     public updateView() {
         let currentLevel:Level = this.selectedDatePart !== void 0 ? this.selectedDatePart.getLevel() : Level.NONE;
         this.element.value = this.toString();
+        
+        if (!this.isInput) return;
         
         if (this.selectedDatePart === void 0) return;
         

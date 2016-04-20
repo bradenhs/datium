@@ -8,7 +8,10 @@ class YearPicker extends Picker implements IPicker {
            let el:Element = <Element>e.target || e.srcElement;
            let year = new Date(el.getAttribute('datium-data')).getFullYear();
            
-           let date = new Date(this.selectedDate.valueOf());
+           let date = new Date(this.selectedDate === void 0 ?
+                               this.options.initialDate.valueOf() :
+                               this.selectedDate.valueOf());
+                               
            date.setFullYear(year);
            
            trigger.zoomIn(element, {

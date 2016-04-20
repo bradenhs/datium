@@ -11,6 +11,7 @@ class DatiumInternals {
     
     private levels:Level[];
     private date:Date;
+    private dirty:boolean = false;
     
     constructor(private element:HTMLInputElement, options:IOptions) {
         if (element === void 0) throw 'element is required';
@@ -49,13 +50,9 @@ class DatiumInternals {
             if (initialDate.valueOf() > this.options.maxDate.valueOf()) {
                 initialDate = new Date(this.options.maxDate.valueOf());
             }
-        } else {
-            this.input.dateParts.forEach((datePart) => {
-                datePart.setDefined(true);
-            });
         }
         
-        this.goto(initialDate, Level.NONE, true);
+        this.goto(initialDate, Level.NONE, false);
     }
     public setDate(date:Date|string) {
         if (typeof date === 'string') {
@@ -68,9 +65,17 @@ class DatiumInternals {
         }
     }
     
+    public setDirty(dirty:boolean) {
+        this.dirty = dirty;
+    }
+    
     public setDefined() {
         this.input.dateParts.forEach((datePart) => {
             datePart.setDefined(true);
+            trigger.updateDefinedState(this.element, {
+                defined: true,
+                level: datePart.getLevel()
+            });
         });
         trigger.goto(this.element, {
             date: this.input.getDate(),
@@ -118,21 +123,32 @@ class DatiumInternals {
         return this.input.toString();
     }
     
+    public getInvalidReasons() {
+        return this.input.getInvalidReasons();
+    }
+    
     public isValid() {
         return this.input.isValid();
     }
     
+    public isDirty() {
+        return this.dirty;
+    }
+    
     public getDate() {
+        if (!this.isValid()) return void 0;
         return this.input.getDate();
     }
     
     public goto(date:Date, level:Level, update:boolean = true) {
         this.date = date;
+        if (update) this.dirty = true;
         trigger.viewchanged(this.element, {
             date: this.date,
             level: level,
             update: update
         });
+        this.element.dispatchEvent(new Event('input'));
     }
     
     public updateOptions(newOptions:IOptions = <any>{}) {

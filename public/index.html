@@ -27,37 +27,40 @@
                 padding-top: 10px;
                 font-family: Roboto;
             }
+            label button {
+                width: 40px;
+                height: 40px;
+                display: inline-block;
+                background: red;
+                border: 1px solid blue;
+            }
+            
+            .datepickers label {
+                display: inline-block;
+                width: 300px;
+            }
         </style>
     </head>
     <body>
         <h4>showpicker</h4>
         
         <div ng-app="myApp" ng-controller="myController">
-            
-            <input ng-model="startDate"/>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed lacus elit, viverra ut gravida nec, feugiat ut ex. Donec placerat ut dui id tristique. Proin auctor nulla ante, non dictum nulla pretium a. Nulla a diam sed tellus tristique consequat. Aenean vehicula eu sapien a egestas. Duis ac turpis at metus semper blandit. Praesent cursus et sem in porta. Duis auctor porttitor leo non suscipit. Praesent at est velit. Duis at imperdiet risus, ut aliquam eros. Cras hendrerit sollicitudin nulla, non dignissim odio ultrices eu. Nulla facilisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla ut lobortis orci, at consequat libero.</p>
             <p>Vestibulum id blandit quam. Phasellus in efficitur justo. Maecenas posuere augue vel sem malesuada tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque fringilla ac tellus quis convallis. Vivamus in ornare erat. Sed vel commodo lorem. Fusce a risus in est vulputate elementum. Donec nec nisi diam. Nunc fringilla ligula in auctor laoreet. Suspendisse molestie est dolor, vel tempus justo auctor a. Duis vel ipsum nec libero gravida auctor. Curabitur tristique sem dictum quam gravida pulvinar. Nullam efficitur nibh sit amet sodales euismod. Fusce sed elit molestie, vehicula sem nec, dictum massa.</p>
-            <label>
-                Start Date
-                <input datium-picker datium-options="{maxDate: endDate}" ng-model="startDate"/>
-            </label>
-            <label>
-                End Date
-                <input datium-picker datium-options="{minDate: startDate}" ng-model="endDate"/>
-            </label>
+            <p>Vestibulum id blandit quam. Phasellus in efficitur justo. Maecenas posuere augue vel sem malesuada tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque fringilla ac tellus quis convallis. Vivamus in ornare erat. Sed vel commodo lorem. Fusce a risus in est vulputate elementum. Donec nec nisi diam. Nunc fringilla ligula in auctor laoreet. Suspendisse molestie est dolor, vel tempus justo auctor a. Duis vel ipsum nec libero gravida auctor. Curabitur tristique sem dictum quam gravida pulvinar. Nullam efficitur nibh sit amet sodales euismod. Fusce sed elit molestie, vehicula sem nec, dictum massa.</p>
+            <div class='datepickers'>
+                <label>
+                    Date
+                    <button datium-picker ng-model="date">Pick</button>
+                </label>
+                <label>
+                    Date
+                    <input datium-picker ng-model="date"/>
+                </label>
+            </div>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed lacus elit, viverra ut gravida nec, feugiat ut ex. Donec placerat ut dui id tristique. Proin auctor nulla ante, non dictum nulla pretium a. Nulla a diam sed tellus tristique consequat. Aenean vehicula eu sapien a egestas. Duis ac turpis at metus semper blandit. Praesent cursus et sem in porta. Duis auctor porttitor leo non suscipit. Praesent at est velit. Duis at imperdiet risus, ut aliquam eros. Cras hendrerit sollicitudin nulla, non dignissim odio ultrices eu. Nulla facilisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla ut lobortis orci, at consequat libero.</p>
-            <label>
-                options.displayAs
-                <input ng-model="options.displayAs"/>
-            </label>
-            <label>
-                options.theme
-                <input ng-model="options.theme"/>
-            </label>
-            <label>
-                ngModel
-                <input ng-model="startDate"/>
-            </label>
+            <p>Vestibulum id blandit quam. Phasellus in efficitur justo. Maecenas posuere augue vel sem malesuada tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque fringilla ac tellus quis convallis. Vivamus in ornare erat. Sed vel commodo lorem. Fusce a risus in est vulputate elementum. Donec nec nisi diam. Nunc fringilla ligula in auctor laoreet. Suspendisse molestie est dolor, vel tempus justo auctor a. Duis vel ipsum nec libero gravida auctor. Curabitur tristique sem dictum quam gravida pulvinar. Nullam efficitur nibh sit amet sodales euismod. Fusce sed elit molestie, vehicula sem nec, dictum massa.</p>
+            <p>Vestibulum id blandit quam. Phasellus in efficitur justo. Maecenas posuere augue vel sem malesuada tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque fringilla ac tellus quis convallis. Vivamus in ornare erat. Sed vel commodo lorem. Fusce a risus in est vulputate elementum. Donec nec nisi diam. Nunc fringilla ligula in auctor laoreet. Suspendisse molestie est dolor, vel tempus justo auctor a. Duis vel ipsum nec libero gravida auctor. Curabitur tristique sem dictum quam gravida pulvinar. Nullam efficitur nibh sit amet sodales euismod. Fusce sed elit molestie, vehicula sem nec, dictum massa.</p>
         </div>
     </body>
 </html>

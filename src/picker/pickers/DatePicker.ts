@@ -11,7 +11,9 @@ class DatePicker extends Picker implements IPicker {
            let month = new Date(el.getAttribute('datium-data')).getMonth();
            let dateOfMonth = new Date(el.getAttribute('datium-data')).getDate();
            
-           let date = new Date(this.selectedDate.valueOf());
+           let date = new Date(this.selectedDate === void 0 ?
+                               this.options.initialDate.valueOf() :
+                               this.selectedDate.valueOf());
            date.setFullYear(year);
            date.setMonth(month);
            if (date.getMonth() !== month) {

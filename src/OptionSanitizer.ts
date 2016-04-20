@@ -1,5 +1,5 @@
 function OptionException(msg:string) {
-    return `[Datium Option Exception]\n  ${msg}\n  See http://datium.io/documentation for documentation.`;
+    return `[Datium Option Exception]\n  ${msg}\n  See the readme for documentation.\n`;
 }
 
 class OptionSanitizer {
@@ -13,21 +13,21 @@ class OptionSanitizer {
     static sanitizeMinDate(minDate:any, dflt:Date = new Date(-62135658000000)) {
         if (minDate === void 0) return dflt;
         let date = new Date(minDate);
-        if (date.toString() === 'Invalid Date') throw OptionException("Min date is invalid.");
+        if (date.toString() === 'Invalid Date') throw OptionException('The "minDate" option is invalid.');
         return date;
     }
     
     static sanitizeMaxDate(maxDate:any, dflt:Date = new Date(8640000000000000)) {
         if (maxDate === void 0) return dflt;
         let date = new Date(maxDate);
-        if (date.toString() === 'Invalid Date') throw OptionException("Max date is invalid.");
+        if (date.toString() === 'Invalid Date') throw OptionException('The "maxDate" option is invalid.');
         return date;
     }
     
-    static sanitizeInitialDate(initialDate:any, dflt:Date = void 0) {
+    static sanitizeInitialDate(initialDate:any, dflt:Date = new Date()) {
         if (initialDate === void 0) return dflt;
         let date = new Date(initialDate);
-        if (date.toString() === 'Invalid Date') throw OptionException("Initial date is invalid.");
+        if (date.toString() === 'Invalid Date') throw OptionException('The "initialDate" option is invalid.');
         return date;
     }
         
@@ -153,7 +153,7 @@ class OptionSanitizer {
         return <boolean>transition;
     }
     
-    static sanitize(options:IOptions, defaults:IOptions) {
+    static sanitize(options:IOptions, defaults:IOptions) {        
         let minDate = OptionSanitizer.sanitizeMinDate(options['minDate'], defaults.minDate);
         let maxDate = OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate);
         

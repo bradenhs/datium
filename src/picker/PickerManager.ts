@@ -105,7 +105,17 @@ class PickerManager {
                     break;
             }
         });
+        
+        listen.down(element, (e) => {
+            if ((<TouchEvent>e).changedTouches !== void 0) {
+                this.clientX = (<TouchEvent>e).changedTouches[0].clientX;
+            } else {
+                this.clientX = (<MouseEvent>e).clientX;
+            }
+        });
     }
+    
+    private clientX:number;
     
     private openingTimeout:number;
     
@@ -172,7 +182,6 @@ class PickerManager {
             this.currentPicker = this.getPicker(level);
             this.currentPicker.create(date, transition);
         }
-        
         if (update) this.updateSelectedDate(date);
         if (this.isOpen) this.adjustHeight(this.currentPicker.getHeight());
         this.openPicker();
@@ -223,7 +232,11 @@ class PickerManager {
         let scale = this.isOpen ? 'scale(1)' : 'scale(.01)';
         
         this.container.style.transform = `translate(${marginLeft}px, ${topAdjust}px) ${scale}`;
-        this.container.style.transformOrigin = `10px ${origin}px`;
+        
+        let xDiff = this.clientX - this.container.getBoundingClientRect().left;
+        if (xDiff < 10) xDiff = 10;
+        if (xDiff > 220) xDiff = 220;
+        this.container.style.transformOrigin = `${xDiff}px ${origin}px`;
         
         this.pickerContainer.style.transform = `translateY(${height - 280}px)`;
     }

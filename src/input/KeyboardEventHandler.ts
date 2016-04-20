@@ -9,7 +9,7 @@ class KeyboardEventHandler {
     private tabDown = false;
     
     constructor(private input:Input) {
-        // TODO handle these things in events
+        if (!input.isInput) return;
         input.element.addEventListener("keydown", (e) => this.keydown(e));
         input.element.addEventListener("focus", () => this.focus());
         document.addEventListener("keydown", (e) => this.documentKeydown(e));

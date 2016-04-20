@@ -145,8 +145,6 @@ class TimePicker extends Picker {
             let t = this.selectedDate.getHours();
             let r1 =  (t + 6) / 6 * Math.PI;
             
-            
-            
             let t2 = this.selectedDate.getMinutes();
             let r2 = this.timeToRotation(t2);
             
@@ -171,7 +169,7 @@ class TimePicker extends Picker {
     }
     
     public setSelectedDate(date:Date) {
-        if (date === void 0) return;
+        if (date === void 0) date = this.options.initialDate;
         this.selectedDate = new Date(date.valueOf());
         
         if (this.getLevel() === Level.HOUR) {

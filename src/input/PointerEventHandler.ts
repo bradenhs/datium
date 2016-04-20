@@ -48,6 +48,8 @@ class PointerEventHandler {
     private mousedown() {
         this.down = true;
         
+        if (!this.input.isInput) return;
+        
         this.input.element.setSelectionRange(void 0, void 0);
         
         setTimeout(() => {
@@ -62,18 +64,30 @@ class PointerEventHandler {
         if (!this.down) return;
         this.down = false;
         
-        let pos:number = this.input.element.selectionStart;
-        
-        if (pos === this.caretStart) {
-            pos = this.input.element.selectionEnd;
-        }
-        
-        let block = this.input.getNearestSelectableDatePart(pos);
-        
-        this.input.setSelectedDatePart(block);
-        
-        if (this.input.element.selectionStart > 0 || this.input.element.selectionEnd < this.input.element.value.length) {
-            this.input.triggerViewChange();
+        if (this.input.isInput) {
+            let pos:number = this.input.element.selectionStart;
+            
+            if (pos === this.caretStart) {
+                pos = this.input.element.selectionEnd;
+            }
+            
+            let block = this.input.getNearestSelectableDatePart(pos);
+            
+            this.input.setSelectedDatePart(block);
+            
+            if (this.input.element.selectionStart > 0 || this.input.element.selectionEnd < this.input.element.value.length) {
+                this.input.triggerViewChange();
+            }
+        } else {
+            let maxLevel = this.input.getLevels().slice().sort()[0];
+            this.input.dateParts.some((datePart) => {
+                if (datePart.getLevel() === maxLevel) {
+                    this.input.setSelectedDatePart(datePart);
+                    this.input.triggerViewChange();
+                    return true;
+                }
+                return false;
+            });
         }
     };
 }

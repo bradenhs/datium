@@ -107,7 +107,9 @@ class SecondPicker extends TimePicker implements ITimePicker {
         let seconds = d.getSeconds();
         
         
-        let newDate = new Date(this.selectedDate.valueOf());
+        let newDate = new Date(this.selectedDate === void 0 ?
+                               this.options.initialDate.valueOf() :
+                               this.selectedDate.valueOf());
         newDate.setFullYear(year);
         newDate.setMonth(month);
         if (newDate.getMonth() !== month) {
