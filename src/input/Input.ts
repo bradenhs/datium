@@ -281,6 +281,16 @@ class Input {
         this.viewchanged(this.date, this.level, true);
     }
     
+    public getMaxDatePart() {
+        let maxLevel = this.getLevels().slice().sort()[0];
+        return this.dateParts.filter((datePart) => {
+            if (datePart.getLevel() === maxLevel) {
+                return true;
+            }
+            return false;
+        })[0];
+    }
+    
     public toString() {
         let dateString = '';
         this.dateParts.forEach((datePart) => {
