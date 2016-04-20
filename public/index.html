@@ -27,12 +27,16 @@
                 padding-top: 10px;
                 font-family: Roboto;
             }
-            label button {
+            label span {
                 width: 40px;
                 height: 40px;
                 display: inline-block;
                 background: red;
                 border: 1px solid blue;
+            }
+            
+            label span:focus {
+                border: 2px solid yellow;
             }
             
             .datepickers label {
@@ -42,7 +46,7 @@
         </style>
     </head>
     <body>
-        <h4>showpicker</h4>
+        <h4>now fix up fix</h4>
         
         <div ng-app="myApp" ng-controller="myController">
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed lacus elit, viverra ut gravida nec, feugiat ut ex. Donec placerat ut dui id tristique. Proin auctor nulla ante, non dictum nulla pretium a. Nulla a diam sed tellus tristique consequat. Aenean vehicula eu sapien a egestas. Duis ac turpis at metus semper blandit. Praesent cursus et sem in porta. Duis auctor porttitor leo non suscipit. Praesent at est velit. Duis at imperdiet risus, ut aliquam eros. Cras hendrerit sollicitudin nulla, non dignissim odio ultrices eu. Nulla facilisi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla ut lobortis orci, at consequat libero.</p>
@@ -51,7 +55,7 @@
             <div class='datepickers'>
                 <label>
                     Date
-                    <button datium-picker ng-model="date">Pick</button>
+                    <span datium-picker ng-model="date">Pick</span>
                 </label>
                 <label>
                     Date

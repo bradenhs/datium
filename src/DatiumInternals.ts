@@ -35,6 +35,16 @@ class DatiumInternals {
                 element.setAttribute('readonly', 'readonly');
             }
         });
+        
+        if (this.input.isInput) return;
+        
+        listen.down(element, () => {
+            if (!this.pickerManager.container.classList.contains('datium-closed')) return;
+            trigger.goto(element, {
+                date: this.date,
+                level: this.levels[0]
+            });
+        })
     }
     
     public first:boolean = true;

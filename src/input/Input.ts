@@ -11,8 +11,11 @@ class Input {
     public isInput:boolean;
     
     constructor(public element: HTMLInputElement) {
-        
         this.isInput = element.setSelectionRange !== void 0;
+        
+        if (!this.isInput) {
+            element.setAttribute('tabindex', '0');
+        }
         
         new KeyboardEventHandler(this);
         new PointerEventHandler(this);

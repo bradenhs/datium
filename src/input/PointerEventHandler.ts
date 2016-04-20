@@ -8,16 +8,18 @@ class PointerEventHandler {
             if (!stopMousedown) this.mousedown();
             stopMousedown = false;
         });
-        listen.mouseup(document, () => this.mouseup());
+        listen.mouseup(document, () => {
+            this.mouseup();
+        });
         
         // Set Interval for Touch Devices
-        let start:number, end:number;
-        setInterval(() => {
-            if (this.down ||
+        if (this.input.isInput) {
+            let start:number, end:number;
+            setInterval(() => {
+                if (this.down ||
                 this.input.element !== document.activeElement)
                 return;
             
-            if (this.input.isInput) {
                 if (start === this.input.element.selectionStart &&
                     end === this.input.element.selectionEnd)
                     return;
@@ -32,12 +34,9 @@ class PointerEventHandler {
                 
                 let block = this.input.getNearestSelectableDatePart(pos);
                 this.input.setSelectedDatePart(block);
-            } else {
-                let maxDatePart = this.input.getMaxDatePart();
-                this.input.setSelectedDatePart(maxDatePart);
-            }
-            this.input.triggerViewChange();
-        }, 10);
+                this.input.triggerViewChange();
+            }, 10);
+        }
         
         // Stop default
         input.element.addEventListener("dragenter", (e) => e.preventDefault());

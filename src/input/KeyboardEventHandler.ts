@@ -9,9 +9,9 @@ class KeyboardEventHandler {
     private tabDown = false;
     
     constructor(private input:Input) {
+        input.element.addEventListener("focus", () => this.focus());
         if (!input.isInput) return;
         input.element.addEventListener("keydown", (e) => this.keydown(e));
-        input.element.addEventListener("focus", () => this.focus());
         document.addEventListener("keydown", (e) => this.documentKeydown(e));
     }
 
@@ -25,6 +25,12 @@ class KeyboardEventHandler {
         } else if (this.shiftTabDown) {
             let last = this.input.getLastSelectableDatePart();
             this.input.setSelectedDatePart(last);
+            setTimeout(() => {
+               this.input.triggerViewChange();
+            });
+        } else if (!this.input.isInput) {
+            let block = this.input.getMaxDatePart();
+            this.input.setSelectedDatePart(block);
             setTimeout(() => {
                this.input.triggerViewChange();
             });
