@@ -17,21 +17,25 @@ class PointerEventHandler {
                 this.input.element !== document.activeElement)
                 return;
             
-            if (start === this.input.element.selectionStart &&
-                end === this.input.element.selectionEnd)
-                return;
+            if (this.input.isInput) {
+                if (start === this.input.element.selectionStart &&
+                    end === this.input.element.selectionEnd)
+                    return;
+                    
+                if (this.input.element.selectionStart !== this.input.element.selectionEnd)
+                    return;
                 
-            if (this.input.element.selectionStart !== this.input.element.selectionEnd)
-                return;
-            
-            start = this.input.element.selectionStart;
-            end = this.input.element.selectionEnd;
-            
-            let pos = start + (end - start) / 2;
-            
-            let block = this.input.getNearestSelectableDatePart(pos);
-            this.input.setSelectedDatePart(block);
-            
+                start = this.input.element.selectionStart;
+                end = this.input.element.selectionEnd;
+                
+                let pos = start + (end - start) / 2;
+                
+                let block = this.input.getNearestSelectableDatePart(pos);
+                this.input.setSelectedDatePart(block);
+            } else {
+                let maxDatePart = this.input.getMaxDatePart();
+                this.input.setSelectedDatePart(maxDatePart);
+            }
             this.input.triggerViewChange();
         }, 10);
         
@@ -79,15 +83,9 @@ class PointerEventHandler {
                 this.input.triggerViewChange();
             }
         } else {
-            let maxLevel = this.input.getLevels().slice().sort()[0];
-            this.input.dateParts.some((datePart) => {
-                if (datePart.getLevel() === maxLevel) {
-                    this.input.setSelectedDatePart(datePart);
-                    this.input.triggerViewChange();
-                    return true;
-                }
-                return false;
-            });
+            let maxDatePart = this.input.getMaxDatePart();
+            this.input.setSelectedDatePart(maxDatePart);
+            this.input.triggerViewChange();
         }
     };
 }
