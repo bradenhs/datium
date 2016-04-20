@@ -44,7 +44,19 @@ class DatiumInternals {
                 date: this.date,
                 level: this.levels[0]
             });
-        })
+        });
+        
+        listen.down(document, (e) => {
+            var target = e.srcElement || <Element>e.target;
+            while(target !== null) {
+                if (target === this.pickerManager.container ||
+                    target === this.element) {
+                    return;
+                }
+                target = target.parentElement;
+            }
+            this.element.blur();
+        });
     }
     
     public first:boolean = true;
@@ -109,7 +121,9 @@ class DatiumInternals {
         if (newLevel === void 0) {
             newLevel = Level.NONE;
             this.pickerManager.closePicker();
-            this.element.blur();
+            if (!this.input.isInput) {
+                this.element.blur();
+            }
         }
         
         this.input.dateParts.forEach((datePart) => {

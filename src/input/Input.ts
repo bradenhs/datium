@@ -324,7 +324,8 @@ class Input {
             end === this.element.selectionEnd)
             return;
         
-        this.element.setSelectionRange(start, end);
+        if (document.activeElement === this.element)
+            this.element.setSelectionRange(start, end);
     }
     
     public viewchanged(date:Date, level:Level, update?:boolean) {

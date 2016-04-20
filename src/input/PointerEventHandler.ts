@@ -48,6 +48,7 @@ class PointerEventHandler {
     private caretStart:number;
     private down:boolean = false;
     
+    
     private mousedown() {
         this.down = true;
         
