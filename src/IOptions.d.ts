@@ -24,3 +24,4 @@ interface IOptions {
 }
 
 // TODO Cross-browser
+// TODO pasting bugs. look closer

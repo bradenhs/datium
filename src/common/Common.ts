@@ -48,6 +48,10 @@ class Common {
     }
     
     protected getClientCoor(e:any):{x:number, y:number} {
+        return Common.GetClientCoor(e);
+    }
+    
+    static GetClientCoor(e:any):{x:number, y:number} {
         if (e.clientX !== void 0) {
             return {
                 x: e.clientX,

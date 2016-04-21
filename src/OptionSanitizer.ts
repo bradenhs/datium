@@ -181,3 +181,6 @@ class OptionSanitizer {
         return opts;
     }
 }
+
+// TODO negative years
+// alternate display as string[]

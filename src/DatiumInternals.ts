@@ -36,17 +36,16 @@ class DatiumInternals {
             }
         });
         
-        if (this.input.isInput) return;
-        
-        listen.down(element, () => {
-            if (!this.pickerManager.container.classList.contains('datium-closed')) return;
-            trigger.goto(element, {
-                date: this.date,
-                level: this.levels[0]
-            });
-        });
+        let downCoor:{x:number, y:number};
         
         listen.down(document, (e) => {
+            downCoor = Common.GetClientCoor(e);
+        });
+        
+        listen.up(document, (e) => {
+            let upCoor = Common.GetClientCoor(e);
+            if (Math.sqrt(Math.pow(upCoor.x - downCoor.x, 2) + Math.pow(upCoor.y - downCoor.y, 2)) > 20)
+                return;
             var target = e.srcElement || <Element>e.target;
             while(target !== null) {
                 if (target === this.pickerManager.container ||
@@ -56,6 +55,16 @@ class DatiumInternals {
                 target = target.parentElement;
             }
             this.element.blur();
+        });
+        
+        if (this.input.isInput) return;
+        
+        listen.down(element, () => {
+            if (!this.pickerManager.container.classList.contains('datium-closed')) return;
+            trigger.goto(element, {
+                date: this.date,
+                level: this.levels[0]
+            });
         });
     }
     

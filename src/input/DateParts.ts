@@ -288,7 +288,7 @@ let formatBlocks = (function() {
         }
         
         public getRegEx() {
-            return /^([1-9]|(1[0-2]))$/;
+            return /^((1[0-2])|[1-9])$/;
         }
         
         public toString() {
@@ -361,7 +361,7 @@ let formatBlocks = (function() {
         }
         
         public getRegEx() {
-            return /^[1-9]|((1|2)[0-9])|(3[0-1])$/;
+            return /^((1|2)[0-9])|(3[0-1])|[1-9]$/;
         }
         
         public getMaxBuffer() {
@@ -572,7 +572,7 @@ let formatBlocks = (function() {
         }
         
         public getRegEx() {
-            return /^((1?[0-9])|(2[0-3]))$/;
+            return /^((2[0-3])|(1?[0-9]))$/;
         }
         
         public toString() {
@@ -628,7 +628,7 @@ let formatBlocks = (function() {
         }
         
         public getRegEx() {
-            return /^[1-9]|(1[0-2])$/;
+            return /^(1[0-2])|[1-9]$/;
         }
         
         public toString() {

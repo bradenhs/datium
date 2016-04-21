@@ -23,6 +23,8 @@ gulp.task('default', ['serve', 'build'], function() {
 });
 gulp.task('serve', serve);
 
+gulp.task('angularify', ['less'], angularify);
+
 gulp.task('build', ['typescript']);
 gulp.task('typescript', ['less'], typescript);
 gulp.task('less', ['html'], less);
@@ -75,6 +77,17 @@ function html() {
         .on('end', function() {
             del.sync(filesToDelete);
         });
+}
+
+function angularify() {
+    del.sync(['./angularify']);
+    return gulp.src('./src/**/*.ts')
+        .pipe(ts())
+        .pipe(insert.transform(function(contents, file) {
+            console.log(file.basename);
+            return 'ngm.factory("", function() {\n' + contents + '});'; 
+        }))
+        .pipe(gulp.dest('./angularify'));
 }
 
 function less() {
