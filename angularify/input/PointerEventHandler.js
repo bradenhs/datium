@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.PointerEventHandler", function() {
 var PointerEventHandler = (function () {
     function PointerEventHandler(input) {
         var _this = this;
@@ -75,4 +75,5 @@ var PointerEventHandler = (function () {
     };
     return PointerEventHandler;
 }());
+return PointerEventHandler;
 });

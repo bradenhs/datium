@@ -1,16 +1,16 @@
-ngm.factory("", function() {
-function OptionException(msg) {
-    return "[Datium Option Exception]\n  " + msg + "\n  See the readme for documentation.\n";
-}
+ngm.factory("datium.OptionSanitizer", function() {
 var OptionSanitizer = (function () {
     function OptionSanitizer() {
     }
+    OptionSanitizer.Exception = function (msg) {
+        return "[Datium Option Exception]\n  " + msg + "\n  See the readme for documentation.\n";
+    };
     OptionSanitizer.sanitizeDisplayAs = function (displayAs, dflt) {
         if (dflt === void 0) { dflt = 'h:mma MMM D, YYYY'; }
         if (displayAs === void 0)
             return dflt;
         if (typeof displayAs !== 'string')
-            throw OptionException('The "displayAs" option must be a string');
+            throw OptionSanitizer.Exception('The "displayAs" option must be a string');
         return displayAs;
     };
     OptionSanitizer.sanitizeMinDate = function (minDate, dflt) {
@@ -19,7 +19,7 @@ var OptionSanitizer = (function () {
             return dflt;
         var date = new Date(minDate);
         if (date.toString() === 'Invalid Date')
-            throw OptionException('The "minDate" option is invalid.');
+            throw OptionSanitizer.Exception('The "minDate" option is invalid.');
         return date;
     };
     OptionSanitizer.sanitizeMaxDate = function (maxDate, dflt) {
@@ -28,7 +28,7 @@ var OptionSanitizer = (function () {
             return dflt;
         var date = new Date(maxDate);
         if (date.toString() === 'Invalid Date')
-            throw OptionException('The "maxDate" option is invalid.');
+            throw OptionSanitizer.Exception('The "maxDate" option is invalid.');
         return date;
     };
     OptionSanitizer.sanitizeInitialDate = function (initialDate, dflt) {
@@ -37,7 +37,7 @@ var OptionSanitizer = (function () {
             return dflt;
         var date = new Date(initialDate);
         if (date.toString() === 'Invalid Date')
-            throw OptionException('The "initialDate" option is invalid.');
+            throw OptionSanitizer.Exception('The "initialDate" option is invalid.');
         return date;
     };
     OptionSanitizer.sanitizeColor = function (color) {
@@ -47,9 +47,9 @@ var OptionSanitizer = (function () {
         var rgba = '\\s*rgba\\(\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*\\,\\s*[0-9]*\\.[0-9]+\\s*\\)\\s*';
         var sanitizeColorRegex = new RegExp("^((" + threeHex + ")|(" + sixHex + ")|(" + rgb + ")|(" + rgba + "))$");
         if (color === void 0)
-            throw OptionException("All theme colors (primary, primary_text, secondary, secondary_text, secondary_accent) must be defined");
+            throw OptionSanitizer.Exception("All theme colors (primary, primary_text, secondary, secondary_text, secondary_accent) must be defined");
         if (!sanitizeColorRegex.test(color))
-            throw OptionException("All theme colors must be valid rgb, rgba, or hex code");
+            throw OptionSanitizer.Exception("All theme colors must be valid rgb, rgba, or hex code");
         return color;
     };
     OptionSanitizer.sanitizeTheme = function (theme, dflt) {
@@ -96,7 +96,7 @@ var OptionSanitizer = (function () {
             };
         }
         else {
-            throw OptionException('The "theme" option must be object or string');
+            throw OptionSanitizer.Exception('The "theme" option must be object or string');
         }
     };
     OptionSanitizer.sanitizeIsSecondValid = function (isSecondValid, dflt) {
@@ -104,7 +104,7 @@ var OptionSanitizer = (function () {
         if (isSecondValid === void 0)
             return dflt;
         if (typeof isSecondValid !== 'function')
-            throw OptionException('The "isSecondValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isSecondValid" option should be a function with signature (date:Date) => boolean');
         return isSecondValid;
     };
     OptionSanitizer.sanitizeIsMinuteValid = function (isMinuteValid, dflt) {
@@ -112,7 +112,7 @@ var OptionSanitizer = (function () {
         if (isMinuteValid === void 0)
             return dflt;
         if (typeof isMinuteValid !== 'function')
-            throw OptionException('The "isMinuteValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isMinuteValid" option should be a function with signature (date:Date) => boolean');
         return isMinuteValid;
     };
     OptionSanitizer.sanitizeIsHourValid = function (isHourValid, dflt) {
@@ -120,7 +120,7 @@ var OptionSanitizer = (function () {
         if (isHourValid === void 0)
             return dflt;
         if (typeof isHourValid !== 'function')
-            throw OptionException('The "isHourValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isHourValid" option should be a function with signature (date:Date) => boolean');
         return isHourValid;
     };
     OptionSanitizer.sanitizeIsDateValid = function (isDateValid, dflt) {
@@ -128,7 +128,7 @@ var OptionSanitizer = (function () {
         if (isDateValid === void 0)
             return dflt;
         if (typeof isDateValid !== 'function')
-            throw OptionException('The "isDateValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isDateValid" option should be a function with signature (date:Date) => boolean');
         return isDateValid;
     };
     OptionSanitizer.sanitizeIsMonthValid = function (isMonthValid, dflt) {
@@ -136,7 +136,7 @@ var OptionSanitizer = (function () {
         if (isMonthValid === void 0)
             return dflt;
         if (typeof isMonthValid !== 'function')
-            throw OptionException('The "isMonthValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isMonthValid" option should be a function with signature (date:Date) => boolean');
         return isMonthValid;
     };
     OptionSanitizer.sanitizeIsYearValid = function (isYearValid, dflt) {
@@ -144,7 +144,7 @@ var OptionSanitizer = (function () {
         if (isYearValid === void 0)
             return dflt;
         if (typeof isYearValid !== 'function')
-            throw OptionException('The "isYearValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isYearValid" option should be a function with signature (date:Date) => boolean');
         return isYearValid;
     };
     OptionSanitizer.sanitizeMilitaryTime = function (militaryTime, dflt) {
@@ -152,7 +152,7 @@ var OptionSanitizer = (function () {
         if (militaryTime === void 0)
             return dflt;
         if (typeof militaryTime !== 'boolean') {
-            throw OptionException('The "militaryTime" option must be a boolean');
+            throw OptionSanitizer.Exception('The "militaryTime" option must be a boolean');
         }
         return militaryTime;
     };
@@ -161,7 +161,7 @@ var OptionSanitizer = (function () {
         if (showPicker === void 0)
             return dflt;
         if (typeof showPicker !== 'boolean') {
-            throw OptionException('The "showPicker" option must be a boolean');
+            throw OptionSanitizer.Exception('The "showPicker" option must be a boolean');
         }
         return showPicker;
     };
@@ -170,7 +170,7 @@ var OptionSanitizer = (function () {
         if (transition === void 0)
             return dflt;
         if (typeof transition !== 'boolean') {
-            throw OptionException('The "transition" option must be a boolean');
+            throw OptionSanitizer.Exception('The "transition" option must be a boolean');
         }
         return transition;
     };
@@ -178,7 +178,7 @@ var OptionSanitizer = (function () {
         var minDate = OptionSanitizer.sanitizeMinDate(options['minDate'], defaults.minDate);
         var maxDate = OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate);
         if (minDate.valueOf() > maxDate.valueOf()) {
-            throw OptionException('"minDate" must be before "maxDate"');
+            throw OptionSanitizer.Exception('"minDate" must be before "maxDate"');
         }
         var opts = {
             displayAs: OptionSanitizer.sanitizeDisplayAs(options['displayAs'], defaults.displayAs),
@@ -202,4 +202,5 @@ var OptionSanitizer = (function () {
 }());
 // TODO negative years
 // alternate display as string[] 
+return OptionSanitizer;
 });

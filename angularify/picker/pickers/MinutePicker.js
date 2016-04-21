@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.MinutePicker", function() {
 /// <reference path="TimePicker.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -205,4 +205,5 @@ var MinutePicker = (function (_super) {
     };
     return MinutePicker;
 }(TimePicker));
+return MinutePicker;
 });

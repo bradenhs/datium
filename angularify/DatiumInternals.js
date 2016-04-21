@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.DatiumInternals", function() {
 var DatiumInternals = (function () {
     function DatiumInternals(element, options) {
         var _this = this;
@@ -196,4 +196,5 @@ var DatiumInternals = (function () {
     };
     return DatiumInternals;
 }());
+return DatiumInternals;
 });

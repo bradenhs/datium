@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.KeyboardEventHandler", function() {
 var KeyboardEventHandler = (function () {
     function KeyboardEventHandler(input) {
         var _this = this;
@@ -190,4 +190,5 @@ var KeyboardEventHandler = (function () {
     };
     return KeyboardEventHandler;
 }());
+return KeyboardEventHandler;
 });

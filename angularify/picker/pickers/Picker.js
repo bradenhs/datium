@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.Picker", function() {
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -87,4 +87,5 @@ var Picker = (function (_super) {
     };
     return Picker;
 }(Common));
+return Picker;
 });

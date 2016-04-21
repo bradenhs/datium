@@ -84,8 +84,15 @@ function angularify() {
     return gulp.src('./src/**/*.ts')
         .pipe(ts())
         .pipe(insert.transform(function(contents, file) {
-            console.log(file.basename);
-            return 'ngm.factory("", function() {\n' + contents + '});'; 
+            var name = file.basename.replace('.js', '');
+            
+            var str = 'ngm.factory("datium.'+name+'", function() {\n';
+            
+            str += contents;
+            
+            str += 'return '+name+';\n});';
+            
+            return str; 
         }))
         .pipe(gulp.dest('./angularify'));
 }

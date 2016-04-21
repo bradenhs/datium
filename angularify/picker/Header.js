@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.Header", function() {
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -175,4 +175,5 @@ var Header = (function (_super) {
     };
     return Header;
 }(Common));
+return Header;
 });

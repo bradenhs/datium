@@ -1,33 +1,32 @@
-function OptionException(msg:string) {
-    return `[Datium Option Exception]\n  ${msg}\n  See the readme for documentation.\n`;
-}
-
 class OptionSanitizer {
+    static Exception(msg:string) {
+        return `[Datium Option Exception]\n  ${msg}\n  See the readme for documentation.\n`;
+    }
     
     static sanitizeDisplayAs(displayAs:any, dflt:string = 'h:mma MMM D, YYYY') {
         if (displayAs === void 0) return dflt;
-        if (typeof displayAs !== 'string') throw OptionException('The "displayAs" option must be a string');
+        if (typeof displayAs !== 'string') throw OptionSanitizer.Exception('The "displayAs" option must be a string');
         return displayAs;
     }
     
     static sanitizeMinDate(minDate:any, dflt:Date = new Date(-62135658000000)) {
         if (minDate === void 0) return dflt;
         let date = new Date(minDate);
-        if (date.toString() === 'Invalid Date') throw OptionException('The "minDate" option is invalid.');
+        if (date.toString() === 'Invalid Date') throw OptionSanitizer.Exception('The "minDate" option is invalid.');
         return date;
     }
     
     static sanitizeMaxDate(maxDate:any, dflt:Date = new Date(8640000000000000)) {
         if (maxDate === void 0) return dflt;
         let date = new Date(maxDate);
-        if (date.toString() === 'Invalid Date') throw OptionException('The "maxDate" option is invalid.');
+        if (date.toString() === 'Invalid Date') throw OptionSanitizer.Exception('The "maxDate" option is invalid.');
         return date;
     }
     
     static sanitizeInitialDate(initialDate:any, dflt:Date = new Date()) {
         if (initialDate === void 0) return dflt;
         let date = new Date(initialDate);
-        if (date.toString() === 'Invalid Date') throw OptionException('The "initialDate" option is invalid.');
+        if (date.toString() === 'Invalid Date') throw OptionSanitizer.Exception('The "initialDate" option is invalid.');
         return date;
     }
         
@@ -38,8 +37,8 @@ class OptionSanitizer {
         let rgba = '\\s*rgba\\(\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*,\\s*[0-9]{1,3}\\s*\\,\\s*[0-9]*\\.[0-9]+\\s*\\)\\s*';
         let sanitizeColorRegex = new RegExp(`^((${threeHex})|(${sixHex})|(${rgb})|(${rgba}))$`);
 
-        if (color === void 0) throw OptionException("All theme colors (primary, primary_text, secondary, secondary_text, secondary_accent) must be defined");
-        if (!sanitizeColorRegex.test(color)) throw OptionException("All theme colors must be valid rgb, rgba, or hex code");
+        if (color === void 0) throw OptionSanitizer.Exception("All theme colors (primary, primary_text, secondary, secondary_text, secondary_accent) must be defined");
+        if (!sanitizeColorRegex.test(color)) throw OptionSanitizer.Exception("All theme colors must be valid rgb, rgba, or hex code");
         return <string>color;
     }
     
@@ -83,56 +82,56 @@ class OptionSanitizer {
                 secondary_accent: OptionSanitizer.sanitizeColor(theme['secondary_accent'])
             }
         } else {
-            throw OptionException('The "theme" option must be object or string');
+            throw OptionSanitizer.Exception('The "theme" option must be object or string');
         }
     }
     
     static sanitizeIsSecondValid(isSecondValid:any, dflt:any = () => true) {
         if (isSecondValid === void 0) return dflt;
         if (typeof isSecondValid !== 'function')
-            throw OptionException('The "isSecondValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isSecondValid" option should be a function with signature (date:Date) => boolean');
         return isSecondValid;
     }
     
     static sanitizeIsMinuteValid(isMinuteValid:any, dflt:any = () => true) {
         if (isMinuteValid === void 0) return dflt;
         if (typeof isMinuteValid !== 'function')
-            throw OptionException('The "isMinuteValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isMinuteValid" option should be a function with signature (date:Date) => boolean');
         return isMinuteValid;
     }
     
     static sanitizeIsHourValid(isHourValid:any, dflt:any = () => true) {
         if (isHourValid === void 0) return dflt;
         if (typeof isHourValid !== 'function')
-            throw OptionException('The "isHourValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isHourValid" option should be a function with signature (date:Date) => boolean');
         return isHourValid;
     }
     
     static sanitizeIsDateValid(isDateValid:any, dflt:any = () => true) {
         if (isDateValid === void 0) return dflt;
         if (typeof isDateValid !== 'function')
-            throw OptionException('The "isDateValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isDateValid" option should be a function with signature (date:Date) => boolean');
         return isDateValid;
     }
     
     static sanitizeIsMonthValid(isMonthValid:any, dflt:any = () => true) {
         if (isMonthValid === void 0) return dflt;
         if (typeof isMonthValid !== 'function')
-            throw OptionException('The "isMonthValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isMonthValid" option should be a function with signature (date:Date) => boolean');
         return isMonthValid;
     }
     
     static sanitizeIsYearValid(isYearValid:any, dflt:any = () => true) {
         if (isYearValid === void 0) return dflt;
         if (typeof isYearValid !== 'function')
-            throw OptionException('The "isYearValid" option should be a function with signature (date:Date) => boolean');
+            throw OptionSanitizer.Exception('The "isYearValid" option should be a function with signature (date:Date) => boolean');
         return isYearValid;
     }
     
     static sanitizeMilitaryTime(militaryTime:any, dflt:boolean = false) {
         if (militaryTime === void 0) return dflt;
         if (typeof militaryTime !== 'boolean') {
-            throw OptionException('The "militaryTime" option must be a boolean');
+            throw OptionSanitizer.Exception('The "militaryTime" option must be a boolean');
         }
         return <boolean>militaryTime;
     }
@@ -140,7 +139,7 @@ class OptionSanitizer {
     static sanitizeShowPicker(showPicker:any, dflt:boolean = true) {
         if (showPicker === void 0) return dflt;
         if (typeof showPicker !== 'boolean') {
-            throw OptionException('The "showPicker" option must be a boolean');
+            throw OptionSanitizer.Exception('The "showPicker" option must be a boolean');
         }
         return <boolean>showPicker;
     }
@@ -148,7 +147,7 @@ class OptionSanitizer {
     static sanitizeTransition(transition:any, dflt:boolean = true) {
         if (transition === void 0) return dflt;
         if (typeof transition !== 'boolean') {
-            throw OptionException('The "transition" option must be a boolean');
+            throw OptionSanitizer.Exception('The "transition" option must be a boolean');
         }
         return <boolean>transition;
     }
@@ -158,7 +157,7 @@ class OptionSanitizer {
         let maxDate = OptionSanitizer.sanitizeMaxDate(options['maxDate'], defaults.maxDate);
         
         if (minDate.valueOf() > maxDate.valueOf()) {
-            throw OptionException('"minDate" must be before "maxDate"');
+            throw OptionSanitizer.Exception('"minDate" must be before "maxDate"');
         }
         
         let opts:IOptions = {

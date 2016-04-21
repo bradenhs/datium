@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.Input", function() {
 var Input = (function () {
     function Input(element) {
         var _this = this;
@@ -305,4 +305,5 @@ var Input = (function () {
     };
     return Input;
 }());
+return Input;
 });

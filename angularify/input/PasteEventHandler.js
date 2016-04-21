@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.PasteEventHandler", function() {
 var PasteEventHander = (function () {
     function PasteEventHander(input) {
         var _this = this;
@@ -18,4 +18,5 @@ var PasteEventHander = (function () {
     };
     return PasteEventHander;
 }());
+return PasteEventHandler;
 });

@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.DatePicker", function() {
 /// <reference path="Picker.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -121,4 +121,5 @@ var DatePicker = (function (_super) {
     };
     return DatePicker;
 }(Picker));
+return DatePicker;
 });

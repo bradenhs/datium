@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.Parser", function() {
 var Parser = (function () {
     function Parser() {
     }
@@ -59,4 +59,5 @@ var Parser = (function () {
     };
     return Parser;
 }());
+return Parser;
 });

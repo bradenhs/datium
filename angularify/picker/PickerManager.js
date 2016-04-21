@@ -1,4 +1,4 @@
-ngm.factory("", function() {
+ngm.factory("datium.PickerManager", function() {
 var PickerManager = (function () {
     function PickerManager(element) {
         var _this = this;
@@ -278,4 +278,5 @@ var PickerManager = (function () {
     PickerManager.stylesInserted = 0;
     return PickerManager;
 }());
+return PickerManager;
 });
