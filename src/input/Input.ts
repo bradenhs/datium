@@ -105,21 +105,13 @@ class Input {
             this.updateDateFromBuffer();
         }
     }
-    
-    public beforeMinDate() {
-        return this.date.valueOf() < this.options.minDate.valueOf();
-    }
-    
-    public afterMaxDate() {
-        return this.date.valueOf() > this.options.maxDate.valueOf();
-    }
-    
+  
     public getInvalidReasons():string[] {
         let reasons:string[] = [];
-        if (this.date.valueOf() < this.options.minDate.valueOf()) {
+        if (this.date !== void 0 && this.date.valueOf() < this.options.minDate.valueOf()) {
             reasons.push('datium-before-min');
         }
-        if (this.date.valueOf() > this.options.maxDate.valueOf()) {
+        if (this.date !== void 0 && this.date.valueOf() > this.options.maxDate.valueOf()) {
             reasons.push('datium-after-max');
         }
         this.dateParts.forEach((datePart) => {
@@ -142,8 +134,9 @@ class Input {
     }
     
     public isValid() {
-        if (this.date.valueOf() < this.options.minDate.valueOf() ||
-            this.date.valueOf() > this.options.maxDate.valueOf()) {
+        if (this.date !== void 0 &&
+            (this.date.valueOf() < this.options.minDate.valueOf() ||
+            this.date.valueOf() > this.options.maxDate.valueOf())) {
             return false;
         }
         return this.dateParts.every((datePart) => {

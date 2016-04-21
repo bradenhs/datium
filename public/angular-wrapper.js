@@ -5,6 +5,13 @@ app.controller("myController", function($scope) {
     $scope.options = {
         isMinuteValid: function(date) {
             return date.getMinutes() % 15 === 0;
+        },
+        theme: {
+            primary: '#FFC107',
+            primary_text: '#FFECB3',
+            secondary: '#FFECB3',
+            secondary_text: '#212121',
+            secondary_accent: '#607D8B'
         }
     }
 });
