@@ -81,20 +81,60 @@ function html() {
 
 function angularify() {
     del.sync(['./angularify']);
+    var symbols = [];
     return gulp.src('./src/**/*.ts')
         .pipe(ts())
         .pipe(insert.transform(function(contents, file) {
             var name = file.basename.replace('.js', '');
+            symbols.push(name);
+            var str = 'ngm.factory("datium.'+name+'",\n[@DEPENDENCY@function(@REFERENCE@) {\n';
             
-            var str = 'ngm.factory("datium.'+name+'", function() {\n';
+            str += contents.replace(new RegExp('_this', 'g'), 'self');
             
-            str += contents;
-            
-            str += 'return '+name+';\n});';
+            str += 'return '+name+';\n}]);';
             
             return str; 
         }))
-        .pipe(gulp.dest('./angularify'));
+        .pipe(gulp.dest('./angularify'))
+        .on('end', function() {
+            gulp.src('./angularify/**/*.js')
+                .pipe(insert.transform(function(contents, file) {
+                    var dependency = '';
+                    var reference = '';
+                    var j = 1;
+                    var arr = file.path.split('\\');
+                    var fileName = arr[arr.length-1].replace('.js', '');
+                    for (var i = 0; i < symbols.length; i++) {
+                        var symbol = symbols[i];
+                        if (fileName === symbol) continue;
+                        if (!new RegExp(symbol+'(?!([A-z]|[0-9]))').test(contents)) continue;
+                        var index = contents.indexOf(symbol);
+                        if (index === -1) continue;
+                        if (!/[A-z]|[0-9]/.test(contents[index-1])) {
+                            
+                            dependency += '"datium.'+symbol+'", ';
+                            reference += symbol+', ';
+                            if (j > 2) {
+                                j = 0;
+                                dependency += "\n";
+                            }
+                            j++;
+                        }
+                    }
+                    
+                    if (dependency.length > 0 && dependency.substr(dependency.length - 1) !== '\n') {
+                        dependency += '\n';
+                    }
+                    
+                    if (reference.length > 0) {
+                        reference = reference.substr(0, reference.length - 2);
+                    }
+                    
+                    contents = contents.replace('@DEPENDENCY@', dependency).replace('@REFERENCE@', reference);
+                    return contents;
+                }))
+                .pipe(gulp.dest('./angularify'));
+        });
 }
 
 function less() {

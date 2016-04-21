@@ -1,4 +1,6 @@
-ngm.factory("datium.MonthPicker", function() {
+ngm.factory("datium.MonthPicker",
+["datium.listen", "datium.trigger", 
+function(listen, trigger) {
 /// <reference path="Picker.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8,15 +10,15 @@ var __extends = (this && this.__extends) || function (d, b) {
 var MonthPicker = (function (_super) {
     __extends(MonthPicker, _super);
     function MonthPicker(element, container) {
-        var _this = this;
+        var self = this;
         _super.call(this, element, container);
         listen.tap(container, 'datium-month-element[datium-data]', function (e) {
             var el = e.target || e.srcElement;
             var year = new Date(el.getAttribute('datium-data')).getFullYear();
             var month = new Date(el.getAttribute('datium-data')).getMonth();
-            var date = new Date(_this.selectedDate === void 0 ?
-                _this.options.initialDate.valueOf() :
-                _this.selectedDate.valueOf());
+            var date = new Date(self.selectedDate === void 0 ?
+                self.options.initialDate.valueOf() :
+                self.selectedDate.valueOf());
             date.setFullYear(year);
             date.setMonth(month);
             if (date.getMonth() !== month) {
@@ -29,8 +31,8 @@ var MonthPicker = (function (_super) {
         });
         listen.down(container, 'datium-month-element', function (e) {
             var el = (e.target || e.srcElement);
-            var text = _this.getShortMonths()[new Date(el.getAttribute('datium-data')).getMonth()];
-            var offset = _this.getOffset(el);
+            var text = self.getShortMonths()[new Date(el.getAttribute('datium-data')).getMonth()];
+            var offset = self.getOffset(el);
             trigger.openBubble(element, {
                 x: offset.x + 35,
                 y: offset.y + 15,
@@ -102,4 +104,4 @@ var MonthPicker = (function (_super) {
     return MonthPicker;
 }(Picker));
 return MonthPicker;
-});
+}]);

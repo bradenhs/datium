@@ -1,7 +1,10 @@
-ngm.factory("datium.Input", function() {
+ngm.factory("datium.Input",
+["datium.listen", "datium.trigger", "datium.KeyboardEventHandler", 
+"datium.Parser", "datium.PointerEventHandler", 
+function(listen, trigger, KeyboardEventHandler, Parser, PointerEventHandler) {
 var Input = (function () {
     function Input(element) {
-        var _this = this;
+        var self = this;
         this.element = element;
         this.textBuffer = "";
         this.hasBlurred = false;
@@ -12,10 +15,10 @@ var Input = (function () {
         new KeyboardEventHandler(this);
         new PointerEventHandler(this);
         new PasteEventHander(this);
-        listen.viewchanged(element, function (e) { return _this.viewchanged(e.date, e.level, e.update); });
+        listen.viewchanged(element, function (e) { return self.viewchanged(e.date, e.level, e.update); });
         listen.blur(element, function () {
-            _this.textBuffer = '';
-            _this.hasBlurred = true;
+            self.textBuffer = '';
+            self.hasBlurred = true;
         });
     }
     Input.prototype.setDateFromString = function (str, start, end) {
@@ -275,20 +278,20 @@ var Input = (function () {
             this.element.setSelectionRange(start, end);
     };
     Input.prototype.viewchanged = function (date, level, update) {
-        var _this = this;
+        var self = this;
         this.date = date;
         this.level = level;
         this.dateParts.forEach(function (datePart) {
             if (update)
-                datePart.setValue(_this.date);
-            if (update && level === datePart.getLevel() && _this.textBuffer.length > 0) {
-                _this.setDefined(datePart, true);
+                datePart.setValue(self.date);
+            if (update && level === datePart.getLevel() && self.textBuffer.length > 0) {
+                self.setDefined(datePart, true);
             }
             if (datePart.isSelectable() &&
                 datePart.getLevel() === level &&
-                _this.getSelectedDatePart() !== void 0 &&
-                level !== _this.getSelectedDatePart().getLevel()) {
-                _this.setSelectedDatePart(datePart);
+                self.getSelectedDatePart() !== void 0 &&
+                level !== self.getSelectedDatePart().getLevel()) {
+                self.setSelectedDatePart(datePart);
             }
         });
         this.updateView();
@@ -306,4 +309,4 @@ var Input = (function () {
     return Input;
 }());
 return Input;
-});
+}]);

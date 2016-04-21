@@ -1,4 +1,5 @@
-ngm.factory("datium.OptionSanitizer", function() {
+ngm.factory("datium.OptionSanitizer",
+[function() {
 var OptionSanitizer = (function () {
     function OptionSanitizer() {
     }
@@ -203,4 +204,4 @@ var OptionSanitizer = (function () {
 // TODO negative years
 // alternate display as string[] 
 return OptionSanitizer;
-});
+}]);

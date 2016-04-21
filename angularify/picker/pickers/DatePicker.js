@@ -1,4 +1,6 @@
-ngm.factory("datium.DatePicker", function() {
+ngm.factory("datium.DatePicker",
+["datium.listen", "datium.trigger", "datium.header", 
+function(listen, trigger, header) {
 /// <reference path="Picker.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8,16 +10,16 @@ var __extends = (this && this.__extends) || function (d, b) {
 var DatePicker = (function (_super) {
     __extends(DatePicker, _super);
     function DatePicker(element, container) {
-        var _this = this;
+        var self = this;
         _super.call(this, element, container);
         listen.tap(container, 'datium-date-element[datium-data]', function (e) {
             var el = e.target || e.srcElement;
             var year = new Date(el.getAttribute('datium-data')).getFullYear();
             var month = new Date(el.getAttribute('datium-data')).getMonth();
             var dateOfMonth = new Date(el.getAttribute('datium-data')).getDate();
-            var date = new Date(_this.selectedDate === void 0 ?
-                _this.options.initialDate.valueOf() :
-                _this.selectedDate.valueOf());
+            var date = new Date(self.selectedDate === void 0 ?
+                self.options.initialDate.valueOf() :
+                self.selectedDate.valueOf());
             date.setFullYear(year);
             date.setMonth(month);
             if (date.getMonth() !== month) {
@@ -31,8 +33,8 @@ var DatePicker = (function (_super) {
         });
         listen.down(container, 'datium-date-element', function (e) {
             var el = (e.target || e.srcElement);
-            var text = _this.pad(new Date(el.getAttribute('datium-data')).getDate());
-            var offset = _this.getOffset(el);
+            var text = self.pad(new Date(el.getAttribute('datium-data')).getDate());
+            var offset = self.getOffset(el);
             trigger.openBubble(element, {
                 x: offset.x + 20,
                 y: offset.y + 2,
@@ -122,4 +124,4 @@ var DatePicker = (function (_super) {
     return DatePicker;
 }(Picker));
 return DatePicker;
-});
+}]);

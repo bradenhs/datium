@@ -1,4 +1,6 @@
-ngm.factory("datium.trigger", function() {
+ngm.factory("datium.trigger",
+["datium.CustomEvent", 
+function(CustomEvent) {
 var trigger;
 (function (trigger) {
     function goto(element, data) {
@@ -59,4 +61,4 @@ var trigger;
     trigger.updateDefinedState = updateDefinedState;
 })(trigger || (trigger = {}));
 return trigger;
-});
+}]);

@@ -1,4 +1,6 @@
-ngm.factory("datium.MinutePicker", function() {
+ngm.factory("datium.MinutePicker",
+["datium.listen", "datium.trigger", "datium.TimePicker", 
+function(listen, trigger, TimePicker) {
 /// <reference path="TimePicker.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8,28 +10,28 @@ var __extends = (this && this.__extends) || function (d, b) {
 var MinutePicker = (function (_super) {
     __extends(MinutePicker, _super);
     function MinutePicker(element, container) {
-        var _this = this;
+        var self = this;
         _super.call(this, element, container);
         listen.drag(container, '.datium-minute-drag', {
-            dragStart: function (e) { return _this.dragStart(e); },
-            dragMove: function (e) { return _this.dragMove(e); },
-            dragEnd: function (e) { return _this.dragEnd(e); }
+            dragStart: function (e) { return self.dragStart(e); },
+            dragMove: function (e) { return self.dragMove(e); },
+            dragEnd: function (e) { return self.dragEnd(e); }
         });
         listen.tap(container, '.datium-minute-element', function (e) {
             var el = e.target || e.srcElement;
-            trigger.zoomIn(_this.element, {
-                date: _this.getElementDate(el),
+            trigger.zoomIn(self.element, {
+                date: self.getElementDate(el),
                 currentLevel: 4 /* MINUTE */
             });
         });
         listen.down(container, '.datium-minute-element', function (e) {
             var el = (e.target || e.srcElement);
             var minutes = new Date(el.getAttribute('datium-data')).getMinutes();
-            var offset = _this.getOffset(el);
+            var offset = self.getOffset(el);
             trigger.openBubble(element, {
                 x: offset.x + 25,
                 y: offset.y + 3,
-                text: _this.getBubbleText(minutes)
+                text: self.getBubbleText(minutes)
             });
         });
     }
@@ -206,4 +208,4 @@ var MinutePicker = (function (_super) {
     return MinutePicker;
 }(TimePicker));
 return MinutePicker;
-});
+}]);

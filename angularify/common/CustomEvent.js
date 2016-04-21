@@ -1,4 +1,5 @@
-ngm.factory("datium.CustomEventPolyfill", function() {
+ngm.factory("datium.CustomEvent",
+[function() {
 CustomEvent = (function () {
     function useNative() {
         try {
@@ -44,5 +45,5 @@ CustomEvent = (function () {
         };
     }
 })();
-return CustomEventPolyfill;
-});
+return CustomEvent;
+}]);

@@ -1,4 +1,5 @@
-ngm.factory("datium.listen", function() {
+ngm.factory("datium.listen",
+[function() {
 var listen;
 (function (listen) {
     var matches = document.documentElement.matches || document.documentElement.msMatchesSelector;
@@ -293,4 +294,4 @@ var listen;
     listen.removeListeners = removeListeners;
 })(listen || (listen = {}));
 return listen;
-});
+}]);

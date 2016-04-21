@@ -1,7 +1,12 @@
-ngm.factory("datium.PickerManager", function() {
+ngm.factory("datium.PickerManager",
+["datium.listen", "datium.Header", "datium.header", 
+"datium.Picker", "datium.DatePicker", "datium.HourPicker", 
+"datium.MinutePicker", "datium.MonthPicker", "datium.SecondPicker", 
+"datium.YearPicker", "datium.css", 
+function(listen, Header, header, Picker, DatePicker, HourPicker, MinutePicker, MonthPicker, SecondPicker, YearPicker, css) {
 var PickerManager = (function () {
     function PickerManager(element) {
-        var _this = this;
+        var self = this;
         this.element = element;
         this.isOpen = false;
         this.container = this.createView();
@@ -14,81 +19,81 @@ var PickerManager = (function () {
         this.hourPicker = new HourPicker(element, this.container);
         this.minutePicker = new MinutePicker(element, this.container);
         this.secondPicker = new SecondPicker(element, this.container);
-        listen.down(this.container, '*', function (e) { _this.addActiveClasses(e); });
+        listen.down(this.container, '*', function (e) { self.addActiveClasses(e); });
         listen.up(document, function () {
-            _this.closeBubble();
-            _this.removeActiveClasses();
+            self.closeBubble();
+            self.removeActiveClasses();
         });
         listen.mousedown(this.container, function (e) {
             e.preventDefault();
             e.stopPropagation();
             return false;
         });
-        listen.viewchanged(element, function (e) { return _this.viewchanged(e.date, e.level, e.update); });
+        listen.viewchanged(element, function (e) { return self.viewchanged(e.date, e.level, e.update); });
         listen.openBubble(element, function (e) {
-            _this.openBubble(e.x, e.y, e.text);
+            self.openBubble(e.x, e.y, e.text);
         });
         listen.updateBubble(element, function (e) {
-            _this.updateBubble(e.x, e.y, e.text);
+            self.updateBubble(e.x, e.y, e.text);
         });
         listen.swipeLeft(this.container, function () {
-            if (_this.secondPicker.isDragging() ||
-                _this.minutePicker.isDragging() ||
-                _this.hourPicker.isDragging())
+            if (self.secondPicker.isDragging() ||
+                self.minutePicker.isDragging() ||
+                self.hourPicker.isDragging())
                 return;
-            _this.header.next();
+            self.header.next();
         });
         listen.swipeRight(this.container, function () {
-            if (_this.secondPicker.isDragging() ||
-                _this.minutePicker.isDragging() ||
-                _this.hourPicker.isDragging())
+            if (self.secondPicker.isDragging() ||
+                self.minutePicker.isDragging() ||
+                self.hourPicker.isDragging())
                 return;
-            _this.header.previous();
+            self.header.previous();
         });
         listen.blur(this.element, function () {
-            _this.closePicker();
+            self.closePicker();
         });
         listen.up(document, function () {
-            _this.closeBubble();
+            self.closeBubble();
         });
         listen.updateDefinedState(element, function (e) {
             switch (e.level) {
                 case 0 /* YEAR */:
-                    _this.yearPicker.setDefined(e.defined);
+                    self.yearPicker.setDefined(e.defined);
                     break;
                 case 1 /* MONTH */:
-                    _this.monthPicker.setDefined(e.defined);
+                    self.monthPicker.setDefined(e.defined);
                     break;
                 case 2 /* DATE */:
-                    _this.datePicker.setDefined(e.defined);
+                    self.datePicker.setDefined(e.defined);
                     break;
                 case 3 /* HOUR */:
-                    _this.hourPicker.setDefined(e.defined);
+                    self.hourPicker.setDefined(e.defined);
                     break;
                 case 4 /* MINUTE */:
-                    _this.minutePicker.setDefined(e.defined);
+                    self.minutePicker.setDefined(e.defined);
                     break;
                 case 5 /* SECOND */:
-                    _this.secondPicker.setDefined(e.defined);
+                    self.secondPicker.setDefined(e.defined);
                     break;
             }
         });
         listen.down(element, function (e) {
             if (e.changedTouches !== void 0) {
-                _this.clientX = e.changedTouches[0].clientX;
+                self.clientX = e.changedTouches[0].clientX;
             }
             else {
-                _this.clientX = e.clientX;
+                self.clientX = e.clientX;
             }
         });
     }
     PickerManager.prototype.openPicker = function () {
-        var _this = this;
+        var self = this;
         clearTimeout(this.openingTimeout);
         this.openingTimeout = setTimeout(function () {
-            _this.container.classList.remove('datium-closed');
-            _this.isOpen = true;
-            _this.adjustHeight(_this.currentPicker.getHeight());
+            self.container.classList.remove('datium-closed');
+            self.isOpen = true;
+            self.adjustHeight(self.currentPicker.getHeight());
         }, 25);
     };
     PickerManager.prototype.closePicker = function () {
@@ -279,4 +284,4 @@ var PickerManager = (function () {
     return PickerManager;
 }());
 return PickerManager;
-});
+}]);

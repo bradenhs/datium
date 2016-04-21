@@ -1,41 +1,43 @@
-ngm.factory("datium.KeyboardEventHandler", function() {
+ngm.factory("datium.KeyboardEventHandler",
+["datium.trigger", 
+function(trigger) {
 var KeyboardEventHandler = (function () {
     function KeyboardEventHandler(input) {
-        var _this = this;
+        var self = this;
         this.input = input;
         this.shiftTabDown = false;
         this.tabDown = false;
         this.focus = function () {
-            if (_this.tabDown) {
-                var first = _this.input.getFirstSelectableDatePart();
-                _this.input.setSelectedDatePart(first);
+            if (self.tabDown) {
+                var first = self.input.getFirstSelectableDatePart();
+                self.input.setSelectedDatePart(first);
                 setTimeout(function () {
-                    _this.input.triggerViewChange();
+                    self.input.triggerViewChange();
                 });
             }
-            else if (_this.shiftTabDown) {
-                var last = _this.input.getLastSelectableDatePart();
-                _this.input.setSelectedDatePart(last);
+            else if (self.shiftTabDown) {
+                var last = self.input.getLastSelectableDatePart();
+                self.input.setSelectedDatePart(last);
                 setTimeout(function () {
-                    _this.input.triggerViewChange();
+                    self.input.triggerViewChange();
                 });
             }
-            else if (!_this.input.isInput) {
-                var block = _this.input.getMaxDatePart();
-                _this.input.setSelectedDatePart(block);
+            else if (!self.input.isInput) {
+                var block = self.input.getMaxDatePart();
+                self.input.setSelectedDatePart(block);
                 setTimeout(function () {
-                    _this.input.triggerViewChange();
+                    self.input.triggerViewChange();
                 });
             }
         };
-        input.element.addEventListener("focus", function () { return _this.focus(); });
+        input.element.addEventListener("focus", function () { return self.focus(); });
         if (!input.isInput)
             return;
-        input.element.addEventListener("keydown", function (e) { return _this.keydown(e); });
-        document.addEventListener("keydown", function (e) { return _this.documentKeydown(e); });
+        input.element.addEventListener("keydown", function (e) { return self.keydown(e); });
+        document.addEventListener("keydown", function (e) { return self.documentKeydown(e); });
     }
     KeyboardEventHandler.prototype.documentKeydown = function (e) {
-        var _this = this;
+        var self = this;
         if (e.shiftKey && e.keyCode === 9 /* TAB */) {
             this.shiftTabDown = true;
         }
@@ -43,12 +45,12 @@ var KeyboardEventHandler = (function () {
             this.tabDown = true;
         }
         setTimeout(function () {
-            _this.shiftTabDown = false;
-            _this.tabDown = false;
+            self.shiftTabDown = false;
+            self.tabDown = false;
         });
     };
     KeyboardEventHandler.prototype.keydown = function (e) {
-        var _this = this;
+        var self = this;
         var code = e.keyCode;
         if (code >= 96 && code <= 105) {
             code -= 48;
@@ -100,7 +102,7 @@ var KeyboardEventHandler = (function () {
                 var undefinedLevel_1 = this.input.getSelectedDatePart().getLevel();
                 this.input.dateParts.forEach(function (datePart) {
                     if (datePart.getLevel() === undefinedLevel_1) {
-                        _this.input.setDefined(datePart, false);
+                        self.input.setDefined(datePart, false);
                     }
                 });
                 this.input.triggerViewChange();
@@ -111,7 +113,7 @@ var KeyboardEventHandler = (function () {
             var undefinedLevel_2 = this.input.getSelectedDatePart().getLevel();
             this.input.dateParts.forEach(function (datePart) {
                 if (datePart.getLevel() === undefinedLevel_2) {
-                    _this.input.setDefined(datePart, false);
+                    self.input.setDefined(datePart, false);
                 }
             });
             this.input.triggerViewChange();
@@ -159,11 +161,11 @@ var KeyboardEventHandler = (function () {
         return false;
     };
     KeyboardEventHandler.prototype.up = function () {
-        var _this = this;
+        var self = this;
         this.input.getSelectedDatePart().increment();
         this.input.dateParts.forEach(function (datePart) {
-            if (datePart.getLevel() === _this.input.getSelectedDatePart().getLevel()) {
-                _this.input.setDefined(datePart, true);
+            if (datePart.getLevel() === self.input.getSelectedDatePart().getLevel()) {
+                self.input.setDefined(datePart, true);
             }
         });
         var level = this.input.getSelectedDatePart().getLevel();
@@ -174,11 +176,11 @@ var KeyboardEventHandler = (function () {
         });
     };
     KeyboardEventHandler.prototype.down = function () {
-        var _this = this;
+        var self = this;
         this.input.getSelectedDatePart().decrement();
         this.input.dateParts.forEach(function (datePart) {
-            if (datePart.getLevel() === _this.input.getSelectedDatePart().getLevel()) {
-                _this.input.setDefined(datePart, true);
+            if (datePart.getLevel() === self.input.getSelectedDatePart().getLevel()) {
+                self.input.setDefined(datePart, true);
             }
         });
         var level = this.input.getSelectedDatePart().getLevel();
@@ -191,4 +193,4 @@ var KeyboardEventHandler = (function () {
     return KeyboardEventHandler;
 }());
 return KeyboardEventHandler;
-});
+}]);

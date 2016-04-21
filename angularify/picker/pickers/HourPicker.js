@@ -1,4 +1,6 @@
-ngm.factory("datium.HourPicker", function() {
+ngm.factory("datium.HourPicker",
+["datium.listen", "datium.trigger", "datium.TimePicker", 
+function(listen, trigger, TimePicker) {
 /// <reference path="TimePicker.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8,48 +10,48 @@ var __extends = (this && this.__extends) || function (d, b) {
 var HourPicker = (function (_super) {
     __extends(HourPicker, _super);
     function HourPicker(element, container) {
-        var _this = this;
+        var self = this;
         _super.call(this, element, container);
         listen.drag(container, '.datium-hour-drag', {
-            dragStart: function (e) { return _this.dragStart(e); },
-            dragMove: function (e) { return _this.dragMove(e); },
-            dragEnd: function (e) { return _this.dragEnd(e); }
+            dragStart: function (e) { return self.dragStart(e); },
+            dragMove: function (e) { return self.dragMove(e); },
+            dragEnd: function (e) { return self.dragEnd(e); }
         });
         listen.tap(container, '.datium-hour-element', function (e) {
             var el = e.target || e.srcElement;
-            trigger.zoomIn(_this.element, {
-                date: _this.getElementDate(el),
+            trigger.zoomIn(self.element, {
+                date: self.getElementDate(el),
                 currentLevel: 3 /* HOUR */
             });
         });
         listen.down(container, '.datium-hour-element', function (e) {
             var el = (e.target || e.srcElement);
             var hours = new Date(el.getAttribute('datium-data')).getHours();
-            var offset = _this.getOffset(el);
+            var offset = self.getOffset(el);
             trigger.openBubble(element, {
                 x: offset.x + 25,
                 y: offset.y + 3,
-                text: _this.getBubbleText(hours)
+                text: self.getBubbleText(hours)
             });
         });
         listen.tap(container, 'datium-meridiem-switcher', function () {
             // TODO sort out bug with this one
-            var newDate = new Date(_this.lastLabelDate.valueOf());
+            var newDate = new Date(self.lastLabelDate.valueOf());
             if (newDate.getHours() < 12) {
                 newDate.setHours(newDate.getHours() + 12);
-                _this.rotation += Math.PI * 2;
+                self.rotation += Math.PI * 2;
             }
             else {
                 newDate.setHours(newDate.getHours() - 12);
-                _this.rotation -= Math.PI * 2;
+                self.rotation -= Math.PI * 2;
             }
-            _this.updateLabels(newDate);
-            trigger.goto(_this.element, {
+            self.updateLabels(newDate);
+            trigger.goto(self.element, {
                 date: newDate,
                 level: 3 /* HOUR */,
                 update: false
             });
-            _this.updateElements();
+            self.updateElements();
         });
     }
     HourPicker.prototype.ceil = function (date) {
@@ -284,4 +286,4 @@ var HourPicker = (function (_super) {
     return HourPicker;
 }(TimePicker));
 return HourPicker;
-});
+}]);

@@ -1,4 +1,6 @@
-ngm.factory("datium.YearPicker", function() {
+ngm.factory("datium.YearPicker",
+["datium.listen", "datium.trigger", 
+function(listen, trigger) {
 /// <reference path="Picker.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8,14 +10,14 @@ var __extends = (this && this.__extends) || function (d, b) {
 var YearPicker = (function (_super) {
     __extends(YearPicker, _super);
     function YearPicker(element, container) {
-        var _this = this;
+        var self = this;
         _super.call(this, element, container);
         listen.tap(container, 'datium-year-element[datium-data]', function (e) {
             var el = e.target || e.srcElement;
             var year = new Date(el.getAttribute('datium-data')).getFullYear();
-            var date = new Date(_this.selectedDate === void 0 ?
-                _this.options.initialDate.valueOf() :
-                _this.selectedDate.valueOf());
+            var date = new Date(self.selectedDate === void 0 ?
+                self.options.initialDate.valueOf() :
+                self.selectedDate.valueOf());
             date.setFullYear(year);
             trigger.zoomIn(element, {
                 date: date,
@@ -25,7 +27,7 @@ var YearPicker = (function (_super) {
         listen.down(container, 'datium-year-element', function (e) {
             var el = (e.target || e.srcElement);
             var text = new Date(el.getAttribute('datium-data')).getFullYear().toString();
-            var offset = _this.getOffset(el);
+            var offset = self.getOffset(el);
             trigger.openBubble(element, {
                 x: offset.x + 35,
                 y: offset.y + 15,
@@ -102,4 +104,4 @@ var YearPicker = (function (_super) {
     return YearPicker;
 }(Picker));
 return YearPicker;
-});
+}]);

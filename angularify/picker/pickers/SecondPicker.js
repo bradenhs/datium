@@ -1,4 +1,6 @@
-ngm.factory("datium.SecondPicker", function() {
+ngm.factory("datium.SecondPicker",
+["datium.listen", "datium.trigger", "datium.TimePicker", 
+function(listen, trigger, TimePicker) {
 /// <reference path="TimePicker.ts" />
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -8,28 +10,28 @@ var __extends = (this && this.__extends) || function (d, b) {
 var SecondPicker = (function (_super) {
     __extends(SecondPicker, _super);
     function SecondPicker(element, container) {
-        var _this = this;
+        var self = this;
         _super.call(this, element, container);
         listen.drag(container, '.datium-second-drag', {
-            dragStart: function (e) { return _this.dragStart(e); },
-            dragMove: function (e) { return _this.dragMove(e); },
-            dragEnd: function (e) { return _this.dragEnd(e); }
+            dragStart: function (e) { return self.dragStart(e); },
+            dragMove: function (e) { return self.dragMove(e); },
+            dragEnd: function (e) { return self.dragEnd(e); }
         });
         listen.tap(container, '.datium-second-element', function (e) {
             var el = e.target || e.srcElement;
-            trigger.zoomIn(_this.element, {
-                date: _this.getElementDate(el),
+            trigger.zoomIn(self.element, {
+                date: self.getElementDate(el),
                 currentLevel: 5 /* SECOND */
             });
         });
         listen.down(container, '.datium-second-element', function (e) {
             var el = (e.target || e.srcElement);
             var seconds = new Date(el.getAttribute('datium-data')).getSeconds();
-            var offset = _this.getOffset(el);
+            var offset = self.getOffset(el);
             trigger.openBubble(element, {
                 x: offset.x + 25,
                 y: offset.y + 3,
-                text: _this.getBubbleText(seconds)
+                text: self.getBubbleText(seconds)
             });
         });
     }
@@ -210,4 +212,4 @@ var SecondPicker = (function (_super) {
     return SecondPicker;
 }(TimePicker));
 return SecondPicker;
-});
+}]);

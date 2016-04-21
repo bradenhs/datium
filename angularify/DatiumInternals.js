@@ -1,7 +1,11 @@
-ngm.factory("datium.DatiumInternals", function() {
+ngm.factory("datium.DatiumInternals",
+["datium.OptionSanitizer", "datium.Common", "datium.listen", 
+"datium.trigger", "datium.Input", "datium.PickerManager", 
+"datium.Picker", 
+function(OptionSanitizer, Common, listen, trigger, Input, PickerManager, Picker) {
 var DatiumInternals = (function () {
     function DatiumInternals(element, options) {
-        var _this = this;
+        var self = this;
         this.element = element;
         this.options = {};
         this.dirty = false;
@@ -13,14 +17,14 @@ var DatiumInternals = (function () {
         this.input = new Input(element);
         this.pickerManager = new PickerManager(element);
         this.updateOptions(options);
-        listen.goto(element, function (e) { return _this.goto(e.date, e.level, e.update); });
-        listen.zoomOut(element, function (e) { return _this.zoomOut(e.date, e.currentLevel, e.update); });
-        listen.zoomIn(element, function (e) { return _this.zoomIn(e.date, e.currentLevel, e.update); });
+        listen.goto(element, function (e) { return self.goto(e.date, e.level, e.update); });
+        listen.zoomOut(element, function (e) { return self.zoomOut(e.date, e.currentLevel, e.update); });
+        listen.zoomIn(element, function (e) { return self.zoomIn(e.date, e.currentLevel, e.update); });
         listen.focus(element, function (e) {
             element.removeAttribute('readonly');
         });
         listen.blur(element, function () {
-            if (_this.options.showPicker) {
+            if (self.options.showPicker) {
                 element.setAttribute('readonly', 'readonly');
             }
         });
@@ -34,22 +38,22 @@ var DatiumInternals = (function () {
                 return;
             var target = e.srcElement || e.target;
             while (target !== null) {
-                if (target === _this.pickerManager.container ||
-                    target === _this.element) {
+                if (target === self.pickerManager.container ||
+                    target === self.element) {
                     return;
                 }
                 target = target.parentElement;
             }
-            _this.element.blur();
+            self.element.blur();
         });
         if (this.input.isInput)
             return;
         listen.down(element, function () {
-            if (!_this.pickerManager.container.classList.contains('datium-closed'))
+            if (!self.pickerManager.container.classList.contains('datium-closed'))
                 return;
             trigger.goto(element, {
-                date: _this.date,
-                level: _this.levels[0]
+                date: self.date,
+                level: self.levels[0]
             });
         });
     }
@@ -81,10 +85,10 @@ var DatiumInternals = (function () {
         this.dirty = dirty;
     };
     DatiumInternals.prototype.setDefined = function () {
-        var _this = this;
+        var self = this;
         this.input.dateParts.forEach(function (datePart) {
             datePart.setDefined(true);
-            trigger.updateDefinedState(_this.element, {
+            trigger.updateDefinedState(self.element, {
                 defined: true,
                 level: datePart.getLevel()
             });
@@ -106,7 +110,7 @@ var DatiumInternals = (function () {
         });
     };
     DatiumInternals.prototype.zoomIn = function (date, currentLevel, update) {
-        var _this = this;
+        var self = this;
         if (update === void 0) { update = true; }
         var newLevel = this.levels[this.levels.indexOf(currentLevel) + 1];
         if (newLevel === void 0) {
@@ -119,7 +123,7 @@ var DatiumInternals = (function () {
         this.input.dateParts.forEach(function (datePart) {
             if (datePart.getLevel() <= currentLevel) {
                 datePart.setDefined(true);
-                trigger.updateDefinedState(_this.element, {
+                trigger.updateDefinedState(self.element, {
                     defined: true,
                     level: datePart.getLevel()
                 });
@@ -197,4 +201,4 @@ var DatiumInternals = (function () {
     return DatiumInternals;
 }());
 return DatiumInternals;
-});
+}]);
