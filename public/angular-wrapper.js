@@ -7,11 +7,11 @@ app.controller("myController", function($scope) {
             return date.getMinutes() % 15 === 0;
         },
         theme: {
-            primary: '#FFC107',
-            primary_text: '#FFECB3',
-            secondary: '#FFECB3',
-            secondary_text: '#212121',
-            secondary_accent: '#607D8B'
+            primary: '#9e0e10',
+            primary_text: '#fff',
+            secondary: '#fafafa',
+            secondary_text: '#000',
+            secondary_accent: '#9e0e10'
         }
     }
 });

@@ -323,8 +323,11 @@ class Input {
     }
     
     public viewchanged(date:Date, level:Level, update?:boolean) {
+        
         this.date = date;
+        
         this.level = level;
+        
         this.dateParts.forEach((datePart) => {
             if (update) datePart.setValue(this.date);
             if (update && level === datePart.getLevel() && this.textBuffer.length > 0) {
@@ -337,8 +340,11 @@ class Input {
                 this.setSelectedDatePart(datePart);
             }
         });
+        
         this.updateView();
-        this.element.dispatchEvent(new Event('input'));
+        
+        this.element.dispatchEvent(new CustomEvent('input'));
+        
     }
     
     public triggerViewChange() {

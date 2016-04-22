@@ -26,7 +26,7 @@ class Picker extends Common {
         clearTimeout(this.transitionInTimeout);
         this.transitionOut(transition, this.picker);
         setTimeout((picker:HTMLElement) => {
-            picker.remove();
+            picker.parentNode.removeChild(picker);
         }, this.options.transition ? 500 : 0, this.picker);        
     }
     

@@ -141,7 +141,7 @@ class PickerManager {
         if (this.bubble === void 0) return;
         this.bubble.classList.remove('datium-bubble-visible');
         setTimeout((bubble:HTMLElement) => {
-            bubble.remove();
+            bubble.parentNode.removeChild(bubble);
         }, this.options.transition ? 200 : 0, this.bubble);
         this.bubble = void 0;
     }
@@ -318,7 +318,8 @@ class PickerManager {
         
         this.container.classList.add(styleId);
         
-        let transformedCss = css.replace(/_primary_text/g, this.options.theme.primary_text);
+        let transformedCss = css.replace(/_primary_text_encoded/g, encodeURIComponent(this.options.theme.primary_text));
+        transformedCss = transformedCss.replace(/_primary_text/g, this.options.theme.primary_text);
         transformedCss = transformedCss.replace(/_primary/g, this.options.theme.primary);
         transformedCss = transformedCss.replace(/_secondary_text/g, this.options.theme.secondary_text);
         transformedCss = transformedCss.replace(/_secondary_accent/g, this.options.theme.secondary_accent);

@@ -181,7 +181,7 @@ class DatiumInternals {
             level: level,
             update: update
         });
-        this.element.dispatchEvent(new Event('input'));
+        this.element.dispatchEvent(new CustomEvent('input'));
     }
     
     public updateOptions(newOptions:IOptions = <any>{}) {
