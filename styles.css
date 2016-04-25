@@ -1,13 +1,82 @@
 body {
     margin: 0;
-    background: #7597f9;
+    background: #eee;
     font-family: Roboto;
 }
 
-input {
-    width: 260px;
-    padding: 10px;
+header {
+    background: #3771c8;
+    margin-bottom: 50px;
+}
+
+.features span {
+    background: #feac10;
+    color: white;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    font-weight: 900;
     font-size: 16pt;
-    border: none;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
+    white-space: nowrap;   
+}
+
+header .features {
+    padding: 20px;
+    margin-right: 60px;
+}
+
+.github-icon {
+    background: url(data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20id%3D%22Layer_1%22%20viewBox%3D%220%200%2032.700001%2031.812939%22%20width%3D%2232.7%22%20height%3D%2231.813%22%3E%3Cpath%20d%3D%22M16.3%200C7.3%200%200%207.3%200%2016.3c0%207.2%204.7%2013.3%2011.1%2015.5.8.1%201.1-.4%201.1-.8v-2.8c-4.5%201-5.5-2.2-5.5-2.2-.7-1.9-1.8-2.4-1.8-2.4-1.5-1%20.1-1%20.1-1%201.6.1%202.5%201.7%202.5%201.7%201.5%202.5%203.8%201.8%204.7%201.4.1-1.1.6-1.8%201-2.2-3.6-.4-7.4-1.8-7.4-8.1%200-1.8.6-3.2%201.7-4.4-.2-.4-.7-2.1.2-4.3%200%200%201.4-.4%204.5%201.7%201.3-.4%202.7-.5%204.1-.5%201.4%200%202.8.2%204.1.5%203.1-2.1%204.5-1.7%204.5-1.7.9%202.2.3%203.9.2%204.3%201%201.1%201.7%202.6%201.7%204.4%200%206.3-3.8%207.6-7.4%208%20.6.5%201.1%201.5%201.1%203v4.5c0%20.4.3.9%201.1.8%206.5-2.2%2011.1-8.3%2011.1-15.5C32.6%207.3%2025.3%200%2016.3%200z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E);
+    
+    width: 40px;
+    height: 40px;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: block;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+header h1 {
+    font-size: 40pt;
+    color: white;
+    text-shadow: 0 -1px 0 rgba(0,0,0,.5);
+    max-width: 600px;
+    width: 100%;
+    font-weight: 900;
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1 span {
+    display: block;
+    padding: 80px 20px 120px 20px;
+}
+
+header .picker-container {
+    position: absolute;
+    margin-top: -36px;
+    left: 50%;
+    margin-left: -140px;
+}
+
+input {
+    line-height: 20px;
+    color: #333;
+    width: 240px;
+    padding: 18px;
+    font-size: 18pt;
+    border: 2px solid white;
     border-radius: 3px;
+    outline: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: all ease .2s;
+}
+
+input:focus {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }

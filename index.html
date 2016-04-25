@@ -4,22 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Datium | A Solid Datetime Picker</title>
-    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,500' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700,900,400italic,300italic,100italic,100,700italic,500italic,900italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="styles.css"/>
     <script type="text/javascript" src="http://bhsnll.github.io/datium.js"></script>
 </head>
 <body>
-    <h1>Datium</h1>
-    <p>The internet has long been plagued by dependecy-ridden, device-restricted, ugly datetime pickers.</p>
-    <p>Introducing a new solid datetime picker</p>
-    <p>Touch-enabled, beautiful, user and developer friendly, intuitive, fully featured datetime picker</p>
-    
-    <p>Zero dependency</p>
-    <p>Touchable</p>
-    <p>Beautifully smooth & intuitive</p>
-    <input id="picker"/>
+    <header>
+        <div class="features">
+            <span>zero dependencies</span>
+            <span>open source</span>
+            <span>actively developed</span>
+            <span>touchable</span>
+            <span>beautiful</span>
+            <span>smooth</span>
+            <span>intuitive</span>
+            <span>configurable</span>
+            <span>lightweight</span>
+        </div>
+        <a href="http://github.com/bhsnll/datium" target="_blank" class="github-icon"></a>
+        <h1><span>Datium is the ultimate datetime picker.</span></h1>
+        <div class="picker-container">
+            <input id="picker"/>
+        </div>
+    </header>
+    <p>*Note: Datium is currently in developer preview. The API is unstable and changing.</p>
     <script>
-        var picker = new Datium(document.querySelector("#picker"));
+        var picker = new Datium(document.querySelector("#picker"), {
+            theme: {
+                primary: '#3771c8',
+                primary_text: '#fff',
+                secondary: '#fff',
+                secondary_text: '#333',
+                secondary_accent: '#3771c8'
+            }
+        });
         picker.setDate(new Date());
     </script>
 </body>
