@@ -14,3 +14,6 @@ class PasteEventHander {
         });
     }
 }
+
+// TODO Cross-browser
+// TODO pasting bugs. look closer
