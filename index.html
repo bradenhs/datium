@@ -2,9 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Datium | A Solid Datetime Picker</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,700,500' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="styles.css"/>
+    <script type="text/javascript" src="http://bhsnll.github.io/datium.js"></script>
 </head>
 <body>
-    Hello There
+    <h1>Datium</h1>
+    <p>The internet has long been plagued by dependecy-ridden, device-restricted, ugly datetime pickers.</p>
+    <p>Introducing a new solid datetime picker</p>
+    <p>Touch-enabled, beautiful, user and developer friendly, intuitive, fully featured datetime picker</p>
+    
+    <p>Zero dependency</p>
+    <p>Touchable</p>
+    <p>Beautifully smooth & intuitive</p>
+    <input id="picker"/>
+    <script>
+        var picker = new Datium(document.querySelector("#picker"));
+        picker.setDate(new Date());
+    </script>
 </body>
 </html>
