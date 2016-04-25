@@ -94,8 +94,12 @@ interface IOptions {
      * ss - padded second (ex. 06)
      * s - second (ex. 6)
      * 
-     * Surround escaped segments with square brackets (ex. "[The time of day is ] h:mma")
-     * Surround segments needing to reflect the time but not be selectable with curly brackets (ex. "{ddd} MMM Do, YYYY")
+     * Surround escaped segments with square brackets
+     * (ex. "[The time of day is ] h:mma").
+     * 
+     * Surround segments needing to reflect the time but
+     * not be selectable with curly brackets
+     * (ex. "{ddd} MMM Do, YYYY")
      */
     displayAs:string;
     
