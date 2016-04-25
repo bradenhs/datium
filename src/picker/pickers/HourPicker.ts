@@ -46,7 +46,7 @@ class HourPicker extends TimePicker implements ITimePicker {
             trigger.goto(this.element, {
                 date: newDate,
                 level: Level.HOUR,
-                update: false
+                update: true
             });
             this.updateElements();
         });
