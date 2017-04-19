@@ -1,11 +1,11 @@
-#Datium
+# Datium
 
 Datium is a bullet-proof datetime picker. Datium is compatible with the
 latest web browsers and performs well mobile.
 
-##Usage
+## Usage
 
-###Options
+### Options
 
 ```javascript
 /**
@@ -204,7 +204,7 @@ interface IOptions {
 }
 ```
 
-###Angular
+### Angular
 
 Use the `datium-picker` directive as an attribute.
 
@@ -241,7 +241,7 @@ Class Suffix|Description
 `datium-bad-minute-selection`|If the current date is invalid because the<br/>`isMinuteValid` function specified in your options is<br/>returning `false`.
 `datium-bad-second-selection`|If the current date is invalid because the<br/>`isSecondValid` function specified in your options is<br/>returning `false`.
 
-###Plain JavaScript
+### Plain JavaScript
 
 Put the datium script tag on your page.
 
@@ -261,7 +261,7 @@ Method|Description
 `myPicker.toString()`             |Returns the string representing the date in<br/>the format specified in the options<br/>`displayAs` parameter
 `myPicker.getInvalidReasons()`    |Returns an array of strings specifying why<br/>the date is invalid. These strings are described in<br/>the Class Suffix table above. If an empty array is<br/>returned the date is valid.
 
-##Development
+## Development
 
 - Clone the repo
 - Run `npm install`
@@ -277,6 +277,6 @@ Task|Description
 `gulp closure`|Will use the google closure compiler to minify `datium.js`
 `gulp deploy`|Will deploy the project to bhsnll.github.io but this can be configured to push elsewhere.
 
-##Compatability
+## Compatability
 
 Datium works great on mobile browsers. All the latest versions of desktop browsers are supported. Internet Explorer <= IE9 is not supported.
