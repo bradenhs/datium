@@ -1,14 +1,7 @@
 #Datium
 
-Datium is a solid datetime picker for the web. There are zero dependencies and zero hassle. Datium is compatible with the all latest web browsers and performs excellently on both mobile and desktop platforms. Datium is under active development and is currently in a preview state. The code is far from perfect and we're working on cleaning things up right now. You are more than welcome to help find bugs in the project! 
-
-##Why?
-
-Right now the web lacks a solid datetime picker. Datium's goal is to be the most developer and user friendly datetime picker for the web across all devices.
-
-##The Name
-
-"`Da`" is for **da**te, "`ti`" for **ti**me, and "`ium`" is a common suffix for metals used here to convey the solid nature of the datium datetime picker.
+Datium is a bullet-proof datetime picker. Datium is compatible with the
+latest web browsers and performs well mobile.
 
 ##Usage
 
@@ -19,45 +12,45 @@ Right now the web lacks a solid datetime picker. Datium's goal is to be the most
  * The object to specify custom themes. All fields are required.
  */
 interface ITheme {
-    
+
     /**
      * type: string
-     * 
+     *
      * Any valid rgb, rgba, or hex value (ex. "#f00")
      */
     primary:string;
-    
+
     /**
      * type: string
-     * 
+     *
      * Any valid rgb, rgba, or hex value (ex. "#f00")
      */
     primary_text:string;
-    
+
     /**
      * type: string
-     * 
+     *
      * Any valid rgb, rgba, or hex value (ex. "#f00")
      */
     secondary:string;
-    
+
     /**
      * type: string
-     * 
+     *
      * Any valid rgb, rgba, or hex value (ex. "#f00")
      */
     secondary_text:string;
-    
+
     /**
      * type: string
-     * 
+     *
      * Any valid rgb, rgba, or hex value (ex. "#f00")
      */
     secondary_accent:string;
-    
+
     /**
      * type: string
-     * 
+     *
      * Any valid rgb, rgba, or hex value (ex. "#f00")
      */
 }
@@ -66,11 +59,11 @@ interface ITheme {
  * Options for the picker. All options are optional.
  */
 interface IOptions {
-    
+
     /**
      * type: string
      * default: "h:mma MMM D, YYYY"
-     * 
+     *
      * Format for how the date is displayed.
      * YYYY - four digit year (ex. 2016)
      * YY - two digit year (ex. 16)
@@ -93,119 +86,119 @@ interface IOptions {
      * m - minute (ex. 5)
      * ss - padded second (ex. 06)
      * s - second (ex. 6)
-     * 
+     *
      * Surround escaped segments with square brackets
      * (ex. "[The time of day is ] h:mma").
-     * 
+     *
      * Surround segments needing to reflect the time but
      * not be selectable with curly brackets
      * (ex. "{ddd} MMM Do, YYYY")
      */
     displayAs:string;
-    
+
     /**
      * type: Date
      * default: undefined
-     * 
+     *
      * The minimum selectable date.
-     */    
+     */
     minDate:Date;
-    
+
     /**
      * type: Date
      * default: undefined
-     * 
+     *
      * The maximum selectable date.
-     */    
+     */
     maxDate:Date;
-    
-    
+
+
     /**
      * type: Date
      * default: undefined
-     * 
+     *
      * The inital date the picker will open to if no date is selected.
-     */    
+     */
     initialDate:Date;
-    
+
     /**
      * type: ITheme | string
      * default: "material"
-     * 
+     *
      * The color theme for the picker. Preset themes are "material", "light", and "dark."
      * If you want a custom theme pass in an ITheme object.
-     */    
+     */
     theme:ITheme;
-    
+
     /**
      * type: boolean
      * default: false
-     * 
+     *
      * If the picker should display the clock in military time.
      */
     militaryTime:boolean;
-    
+
     /**
      * type: (d?:Date) => boolean
      * default: () => true
-     * 
-     * Get a date object and returns a boolean specifying whether or not the second is valid. 
+     *
+     * Get a date object and returns a boolean specifying whether or not the second is valid.
      */
     isSecondValid:(date:Date) => boolean;
-    
+
     /**
      * type: (d?:Date) => boolean
      * default: () => true
-     * 
-     * Get a date object and returns a boolean specifying whether or not the minute is valid. 
+     *
+     * Get a date object and returns a boolean specifying whether or not the minute is valid.
      */
     isMinuteValid:(date:Date) => boolean;
-    
+
     /**
      * type: (d?:Date) => boolean
      * default: () => true
-     * 
-     * Get a date object and returns a boolean specifying whether or not the hour is valid. 
+     *
+     * Get a date object and returns a boolean specifying whether or not the hour is valid.
      */
     isHourValid:(date:Date) => boolean;
-    
+
     /**
      * type: (d?:Date) => boolean
      * default: () => true
-     * 
-     * Get a date object and returns a boolean specifying whether or not the date is valid. 
+     *
+     * Get a date object and returns a boolean specifying whether or not the date is valid.
      */
     isDateValid:(date:Date) => boolean;
-    
+
     /**
      * type: (d?:Date) => boolean
      * default: () => true
-     * 
-     * Get a date object and returns a boolean specifying whether or not the month is valid. 
+     *
+     * Get a date object and returns a boolean specifying whether or not the month is valid.
      */
     isMonthValid:(date:Date) => boolean;
-    
+
     /**
      * type: (d?:Date) => boolean
      * default: () => true
-     * 
-     * Get a date object and returns a boolean specifying whether or not the year is valid. 
+     *
+     * Get a date object and returns a boolean specifying whether or not the year is valid.
      */
     isYearValid:(date:Date) => boolean;
-    
+
     /**
      * type: boolean
      * default: true
-     * 
-     * Whether or not the picker GUI should show. 
+     *
+     * Whether or not the picker GUI should show.
      */
     showPicker:boolean;
-    
+
     /**
      * type: boolean
      * default: true
-     * 
-     * Whether of not the picker has smooth transitions 
+     *
+     * Whether of not the picker has smooth transitions
      */
     transition:boolean;
 }
@@ -227,7 +220,7 @@ You can optionally specify an `ng-model` via:
 
 `<input datium-picker ng-model="date"/>`
 
-If an `ng-model` is specified the picker will manage `ng-valid` classes on the element the picker is attached to. All possible classes are specified here. Each class suffix described below will be preceded by either `ng-valid` or `ng-invalid` depending on if model is valid or not. 
+If an `ng-model` is specified the picker will manage `ng-valid` classes on the element the picker is attached to. All possible classes are specified here. Each class suffix described below will be preceded by either `ng-valid` or `ng-invalid` depending on if model is valid or not.
 
 Class Suffix|Description
 ---|---
@@ -266,7 +259,7 @@ Method|Description
 `myPicker.setDate(date)`          |Manually set the date of the picker
 `myPicker.setDefined()`           |Manually ensures all fields in the picker<br/>are defined
 `myPicker.toString()`             |Returns the string representing the date in<br/>the format specified in the options<br/>`displayAs` parameter
-`myPicker.getInvalidReasons()`    |Returns an array of strings specifying why<br/>the date is invalid. These strings are described in<br/>the Class Suffix table above. If an empty array is<br/>returned the date is valid. 
+`myPicker.getInvalidReasons()`    |Returns an array of strings specifying why<br/>the date is invalid. These strings are described in<br/>the Class Suffix table above. If an empty array is<br/>returned the date is valid.
 
 ##Development
 
@@ -287,21 +280,3 @@ Task|Description
 ##Compatability
 
 Datium works great on mobile browsers. All the latest versions of desktop browsers are supported. Internet Explorer <= IE9 is not supported.
-
-##Contribute
-
-Please file any bugs or submit any pull requests on github!
-
-##Roadmap
-
-Datium is in preview now. Here's some of the things on the roadmap to beta:
-
-- Support Angular 2.
-- Support older IEs
-- TODO flags in project
-- Fix any bugs
-- Clean up code
-- Reduce gzip size
-- Get inital feedback for API
-- Timezone support
-- More friendly documentation
